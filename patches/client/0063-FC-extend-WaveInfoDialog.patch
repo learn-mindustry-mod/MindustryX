@@ -12,13 +12,17 @@ Content-Transfer-Encoding: 8bit
 * 其他细节优化
 ---
  core/src/mindustry/editor/WaveInfoDialog.java | 150 +++++++++++++++++-
- 1 file changed, 144 insertions(+), 6 deletions(-)
+ 1 file changed, 143 insertions(+), 7 deletions(-)
 
 diff --git a/core/src/mindustry/editor/WaveInfoDialog.java b/core/src/mindustry/editor/WaveInfoDialog.java
-index b4bc26acc2d26abe0dc2630f332fc40da08cd94f..2c29fe824db62c75fce2c8e1866da1ac5a688ae1 100644
+index b4bc26acc2d26abe0dc2630f332fc40da08cd94f..4c809eedc3a01d86396abf2be61b2e290c10209e 100644
 --- a/core/src/mindustry/editor/WaveInfoDialog.java
 +++ b/core/src/mindustry/editor/WaveInfoDialog.java
-@@ -6,6 +6,7 @@ import arc.graphics.*;
+@@ -2,10 +2,10 @@ package mindustry.editor;
+ 
+ import arc.*;
+ import arc.func.*;
+-import arc.graphics.*;
  import arc.input.*;
  import arc.math.*;
  import arc.math.geom.*;
@@ -26,7 +30,7 @@ index b4bc26acc2d26abe0dc2630f332fc40da08cd94f..2c29fe824db62c75fce2c8e1866da1ac
  import arc.scene.event.*;
  import arc.scene.style.*;
  import arc.scene.ui.*;
-@@ -22,9 +23,12 @@ import mindustry.io.*;
+@@ -22,6 +22,8 @@ import mindustry.io.*;
  import mindustry.type.*;
  import mindustry.ui.*;
  import mindustry.ui.dialogs.*;
@@ -35,11 +39,7 @@ index b4bc26acc2d26abe0dc2630f332fc40da08cd94f..2c29fe824db62c75fce2c8e1866da1ac
  
  import static mindustry.Vars.*;
  import static mindustry.game.SpawnGroup.*;
-+import static mindustryX.features.ArcWaveSpawner.calWinWave;
- 
- public class WaveInfoDialog extends BaseDialog{
-     Seq<SpawnGroup> groups = new Seq<>();
-@@ -38,10 +42,16 @@ public class WaveInfoDialog extends BaseDialog{
+@@ -38,10 +40,16 @@ public class WaveInfoDialog extends BaseDialog{
      private boolean checkedSpawns;
      private WaveGraph graph = new WaveGraph();
  
@@ -56,7 +56,7 @@ index b4bc26acc2d26abe0dc2630f332fc40da08cd94f..2c29fe824db62c75fce2c8e1866da1ac
              checkedSpawns = false;
              setup();
          });
-@@ -90,6 +100,11 @@ public class WaveInfoDialog extends BaseDialog{
+@@ -90,6 +98,11 @@ public class WaveInfoDialog extends BaseDialog{
              dialog.show();
          }).size(250f, 64f);
  
@@ -68,7 +68,7 @@ index b4bc26acc2d26abe0dc2630f332fc40da08cd94f..2c29fe824db62c75fce2c8e1866da1ac
          buttons.button(Core.bundle.get("waves.random"), Icon.refresh, () -> {
              groups.clear();
              groups = Waves.generate(1f / 10f);
-@@ -98,7 +113,6 @@ public class WaveInfoDialog extends BaseDialog{
+@@ -98,7 +111,6 @@ public class WaveInfoDialog extends BaseDialog{
      }
  
      void setup(){
@@ -76,7 +76,7 @@ index b4bc26acc2d26abe0dc2630f332fc40da08cd94f..2c29fe824db62c75fce2c8e1866da1ac
          if(groups == null) groups = new Seq<>();
  
          cont.clear();
-@@ -149,11 +163,50 @@ public class WaveInfoDialog extends BaseDialog{
+@@ -149,11 +161,50 @@ public class WaveInfoDialog extends BaseDialog{
              setAlignment(Align.center, Align.center);
          }}).width(390f).growY();
  
@@ -90,7 +90,7 @@ index b4bc26acc2d26abe0dc2630f332fc40da08cd94f..2c29fe824db62c75fce2c8e1866da1ac
      }
  
 +    void buildsWaveList(Table p){
-+        int winWave = calWinWave();
++        int winWave = Math.min(ArcWaveSpawner.calWinWave(), 10000);
 +        p.table(Tex.button, t -> {
 +            p.margin(0).defaults().pad(5).growX();
 +            t.add("\uE86D 为单位数量；\uE813 为单位血+盾；\uE810 为计算buff的血+盾；\uE86E 为预估DPS。在游戏中时会考虑地图出怪点数目").color(Pal.accent);
@@ -128,7 +128,7 @@ index b4bc26acc2d26abe0dc2630f332fc40da08cd94f..2c29fe824db62c75fce2c8e1866da1ac
      void buildGroups(){
          table.clear();
          table.top();
-@@ -172,12 +225,25 @@ public class WaveInfoDialog extends BaseDialog{
+@@ -172,12 +223,25 @@ public class WaveInfoDialog extends BaseDialog{
                      t.button(b -> {
                          b.left();
                          b.image(group.type.uiIcon).size(32f).padRight(3).scaling(Scaling.fit);
@@ -157,7 +157,7 @@ index b4bc26acc2d26abe0dc2630f332fc40da08cd94f..2c29fe824db62c75fce2c8e1866da1ac
                          b.button(Icon.copySmall, Styles.emptyi, () -> {
                              groups.insert(groups.indexOf(group) + 1, expandedGroup = group.copy());
                              buildGroups();
-@@ -339,7 +405,39 @@ public class WaveInfoDialog extends BaseDialog{
+@@ -339,7 +403,39 @@ public class WaveInfoDialog extends BaseDialog{
                                  dialog.show();
                              }).width(160f).height(36f).get().getLabel().setText(() -> group.spawn == -1 ? "@waves.spawn.all" : Point2.x(group.spawn) + ", " + Point2.y(group.spawn));
  
@@ -198,7 +198,7 @@ index b4bc26acc2d26abe0dc2630f332fc40da08cd94f..2c29fe824db62c75fce2c8e1866da1ac
                      }
                  }).width(340f).pad(8);
  
-@@ -390,6 +488,46 @@ public class WaveInfoDialog extends BaseDialog{
+@@ -390,6 +486,46 @@ public class WaveInfoDialog extends BaseDialog{
          dialog.show();
      }
  

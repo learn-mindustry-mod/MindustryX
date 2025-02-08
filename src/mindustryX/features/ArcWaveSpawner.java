@@ -22,7 +22,7 @@ import static mindustry.Vars.*;
 public class ArcWaveSpawner{
     public static boolean hasFlyer = true;
     public static final float flyerSpawnerRadius = 5f * tilesize;
-    public static final Seq<waveInfo> arcWave = new Seq<>();
+    private static final Seq<waveInfo> arcWaveCache = new Seq<>();
 
     static{
         Events.on(EventType.WorldLoadEvent.class, event -> {
@@ -33,10 +33,7 @@ public class ArcWaveSpawner{
                     break;
                 }
             }
-            arcWave.clear();
-            for(int i = 0; i <= calWinWave(); i++){
-                arcWave.add(new waveInfo(i));
-            }
+            arcWaveCache.clear();
         });
     }
 
@@ -63,8 +60,9 @@ public class ArcWaveSpawner{
     }
 
     public static waveInfo getOrInit(int wave){
-        while(arcWave.size <= wave) arcWave.add(new waveInfo(wave));
-        return arcWave.get(wave);
+        wave = Math.min(wave, calWinWave());
+        while(arcWaveCache.size <= wave) arcWaveCache.add(new waveInfo(wave));
+        return arcWaveCache.get(wave);
     }
 
     public static int calWinWave(){
