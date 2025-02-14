@@ -34,11 +34,12 @@ object AutoFill {
 
     private fun tryFill(build: Building) {
         val player = Vars.player ?: return
+        if (player.dead() || player.unit().stack.amount == 0) return
         if (build.team != player.team()
             || (!fillStorageBlock.value && build.block is StorageBlock)
             || (!fillDistribution.value && build.block.category == Category.distribution) || build.team != player.team()
         ) return
-        val item = player.unit()?.item() ?: return
+        val item = player.unit().item() ?: return
         if (build.within(player, Vars.itemTransferRange) && build.acceptStack(item, 9999, player.unit()) >= minFill.value) {
             if (justTransferred(build)) return
             Call.transferInventory(player, build)
