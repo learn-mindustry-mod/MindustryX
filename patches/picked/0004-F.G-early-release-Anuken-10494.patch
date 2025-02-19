@@ -1,0 +1,45 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: way-zer <himc.wicp@gmail.com>
+Date: Wed, 19 Feb 2025 15:00:18 +0800
+Subject: [PATCH] F.G: early release Anuken#10494
+
+---
+ core/src/mindustry/ai/types/CargoAI.java | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
+
+diff --git a/core/src/mindustry/ai/types/CargoAI.java b/core/src/mindustry/ai/types/CargoAI.java
+index 8fb522e900c0af6c85527e8bd3e214b7f26771a3..2568d306f055fbf23222806d270f08d502b3a292 100644
+--- a/core/src/mindustry/ai/types/CargoAI.java
++++ b/core/src/mindustry/ai/types/CargoAI.java
+@@ -74,18 +74,20 @@ public class CargoAI extends AIController{
+ 
+                     //deposit items when it's possible
+                     if(max > 0){
+-                        noDestTimer = 0f;
+                         Call.transferItemTo(unit, unit.item(), max, unit.x, unit.y, unloadTarget);
+ 
+-                        //try the next target later
++                        //reset wait timer if we can't fill the unload point.
+                         if(!unit.hasItem()){
+-                            targetIndex ++;
++                            noDestTimer = 0f;
+                         }
+-                    }else if((noDestTimer += dropSpacing) >= emptyWaitTime){
++                    }
++                    //keep the target for at most emptyWaitTime, then we try change if other need.
++                    if((noDestTimer += dropSpacing) >= emptyWaitTime){
+                         //oh no, it's out of space - wait for a while, and if nothing changes, try the next destination
+ 
+                         //next targeting attempt will try the next destination point
+                         targetIndex = findDropTarget(unit.item(), targetIndex, unloadTarget) + 1;
++                        noDestTimer = 0f;
+ 
+                         //nothing found at all, clear item
+                         if(unloadTarget == null){
+@@ -190,4 +192,4 @@ public class CargoAI extends AIController{
+         //find sort by "most desirable" first
+         targets.sort(Structs.comps(Structs.comparingInt(b -> b.items.total()), Structs.comparingFloat(b -> b.dst2(unit))));
+     }
+-}
++}
+\ No newline at end of file
