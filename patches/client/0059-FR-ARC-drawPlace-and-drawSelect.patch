@@ -10,10 +10,10 @@ Subject: [PATCH] FR: ARC drawPlace and drawSelect
  .../world/blocks/defense/MendProjector.java   |  5 ++-
  .../blocks/defense/OverdriveProjector.java    |  6 ++-
  .../blocks/defense/turrets/BaseTurret.java    |  5 ++-
- .../world/blocks/defense/turrets/Turret.java  | 12 ++++++
+ .../world/blocks/defense/turrets/Turret.java  |  8 ++++
  .../world/blocks/production/Drill.java        | 22 ++++++----
  .../world/blocks/storage/CoreBlock.java       |  9 ++++
- 9 files changed, 92 insertions(+), 13 deletions(-)
+ 9 files changed, 88 insertions(+), 13 deletions(-)
 
 diff --git a/core/src/mindustry/game/Universe.java b/core/src/mindustry/game/Universe.java
 index 33fcc893c17585aef5f24f0282db5788410a5237..4012377fec3fb9161645e7d76616b2f7f78d48c8 100644
@@ -221,28 +221,24 @@ index eced3dc7581a4916970634e600d0f5cd86f6ee7e..58e315a6d9ec8c4c32df8a8220a9ccbb
  
          public float estimateDps(){
 diff --git a/core/src/mindustry/world/blocks/defense/turrets/Turret.java b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
-index 5db6510b6453d024d1f973bbf6d5f227fe176530..725439d42ac8444c15552d938b110f0d4f9052fc 100644
+index 5db6510b6453d024d1f973bbf6d5f227fe176530..b458a8b73455e57a8552b3b6f51e1ca8a83159af 100644
 --- a/core/src/mindustry/world/blocks/defense/turrets/Turret.java
 +++ b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
-@@ -398,6 +398,18 @@ public class Turret extends ReloadTurret{
-             drawer.draw(this);
-         }
- 
-+        //show shoot target line
-+        @Override
-+        public void drawSelect(){
-+            super.drawSelect();
+@@ -405,6 +405,14 @@ public class Turret extends ReloadTurret{
+             if(drawMinRange){
+                 Drawf.dashCircle(x, y, minRange(), team.color);
+             }
++
++            //ARC: show shoot target line
 +            if(!targetPos.isZero() && dst(targetPos) < range * 5){
 +                Lines.stroke(1f);
 +                Lines.dashLine(x, y, targetPos.x, targetPos.y, (int)(Mathf.len(targetPos.x - x, targetPos.y - y) / 8));
 +                Lines.dashCircle(targetPos.x, targetPos.y, 8);
 +                Draw.reset();
 +            }
-+        }
-+
+         }
+ 
          @Override
-         public void drawSelect(){
-             super.drawSelect();
 diff --git a/core/src/mindustry/world/blocks/production/Drill.java b/core/src/mindustry/world/blocks/production/Drill.java
 index 377641cd32a85e37cd99b09622c7ed1b8022a0d1..9188bfda2f06342825afba3231e5861bca09b6d1 100644
 --- a/core/src/mindustry/world/blocks/production/Drill.java

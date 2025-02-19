@@ -78,7 +78,7 @@ public class HudSettingsTable extends ToolTableBase{
                     if(i % settings.getInt("arcQuickMsgKey", 8) == 0) t.row();
                     int finalI = i;
                     t.button(settings.getString(getArcQuickMsgShortName(i)), Styles.flatBordert, () -> {
-                        if(settings.getBool(getArcQuickMsgJs(finalI))) mods.getScripts().runConsole(mods.getScripts().injectConsoleVariables() + settings.getString(getArcQuickMsgName(finalI)));
+                        if(settings.getBool(getArcQuickMsgJs(finalI))) mods.getScripts().runConsole(ui.consolefrag.injectConsoleVariables() + settings.getString(getArcQuickMsgName(finalI)));
                         else Call.sendChatMessage(settings.getString(getArcQuickMsgName(finalI)));
                     });
                 }
