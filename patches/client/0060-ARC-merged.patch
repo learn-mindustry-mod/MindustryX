@@ -323,7 +323,7 @@ index ebc1f0b300d295e45333f1db38ea299c9658ec20..e7cba056743979206c84fc6d00472c2c
                      hide();
                  }).marginLeft(10f);
 diff --git a/core/src/mindustry/entities/comp/BuildingComp.java b/core/src/mindustry/entities/comp/BuildingComp.java
-index 553c66fda67a0b148e5ca3635de93228470ac891..b32ecf7c860bb78389f27c4f414b549437bb19c9 100644
+index 6b7043d1c10378537aa66df480aacffe45ec922d..d8bacbcb2044aabda173d891c9b108df2d718af6 100644
 --- a/core/src/mindustry/entities/comp/BuildingComp.java
 +++ b/core/src/mindustry/entities/comp/BuildingComp.java
 @@ -41,6 +41,7 @@ import mindustry.world.blocks.power.*;
@@ -351,7 +351,7 @@ index 553c66fda67a0b148e5ca3635de93228470ac891..b32ecf7c860bb78389f27c4f414b5494
      }
  
      public float timeScale(){
-@@ -1431,7 +1433,8 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
+@@ -1438,7 +1440,8 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
          //derelict team icon currently doesn't display
          return team == Team.derelict ?
              block.localizedName + "\n" + Core.bundle.get("block.derelict") :
@@ -361,7 +361,7 @@ index 553c66fda67a0b148e5ca3635de93228470ac891..b32ecf7c860bb78389f27c4f414b5494
      }
  
      public TextureRegion getDisplayIcon(){
-@@ -1455,7 +1458,7 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
+@@ -1462,7 +1465,7 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
          table.row();
  
          //only display everything else if the team is the same
@@ -370,7 +370,7 @@ index 553c66fda67a0b148e5ca3635de93228470ac891..b32ecf7c860bb78389f27c4f414b5494
              table.table(bars -> {
                  bars.defaults().growX().height(18f).pad(4);
  
-@@ -1556,6 +1559,15 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
+@@ -1563,6 +1566,15 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
              table.add(result).growX();
              table.row();
          }
@@ -994,10 +994,10 @@ index 728abd67b9c024789fc8fb8554001bb20e0c8716..ed9bdc66157e48ad669dcde4f15a848d
          !(player.unit() instanceof Mechc && player.unit().isFlying()) && !player.unit().mining() && !commandMode;
      }
 diff --git a/core/src/mindustry/input/MobileInput.java b/core/src/mindustry/input/MobileInput.java
-index d67ed72d332008e5521bccbd14460e6ed327c5e0..616f9dc346dc00c0cbc3716f92b93a54f90003a7 100644
+index f667e7444f2cabb69c6dac721e37fe848a218edd..b712df24bf3d25c0a879abe51b2bb53a477c71b1 100644
 --- a/core/src/mindustry/input/MobileInput.java
 +++ b/core/src/mindustry/input/MobileInput.java
-@@ -333,7 +333,7 @@ public class MobileInput extends InputHandler implements GestureListener{
+@@ -340,7 +340,7 @@ public class MobileInput extends InputHandler implements GestureListener{
                      //why the heck doesn't setOrigin work for scaling
                      img.setTranslation(img.getWidth(), 0f);
                  });
@@ -1006,7 +1006,7 @@ index d67ed72d332008e5521bccbd14460e6ed327c5e0..616f9dc346dc00c0cbc3716f92b93a54
              }).margin(4f);
          });
      }
-@@ -1029,18 +1029,22 @@ public class MobileInput extends InputHandler implements GestureListener{
+@@ -1036,18 +1036,22 @@ public class MobileInput extends InputHandler implements GestureListener{
              payloadTarget = null;
          }
  
@@ -1035,7 +1035,7 @@ index d67ed72d332008e5521bccbd14460e6ed327c5e0..616f9dc346dc00c0cbc3716f92b93a54
          unit.movePref(movement);
  
 diff --git a/core/src/mindustry/logic/LExecutor.java b/core/src/mindustry/logic/LExecutor.java
-index 29777759b300977770ba6941cf311d443512ffee..8813705bf4b0b694ad360f7812452a3a8359abae 100644
+index 13b569ddd94fd43a75c836b091e3334a2601a4e7..baccaedd01f852c8e5d1f19ad5c4930ccb07786e 100644
 --- a/core/src/mindustry/logic/LExecutor.java
 +++ b/core/src/mindustry/logic/LExecutor.java
 @@ -10,6 +10,7 @@ import arc.util.*;
@@ -1054,7 +1054,7 @@ index 29777759b300977770ba6941cf311d443512ffee..8813705bf4b0b694ad360f7812452a3a
  
  import static mindustry.Vars.*;
  
-@@ -1656,8 +1658,14 @@ public class LExecutor{
+@@ -1684,8 +1686,14 @@ public class LExecutor{
              }
  
              switch(type){
@@ -1072,7 +1072,7 @@ index 29777759b300977770ba6941cf311d443512ffee..8813705bf4b0b694ad360f7812452a3a
                  //TODO desync?
                  case mission -> state.rules.mission = text;
 diff --git a/core/src/mindustry/type/UnitType.java b/core/src/mindustry/type/UnitType.java
-index 66a322af712862276a5ad407bd6ff5c942ee42c0..9554b2312084de5693966664ad06512d05678079 100644
+index 9ca16a3266b3d0345a1c73eabd8a6129e0cb2d6f..95dc224a200f363ca9c008eb016faa785209fff7 100644
 --- a/core/src/mindustry/type/UnitType.java
 +++ b/core/src/mindustry/type/UnitType.java
 @@ -38,6 +38,7 @@ import mindustry.world.blocks.units.*;
@@ -1083,7 +1083,7 @@ index 66a322af712862276a5ad407bd6ff5c942ee42c0..9554b2312084de5693966664ad06512d
  
  import static arc.graphics.g2d.Draw.*;
  import static mindustry.Vars.*;
-@@ -533,19 +534,45 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -537,19 +538,45 @@ public class UnitType extends UnlockableContent implements Senseable{
          table.table(t -> {
              t.left();
              t.add(new Image(uiIcon)).size(iconMed).scaling(Scaling.fit);
@@ -1133,7 +1133,7 @@ index 66a322af712862276a5ad407bd6ff5c942ee42c0..9554b2312084de5693966664ad06512d
                  bars.row();
              }
  
-@@ -554,7 +581,10 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -558,7 +585,10 @@ public class UnitType extends UnlockableContent implements Senseable{
              }
  
              if(payloadCapacity > 0 && unit instanceof Payloadc payload){
@@ -1145,7 +1145,7 @@ index 66a322af712862276a5ad407bd6ff5c942ee42c0..9554b2312084de5693966664ad06512d
                  bars.row();
  
                  var count = new float[]{-1};
-@@ -566,16 +596,45 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -570,16 +600,45 @@ public class UnitType extends UnlockableContent implements Senseable{
                  }).growX().left().height(0f).pad(0f);
              }
          }).growX();
@@ -1197,7 +1197,7 @@ index 66a322af712862276a5ad407bd6ff5c942ee42c0..9554b2312084de5693966664ad06512d
              if(net.active() && ai.controller != null && ai.controller.lastAccessed != null){
                  table.row();
                  table.add(Core.bundle.format("lastaccessed", ai.controller.lastAccessed)).growX().wrap().left();
-@@ -586,6 +645,11 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -590,6 +649,11 @@ public class UnitType extends UnlockableContent implements Senseable{
          }
  
          table.row();
@@ -1209,7 +1209,7 @@ index 66a322af712862276a5ad407bd6ff5c942ee42c0..9554b2312084de5693966664ad06512d
      }
  
      /** @return whether this block supports a specific environment. */
-@@ -1470,12 +1534,15 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -1480,12 +1544,15 @@ public class UnitType extends UnlockableContent implements Senseable{
              unit.y + Angles.trnsy(unit.rotation + 180f, itemOffsetY),
              size, size);
  
@@ -1639,7 +1639,7 @@ index 2ff15e272b39be703d3405391eff76d6ecb97ac0..08b4f1fde311f5f1a6c3f0a9cb64e3a5
      }
  
 diff --git a/core/src/mindustry/ui/dialogs/PlanetDialog.java b/core/src/mindustry/ui/dialogs/PlanetDialog.java
-index c078fc36ac1cc9dd69e981be234f012686c002c3..edcf97e4045a62f451ed7eab429e5311f5ccf07b 100644
+index 6f008ba7f1f5250dd4c67b3c2122f295d5b17094..5870f7a2853863cbc70f596aeacf0082bfac4711 100644
 --- a/core/src/mindustry/ui/dialogs/PlanetDialog.java
 +++ b/core/src/mindustry/ui/dialogs/PlanetDialog.java
 @@ -36,6 +36,8 @@ import mindustry.type.*;
@@ -1662,7 +1662,7 @@ index c078fc36ac1cc9dd69e981be234f012686c002c3..edcf97e4045a62f451ed7eab429e5311
      public PlanetDialog(){
          super("", Styles.fullDialog);
  
-@@ -287,6 +293,13 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
+@@ -295,6 +301,13 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
              buttons.add().growX();
              buttons.add(sectorTop).minWidth(230f);
              buttons.add().growX();
@@ -1676,7 +1676,7 @@ index c078fc36ac1cc9dd69e981be234f012686c002c3..edcf97e4045a62f451ed7eab429e5311
              addTech();
          }
      }
-@@ -540,6 +553,11 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
+@@ -548,6 +561,11 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
                          Draw.rect(icon, 0, 0, iw, iw * icon.height / icon.width);
                      });
                  }
@@ -1688,7 +1688,7 @@ index c078fc36ac1cc9dd69e981be234f012686c002c3..edcf97e4045a62f451ed7eab429e5311
              }
          }
  
-@@ -688,7 +706,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
+@@ -687,7 +705,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
  
              //sector notifications & search
              c.top().right();
@@ -1697,7 +1697,7 @@ index c078fc36ac1cc9dd69e981be234f012686c002c3..edcf97e4045a62f451ed7eab429e5311
  
              c.button(bundle.get("sectorlist") +
              (attacked == 0 ? "" : "\n[red]⚠[lightgray] " + bundle.format("sectorlist.attacked", "[red]" + attacked + "[]")),
-@@ -732,7 +750,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
+@@ -731,7 +749,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
  
              readd[0] = () -> {
                  con.clearChildren();
@@ -1706,7 +1706,7 @@ index c078fc36ac1cc9dd69e981be234f012686c002c3..edcf97e4045a62f451ed7eab429e5311
                      if(sec.hasBase() && (searchText.isEmpty() || sec.name().toLowerCase().contains(searchText.toLowerCase()))){
                          con.button(t -> {
                              t.marginRight(10f);
-@@ -751,6 +769,19 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
+@@ -750,6 +768,19 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
                                  String ic = sec.iconChar() == null ? "" : sec.iconChar() + " ";
  
                                  head.add(ic + sec.name()).growX().wrap();
@@ -1726,7 +1726,7 @@ index c078fc36ac1cc9dd69e981be234f012686c002c3..edcf97e4045a62f451ed7eab429e5311
                              }).growX().row();
  
                              if(sec.isAttacked()){
-@@ -789,7 +820,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
+@@ -826,7 +857,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
              buffer.end();
  
              Draw.color(color);
@@ -1735,7 +1735,7 @@ index c078fc36ac1cc9dd69e981be234f012686c002c3..edcf97e4045a62f451ed7eab429e5311
              Draw.color();
          }
      }
-@@ -898,14 +929,15 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
+@@ -937,14 +968,15 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
          Table t = new Table().left();
  
          int i = 0;
@@ -1755,7 +1755,7 @@ index c078fc36ac1cc9dd69e981be234f012686c002c3..edcf97e4045a62f451ed7eab429e5311
                      t.row();
                  }
              }
-@@ -913,7 +945,11 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
+@@ -952,7 +984,11 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
  
          if(t.getChildren().any()){
              c.defaults().left();
@@ -1768,7 +1768,7 @@ index c078fc36ac1cc9dd69e981be234f012686c002c3..edcf97e4045a62f451ed7eab429e5311
              builder.get(c);
              c.add(t).padLeft(10f).row();
          }
-@@ -940,7 +976,8 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
+@@ -979,7 +1015,8 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
              }
  
              if(sector.save != null && sector.info.resources.any()){
@@ -1778,7 +1778,7 @@ index c078fc36ac1cc9dd69e981be234f012686c002c3..edcf97e4045a62f451ed7eab429e5311
                  c.table(t -> {
                      for(UnlockableContent uc : sector.info.resources){
                          if(uc == null) continue;
-@@ -975,7 +1012,8 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
+@@ -1014,7 +1051,8 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
              //stored resources
              if(sector.hasBase() && items.total > 0){
  
@@ -1788,7 +1788,7 @@ index c078fc36ac1cc9dd69e981be234f012686c002c3..edcf97e4045a62f451ed7eab429e5311
                  c.table(t -> {
                      t.left();
  
-@@ -985,7 +1023,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
+@@ -1024,7 +1062,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
                          for(ItemStack stack : items){
                              res.image(stack.item.uiIcon).padRight(3);
                              res.add(UI.formatAmount(Math.max(stack.amount, 0))).color(Color.lightGray);
@@ -1797,7 +1797,7 @@ index c078fc36ac1cc9dd69e981be234f012686c002c3..edcf97e4045a62f451ed7eab429e5311
                                  res.row();
                              }
                          }
-@@ -1238,6 +1276,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
+@@ -1277,6 +1315,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
  
                  return;
              }
@@ -1805,7 +1805,7 @@ index c078fc36ac1cc9dd69e981be234f012686c002c3..edcf97e4045a62f451ed7eab429e5311
          }
  
          boolean shouldHide = true;
-@@ -1312,6 +1351,13 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
+@@ -1351,6 +1390,13 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
          if(shouldHide) hide();
      }
  
@@ -2157,7 +2157,7 @@ index 1819d3cabac2aeadbb57bf74cf6962f829c7dded..a24c659a8ee848c12921e5bc3afae839
          }
      }
 diff --git a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
-index 06534ecd894e24f1a089e778bc1ecb81b97cfbb0..8f61eed750f46bc87f11f4e82d863248dc6e047a 100644
+index 76f56d65718672a4e2ad36eb52c1a4105eac3887..97408cb737bad26ec519a24d3b83562a31125026 100644
 --- a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
 +++ b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
 @@ -303,8 +303,8 @@ public class SettingsMenuDialog extends BaseDialog{
@@ -2198,9 +2198,9 @@ index 06534ecd894e24f1a089e778bc1ecb81b97cfbb0..8f61eed750f46bc87f11f4e82d863248
  
          int[] lastUiScale = {settings.getInt("uiscale", 100)};
  
-@@ -453,18 +451,18 @@ public class SettingsMenuDialog extends BaseDialog{
-         graphics.checkPref("destroyedblocks", true);
+@@ -469,18 +467,18 @@ public class SettingsMenuDialog extends BaseDialog{
          graphics.checkPref("blockstatus", false);
+         graphics.checkPref("displayselection", true);
          graphics.checkPref("playerchat", true);
 -        if(!mobile){
 -            graphics.checkPref("coreitems", true);
@@ -2224,10 +2224,10 @@ index 06534ecd894e24f1a089e778bc1ecb81b97cfbb0..8f61eed750f46bc87f11f4e82d863248
          graphics.checkPref("animatedwater", true);
  
 diff --git a/core/src/mindustry/ui/fragments/ChatFragment.java b/core/src/mindustry/ui/fragments/ChatFragment.java
-index 89b9a23ce2bb850df5c7ae99a5f964753a807662..3ace45e2b2b37f9b631e9bf6a84720733dc3d758 100644
+index 61f2d769fa4bb807f58b67eea14072783acf2b6c..d578e94d654b3bffc80f042c6a12d41604744963 100644
 --- a/core/src/mindustry/ui/fragments/ChatFragment.java
 +++ b/core/src/mindustry/ui/fragments/ChatFragment.java
-@@ -216,6 +216,8 @@ public class ChatFragment extends Table{
+@@ -221,6 +221,8 @@ public class ChatFragment extends Table{
              if(mobile){
                  TextInput input = new TextInput();
                  input.maxLength = maxTextLength;
@@ -2236,7 +2236,7 @@ index 89b9a23ce2bb850df5c7ae99a5f964753a807662..3ace45e2b2b37f9b631e9bf6a8472073
                  input.accepted = text -> {
                      chatfield.setText(text);
                      sendMessage();
-@@ -245,7 +247,12 @@ public class ChatFragment extends Table{
+@@ -250,7 +252,12 @@ public class ChatFragment extends Table{
      }
  
      public void updateChat(){
@@ -2251,7 +2251,7 @@ index 89b9a23ce2bb850df5c7ae99a5f964753a807662..3ace45e2b2b37f9b631e9bf6a8472073
      }
  
 diff --git a/core/src/mindustry/ui/fragments/ConsoleFragment.java b/core/src/mindustry/ui/fragments/ConsoleFragment.java
-index e74e6a12e3da57eb58598eb4e679a7990c109def..013255ce5aa828d538814fa25dc64c6a56bf9136 100644
+index 823c2d70a68b63c1237a2d06744b876a577b2223..b0e2c07ae2016ab6329e23d8bb0baff63ad65b6c 100644
 --- a/core/src/mindustry/ui/fragments/ConsoleFragment.java
 +++ b/core/src/mindustry/ui/fragments/ConsoleFragment.java
 @@ -12,9 +12,11 @@ import arc.scene.ui.TextField.*;
@@ -2627,7 +2627,7 @@ index 7ad999d0abdbc3b4d6098c689f0a11734ee798ab..06ad7e2d3d0db7e6df5fcf9aea12c099
      }
  
 diff --git a/core/src/mindustry/ui/fragments/PlacementFragment.java b/core/src/mindustry/ui/fragments/PlacementFragment.java
-index a1a1ab8a54afee42855b423e6212dd8806d6c26b..de0e244e63fa274b75ba878382f8fc410975881f 100644
+index a1a1ab8a54afee42855b423e6212dd8806d6c26b..8d7c7035eed99a920a6e69ce392be2bebcf3475b 100644
 --- a/core/src/mindustry/ui/fragments/PlacementFragment.java
 +++ b/core/src/mindustry/ui/fragments/PlacementFragment.java
 @@ -1,6 +1,7 @@
@@ -2876,7 +2876,7 @@ index a1a1ab8a54afee42855b423e6212dd8806d6c26b..de0e244e63fa274b75ba878382f8fc41
      }
  
      /** @return the thing being hovered over. */
-@@ -778,25 +877,40 @@ public class PlacementFragment{
+@@ -778,25 +878,40 @@ public class PlacementFragment{
          //if the mouse intersects the table or the UI has the mouse, no hovering can occur
          if(Core.scene.hasMouse(Core.input.mouseX(), Core.input.mouseY()) || topTable.hit(v.x, v.y, false) != null) return null;
  
@@ -3086,10 +3086,10 @@ index 58d82ae32d4a37b4e2bea1559c854b775048350f..9b0966bfb36da990de4bd410317c3528
          }
  
 diff --git a/core/src/mindustry/world/Block.java b/core/src/mindustry/world/Block.java
-index e3b63f597bb1cdc3302a745080976b620064d325..8d089013fc8b73de2792477e65a60fc8f6c96790 100644
+index 027f4ed3a1c3ed7994ef97dd48bc723716c95ee7..ea43244688b29f3baeba8dc5c616d243209c56d2 100644
 --- a/core/src/mindustry/world/Block.java
 +++ b/core/src/mindustry/world/Block.java
-@@ -730,7 +730,12 @@ public class Block extends UnlockableContent implements Senseable{
+@@ -732,7 +732,12 @@ public class Block extends UnlockableContent implements Senseable{
  
      public void drawPlan(BuildPlan plan, Eachable<BuildPlan> list, boolean valid, float alpha){
          Draw.reset();

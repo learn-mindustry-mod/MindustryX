@@ -57,7 +57,7 @@ index 76bbcb82b5895ac1b38a6eb15354e9213388f7da..d7319ea55492280601dd9ef80d0f02bc
  
              if(lines.size > 1){
 diff --git a/core/src/mindustry/entities/bullet/BulletType.java b/core/src/mindustry/entities/bullet/BulletType.java
-index 424080f9d817bee5f22584413367b3379985c188..7ce70ca6638127439e6332b14f5dc9f2d9f4f59c 100644
+index 5e0359ab01f14f10a4e0edb6e4d4da5d6d7926e6..30d5dd7c5ac45cdd80392f3fbaad8c867511b6f2 100644
 --- a/core/src/mindustry/entities/bullet/BulletType.java
 +++ b/core/src/mindustry/entities/bullet/BulletType.java
 @@ -22,6 +22,7 @@ import mindustry.graphics.*;
@@ -68,7 +68,7 @@ index 424080f9d817bee5f22584413367b3379985c188..7ce70ca6638127439e6332b14f5dc9f2
  import mindustryX.features.*;
  
  import static mindustry.Vars.*;
-@@ -393,6 +394,7 @@ public class BulletType extends Content implements Cloneable{
+@@ -395,6 +396,7 @@ public class BulletType extends Content implements Cloneable{
          }
  
          if(heals() && build.team == b.team && !(build.block instanceof ConstructBlock)){
@@ -76,7 +76,7 @@ index 424080f9d817bee5f22584413367b3379985c188..7ce70ca6638127439e6332b14f5dc9f2
              healEffect.at(build.x, build.y, 0f, healColor, build.block);
              build.heal(healPercent / 100f * build.maxHealth + healAmount);
          }else if(build.team != b.team && direct){
-@@ -406,6 +408,8 @@ public class BulletType extends Content implements Cloneable{
+@@ -408,6 +410,8 @@ public class BulletType extends Content implements Cloneable{
          boolean wasDead = entity instanceof Unit u && u.dead;
  
          if(entity instanceof Healthc h){
@@ -85,7 +85,7 @@ index 424080f9d817bee5f22584413367b3379985c188..7ce70ca6638127439e6332b14f5dc9f2
              float damage = b.damage;
              float shield = entity instanceof Shieldc s ? Math.max(s.shield(), 0f) : 0f;
              if(maxDamageFraction > 0){
-@@ -507,7 +511,9 @@ public class BulletType extends Content implements Cloneable{
+@@ -509,7 +513,9 @@ public class BulletType extends Content implements Cloneable{
  
      public void createSplashDamage(Bullet b, float x, float y){
          if(splashDamageRadius > 0 && !b.absorbed){
@@ -95,7 +95,7 @@ index 424080f9d817bee5f22584413367b3379985c188..7ce70ca6638127439e6332b14f5dc9f2
  
              if(status != StatusEffects.none){
                  Damage.status(b.team, x, y, splashDamageRadius, status, statusDuration, collidesAir, collidesGround);
-@@ -515,6 +521,7 @@ public class BulletType extends Content implements Cloneable{
+@@ -517,6 +523,7 @@ public class BulletType extends Content implements Cloneable{
  
              if(heals()){
                  indexer.eachBlock(b.team, x, y, splashDamageRadius, Building::damaged, other -> {
@@ -104,7 +104,7 @@ index 424080f9d817bee5f22584413367b3379985c188..7ce70ca6638127439e6332b14f5dc9f2
                      other.heal(healPercent / 100f * other.maxHealth() + healAmount);
                  });
 diff --git a/core/src/mindustry/entities/comp/BuildingComp.java b/core/src/mindustry/entities/comp/BuildingComp.java
-index b32ecf7c860bb78389f27c4f414b549437bb19c9..46845d6b6c01b5d7d81d9bf8da896a3c3b456aa0 100644
+index d8bacbcb2044aabda173d891c9b108df2d718af6..cea90b6ca4499047acb027653c007e5f04ffad08 100644
 --- a/core/src/mindustry/entities/comp/BuildingComp.java
 +++ b/core/src/mindustry/entities/comp/BuildingComp.java
 @@ -41,6 +41,7 @@ import mindustry.world.blocks.power.*;
@@ -115,7 +115,7 @@ index b32ecf7c860bb78389f27c4f414b549437bb19c9..46845d6b6c01b5d7d81d9bf8da896a3c
  import mindustryX.features.*;
  
  import java.util.*;
-@@ -1663,6 +1664,7 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
+@@ -1670,6 +1671,7 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
              damage = Damage.applyArmor(damage, block.armor);
          }
  
@@ -123,7 +123,7 @@ index b32ecf7c860bb78389f27c4f414b549437bb19c9..46845d6b6c01b5d7d81d9bf8da896a3c
          damage(other.team, damage);
          Events.fire(bulletDamageEvent.set(self(), other));
  
-@@ -1680,6 +1682,8 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
+@@ -1687,6 +1689,8 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
  
      /** Handles splash damage with a bullet source. */
      public void damage(Bullet bullet, Team source, float damage){
@@ -132,7 +132,7 @@ index b32ecf7c860bb78389f27c4f414b549437bb19c9..46845d6b6c01b5d7d81d9bf8da896a3c
          damage(source, damage);
          Events.fire(bulletDamageEvent.set(self(), bullet));
      }
-@@ -1932,7 +1936,9 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
+@@ -1939,7 +1943,9 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
  
          //TODO handle this better on the client.
          if(!net.client()){

@@ -44,10 +44,10 @@ index e766e594341959adfdaf7efef819806a7227f5c2..1b445b3ff268b1d626cf9ba84797560c
              TypeIO.writeString(buffer, name);
              TypeIO.writeString(buffer, locale);
 diff --git a/core/src/mindustry/ui/dialogs/JoinDialog.java b/core/src/mindustry/ui/dialogs/JoinDialog.java
-index 9b6a1d4af2f93e3b9a7c8cc5a783c4df1af15c76..633e350de83d599e6d608b29bfc85477beeff372 100644
+index 087470ad988b649d17d02c6d252796d58c3db41e..5d7d51ff157a255e0adb7d00dd9807faa99fe841 100644
 --- a/core/src/mindustry/ui/dialogs/JoinDialog.java
 +++ b/core/src/mindustry/ui/dialogs/JoinDialog.java
-@@ -616,9 +616,22 @@ public class JoinDialog extends BaseDialog{
+@@ -629,9 +629,22 @@ public class JoinDialog extends BaseDialog{
      }
  
      void safeConnect(String ip, int port, int version){

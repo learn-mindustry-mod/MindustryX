@@ -136,10 +136,10 @@ index 36c55360cd776260ad615cbd3654f5b7ed78f814..a1dcfc3c2e5f3a57a7067f8c7a3d5846
                      unit.dockedType = before.type;
                  }else if(before.dockedType != null && before.dockedType.coreUnitDock){
 diff --git a/core/src/mindustry/logic/LExecutor.java b/core/src/mindustry/logic/LExecutor.java
-index d2d074ae56d1070243179c91a588002cbfcbac58..726f21d5460f0626d9e5c2ede9fc7aec64c49caa 100644
+index 1ba96cc93a7f085c363d5a8ceedfc33960462bf3..ea65ed2759e1836f8fdbe846851cc37bc87bf9b0 100644
 --- a/core/src/mindustry/logic/LExecutor.java
 +++ b/core/src/mindustry/logic/LExecutor.java
-@@ -1264,7 +1264,7 @@ public class LExecutor{
+@@ -1292,7 +1292,7 @@ public class LExecutor{
                          result.setobj(units == null || i < 0 || i >= units.size ? null : units.get(i));
                      }
                  }

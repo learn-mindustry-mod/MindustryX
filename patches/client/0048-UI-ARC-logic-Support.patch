@@ -18,16 +18,16 @@ way-zer <himc.wicp@gmail.com> on 2024/7/14
 防止多人模式下编辑世处，并给出提示
 way-zer <himc.wicp@gmail.com> on 2024/9/8
 ---
- core/src/mindustry/logic/LCanvas.java         |  54 ++++++-
+ core/src/mindustry/logic/LCanvas.java         |  58 ++++++-
  core/src/mindustry/logic/LExecutor.java       |   3 +-
  core/src/mindustry/logic/LStatements.java     |  12 ++
- core/src/mindustry/logic/LogicDialog.java     | 151 +++++++++++++++++-
+ core/src/mindustry/logic/LogicDialog.java     | 145 +++++++++++++++++-
  .../world/blocks/logic/LogicBlock.java        |  66 +++++++-
  .../world/blocks/logic/MemoryBlock.java       |  72 ++++++++-
- 6 files changed, 340 insertions(+), 18 deletions(-)
+ 6 files changed, 339 insertions(+), 17 deletions(-)
 
 diff --git a/core/src/mindustry/logic/LCanvas.java b/core/src/mindustry/logic/LCanvas.java
-index b78908ef6fcc26c8f7770da8135527c6d6d66867..e40b426a3c3ec656f9364c25ac762ed3b0121390 100644
+index 2bfd96ac4b9685bde38edee0d80be66380fdf6f2..ba5401c7c2ee4f8d9e7ffcc7da8ca3ad5bdb2a77 100644
 --- a/core/src/mindustry/logic/LCanvas.java
 +++ b/core/src/mindustry/logic/LCanvas.java
 @@ -18,6 +18,8 @@ import mindustry.gen.*;
@@ -38,8 +38,8 @@ index b78908ef6fcc26c8f7770da8135527c6d6d66867..e40b426a3c3ec656f9364c25ac762ed3
 +import mindustryX.features.*;
  
  public class LCanvas extends Table{
-     public static final int maxJumpsDrawn = 100;
-@@ -58,7 +60,7 @@ public class LCanvas extends Table{
+     private static final Seq<JumpCurve> tmpOccupiers1 = new Seq<>();
+@@ -61,7 +63,7 @@ public class LCanvas extends Table{
  
      /** @return if statement elements should have rows. */
      public static boolean useRows(){
@@ -48,7 +48,7 @@ index b78908ef6fcc26c8f7770da8135527c6d6d66867..e40b426a3c3ec656f9364c25ac762ed3
      }
  
      public static void tooltip(Cell<?> cell, String key){
-@@ -344,14 +346,23 @@ public class LCanvas extends Table{
+@@ -433,14 +435,23 @@ public class LCanvas extends Table{
  
                  addressLabel = t.add(index + "").style(Styles.outlineLabel).color(color).padRight(8).get();
  
@@ -56,7 +56,7 @@ index b78908ef6fcc26c8f7770da8135527c6d6d66867..e40b426a3c3ec656f9364c25ac762ed3
 -                }).size(24f).padRight(6).get().tapped(this::copy);
 +                t.button(Icon.add, Styles.logici, () -> LogicDialog.showAddStatement(privileged, (it) -> {
 +                    statements.addChildAfter(this, new StatementElem(it));
-+                    statements.layout();
++                    statements.updateJumpHeights = true;
 +                })).size(24f).padRight(6)
 +                .get().tapped(()->{});//no drag
 +
@@ -69,13 +69,13 @@ index b78908ef6fcc26c8f7770da8135527c6d6d66867..e40b426a3c3ec656f9364c25ac762ed3
                  t.button(Icon.cancel, Styles.logici, () -> {
                      remove();
                      dragging = null;
-                     statements.layout();
+                     statements.updateJumpHeights = true;
 -                }).size(24f);
 +                }).size(24f).padLeft(Vars.mobile?48:0);
  
                  t.addListener(new InputListener(){
                      float lastx, lasty;
-@@ -429,6 +440,39 @@ public class LCanvas extends Table{
+@@ -519,6 +530,45 @@ public class LCanvas extends Table{
              }
          }
  
@@ -97,38 +97,35 @@ index b78908ef6fcc26c8f7770da8135527c6d6d66867..e40b426a3c3ec656f9364c25ac762ed3
 +                StringBuilder thisText = new StringBuilder();
 +                LogicIO.write(st, thisText);
 +                var stNew = new PrintStatement();
-+                stNew.value = thisText.toString();
++                stNew.value = thisText.toString().replace(' ','_');
 +                newElem = new StatementElem(stNew);
++            }
++            for(Element c : statements.getChildren()){
++                if(c instanceof StatementElem ste && ste.st instanceof JumpStatement jst && (jst.dest == null || jst.dest == st.elem)){
++                    if(0 > jst.destIndex || jst.destIndex >= statements.getChildren().size) continue;
++                    jst.saveUI();
++                }
 +            }
 +            statements.addChildBefore(this, newElem);
 +            remove();
 +            for(Element c : statements.getChildren()){
 +                if(c instanceof StatementElem ste && ste.st instanceof JumpStatement jst && (jst.dest == null || jst.dest == st.elem)){
 +                    if(0 > jst.destIndex || jst.destIndex >= statements.getChildren().size) continue;
-+                    jst.dest = (StatementElem)statements.getChildren().get(jst.destIndex);
++                    jst.setupUI();
 +                }
 +            }
-+            statements.layout();
++            newElem.st.setupUI();
 +        }
 +
 +
          @Override
          public void draw(){
              float pad = 5f;
-@@ -577,7 +621,7 @@ public class LCanvas extends Table{
-             float dist = 100f;
- 
-             //square jumps
--            if(false){
-+            if(Core.settings.getBool("rectJumpLine")){
-                 float len = Scl.scl(Mathf.randomSeed(hashCode(), 10, 50));
- 
-                 float maxX = Math.max(x, x2) + len;
 diff --git a/core/src/mindustry/logic/LExecutor.java b/core/src/mindustry/logic/LExecutor.java
-index 726f21d5460f0626d9e5c2ede9fc7aec64c49caa..29777759b300977770ba6941cf311d443512ffee 100644
+index ea65ed2759e1836f8fdbe846851cc37bc87bf9b0..13b569ddd94fd43a75c836b091e3334a2601a4e7 100644
 --- a/core/src/mindustry/logic/LExecutor.java
 +++ b/core/src/mindustry/logic/LExecutor.java
-@@ -501,6 +501,7 @@ public class LExecutor{
+@@ -515,6 +515,7 @@ public class LExecutor{
          public void run(LExecutor exec){
              Object obj = target.obj();
              if(obj instanceof Building b && (exec.privileged || (b.team == exec.team && exec.linkIds.contains(b.id)))){
@@ -136,7 +133,7 @@ index 726f21d5460f0626d9e5c2ede9fc7aec64c49caa..29777759b300977770ba6941cf311d44
  
                  if(type == LAccess.enabled && !p1.bool()){
                      b.lastDisabler = exec.build;
-@@ -1214,7 +1215,7 @@ public class LExecutor{
+@@ -1242,7 +1243,7 @@ public class LExecutor{
          @Override
          public void run(LExecutor exec){
              if(headless) return;
@@ -146,7 +143,7 @@ index 726f21d5460f0626d9e5c2ede9fc7aec64c49caa..29777759b300977770ba6941cf311d44
                  case pan -> {
                      control.input.logicCutscene = true;
 diff --git a/core/src/mindustry/logic/LStatements.java b/core/src/mindustry/logic/LStatements.java
-index 76284ef27228027d0e57313cd2932ab030456dd8..869b2550de9a9bc950525e6eb20fb630138b72fa 100644
+index eda6c92c970e9f3f632094cd5018dcdf9a711d64..b65fb50382f246452b7c75a788e3bd5f61b71bdf 100644
 --- a/core/src/mindustry/logic/LStatements.java
 +++ b/core/src/mindustry/logic/LStatements.java
 @@ -22,6 +22,7 @@ import mindustry.ui.*;
@@ -172,11 +169,11 @@ index 76284ef27228027d0e57313cd2932ab030456dd8..869b2550de9a9bc950525e6eb20fb630
 +                    UIExt.announce("[gold]跳转行号:[] " + destIndex);
 +                });
 +            }
-             table.add(new JumpButton(() -> dest, s -> dest = s)).size(30).right().padLeft(-8);
+             table.add(new JumpButton(() -> dest, s -> dest = s, this.elem)).size(30).right().padLeft(-8);
  
              String name = name();
 diff --git a/core/src/mindustry/logic/LogicDialog.java b/core/src/mindustry/logic/LogicDialog.java
-index ef3dfb4a53e64e08bb81dad0e70e3efdd286977a..8958c52ced6c66efa426e5e7ba320a6d6a17e042 100644
+index c30e82f4a29149bbb6b07efa1baf4a0d4a0ae5d8..9f2ca0206d966a5d8ac392eb6e42a7e67253dba6 100644
 --- a/core/src/mindustry/logic/LogicDialog.java
 +++ b/core/src/mindustry/logic/LogicDialog.java
 @@ -5,6 +5,7 @@ import arc.func.*;
@@ -227,7 +224,7 @@ index ef3dfb4a53e64e08bb81dad0e70e3efdd286977a..8958c52ced6c66efa426e5e7ba320a6d
                  wasPortrait = Core.graphics.isPortrait();
                  wasRows = LCanvas.useRows();
              }
-@@ -66,12 +80,131 @@ public class LogicDialog extends BaseDialog{
+@@ -66,12 +80,125 @@ public class LogicDialog extends BaseDialog{
          });
  
          add(canvas).grow().name("canvas");
@@ -281,12 +278,6 @@ index ef3dfb4a53e64e08bb81dad0e70e3efdd286977a..8958c52ced6c66efa426e5e7ba320a6d
 +                    String text = "[orange]已" + (refreshing ? "开启" : "关闭") + "逻辑刷新";
 +                    UIExt.announce(text);
 +                }).checked((b) -> refreshing).tooltip("辅助器自动刷新");
-+                tt.button(Icon.rightOpenOutSmall, Styles.clearTogglei, () -> {
-+                    Settings.toggle("rectJumpLine");
-+                    String text = "[orange]已" + (Core.settings.getBool("rectJumpLine") ? "开启" : "关闭") + "方形跳转线";
-+                    UIExt.announce(text);
-+                    this.canvas.rebuild();
-+                }).checked((b) -> Core.settings.getBool("rectJumpLine")).tooltip("方形跳转线");
 +                tt.button(Icon.pause, Styles.clearTogglei, () -> {
 +                    if(state.isPaused()) state.set(State.playing);
 +                    else state.set(State.paused);
@@ -359,7 +350,7 @@ index ef3dfb4a53e64e08bb81dad0e70e3efdd286977a..8958c52ced6c66efa426e5e7ba320a6d
      public static Color typeColor(LVar s, Color color){
          return color.set(
              !s.isobj ? Pal.place :
-@@ -143,6 +276,12 @@ public class LogicDialog extends BaseDialog{
+@@ -143,6 +270,12 @@ public class LogicDialog extends BaseDialog{
                              ui.showException(e);
                          }
                      }).marginLeft(12f).disabled(b -> Core.app.getClipboardText() == null);
@@ -372,7 +363,7 @@ index ef3dfb4a53e64e08bb81dad0e70e3efdd286977a..8958c52ced6c66efa426e5e7ba320a6d
                  });
              });
  
-@@ -228,6 +367,11 @@ public class LogicDialog extends BaseDialog{
+@@ -230,6 +363,11 @@ public class LogicDialog extends BaseDialog{
      }
  
      public void showAddDialog(){
@@ -384,7 +375,7 @@ index ef3dfb4a53e64e08bb81dad0e70e3efdd286977a..8958c52ced6c66efa426e5e7ba320a6d
          BaseDialog dialog = new BaseDialog("@add");
          dialog.cont.table(table -> {
              String[] searchText = {""};
-@@ -252,7 +396,7 @@ public class LogicDialog extends BaseDialog{
+@@ -254,7 +392,7 @@ public class LogicDialog extends BaseDialog{
  
                      search.keyDown(KeyCode.enter, () -> {
                          if(!searchText[0].isEmpty() && matched[0] != null){
@@ -393,7 +384,7 @@ index ef3dfb4a53e64e08bb81dad0e70e3efdd286977a..8958c52ced6c66efa426e5e7ba320a6d
                              dialog.hide();
                          }
                      });
-@@ -299,7 +443,7 @@ public class LogicDialog extends BaseDialog{
+@@ -301,7 +439,7 @@ public class LogicDialog extends BaseDialog{
                          style.font = Fonts.outline;
  
                          cat.button(example.name(), style, () -> {
@@ -402,7 +393,7 @@ index ef3dfb4a53e64e08bb81dad0e70e3efdd286977a..8958c52ced6c66efa426e5e7ba320a6d
                              dialog.hide();
                          }).size(130f, 50f).self(c -> tooltip(c, "lst." + example.name())).top().left();
  
-@@ -317,6 +461,7 @@ public class LogicDialog extends BaseDialog{
+@@ -319,6 +457,7 @@ public class LogicDialog extends BaseDialog{
      public void show(String code, LExecutor executor, boolean privileged, Cons<String> modified){
          this.executor = executor;
          this.privileged = privileged;

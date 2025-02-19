@@ -43,10 +43,10 @@ index b3b534965d8197c0633237dd54ab40926c611fe2..4db49bd58a9d6c688fa6d17846ec79f6
          add(netServer = new NetServer());
          add(netClient = new NetClient());
 diff --git a/core/src/mindustry/core/UI.java b/core/src/mindustry/core/UI.java
-index 39e55358714acfc59f87d956af227a9f14562baf..531f9c845698719a162b8772e2739ac515169b3c 100644
+index 7266031779aef1048f5045b26b5281a686edf9d8..783c24fb6ba1c727db95525edfd1ea6d5990d6c3 100644
 --- a/core/src/mindustry/core/UI.java
 +++ b/core/src/mindustry/core/UI.java
-@@ -82,10 +82,6 @@ public class UI implements ApplicationListener, Loadable{
+@@ -84,10 +84,6 @@ public class UI implements ApplicationListener, Loadable{
  
      private @Nullable Element lastAnnouncement;
  

@@ -12,7 +12,7 @@ Content-Transfer-Encoding: 8bit
  core/src/mindustry/Vars.java                  |  5 +++++
  core/src/mindustry/core/Control.java          |  3 ++-
  core/src/mindustry/core/NetClient.java        |  4 ++++
- core/src/mindustry/core/Renderer.java         |  6 +++---
+ core/src/mindustry/core/Renderer.java         |  2 +-
  core/src/mindustry/core/UI.java               | 20 ++-----------------
  core/src/mindustry/game/Schematics.java       |  8 +++++---
  .../mindustry/graphics/MinimapRenderer.java   |  6 ++++--
@@ -24,7 +24,7 @@ Content-Transfer-Encoding: 8bit
  .../world/blocks/distribution/Router.java     |  3 ++-
  .../world/blocks/production/BeamDrill.java    | 12 ++++-------
  .../mindustry/desktop/DesktopLauncher.java    | 12 ++++++++++-
- 16 files changed, 81 insertions(+), 51 deletions(-)
+ 16 files changed, 79 insertions(+), 49 deletions(-)
 
 diff --git a/core/src/mindustry/ClientLauncher.java b/core/src/mindustry/ClientLauncher.java
 index 655d2b09e7cfc011efd194b2b65bc85584c8f7d8..3af35def3785958e05ab0b8a668e721ab4d4dfbf 100644
@@ -52,10 +52,10 @@ index 655d2b09e7cfc011efd194b2b65bc85584c8f7d8..3af35def3785958e05ab0b8a668e721a
          }
      }
 diff --git a/core/src/mindustry/Vars.java b/core/src/mindustry/Vars.java
-index 39ba8ad8de2dbf6de6baac3cff94fb3c73b6b57f..109c59c53d3828c8b0be5f8077ac91318a02dddd 100644
+index 526e9358bf858b5365c8273aea00fe0ec365686f..d23ea53c08b91a6a38ec3a8e72e36f33767fc126 100644
 --- a/core/src/mindustry/Vars.java
 +++ b/core/src/mindustry/Vars.java
-@@ -393,6 +393,11 @@ public class Vars implements Loadable{
+@@ -395,6 +395,11 @@ public class Vars implements Loadable{
                  if(!headless && (ui == null || ui.consolefrag == null)){
                      logBuffer.add(result);
                  }else if(!headless){
@@ -68,10 +68,10 @@ index 39ba8ad8de2dbf6de6baac3cff94fb3c73b6b57f..109c59c53d3828c8b0be5f8077ac9131
                          for(String code : ColorCodes.values){
                              result = result.replace(code, "");
 diff --git a/core/src/mindustry/core/Control.java b/core/src/mindustry/core/Control.java
-index dd49e90f88d455e1272fb35ead0a7a176835d4ec..fa7c3933d8264ea48db6927678453df001c73a04 100644
+index ac274c820cb1362a4863ca6cf98384dadbaafc07..63e6c3ef13f839f531387b10789d135585b19863 100644
 --- a/core/src/mindustry/core/Control.java
 +++ b/core/src/mindustry/core/Control.java
-@@ -574,7 +574,8 @@ public class Control implements ApplicationListener, Loadable{
+@@ -573,7 +573,8 @@ public class Control implements ApplicationListener, Loadable{
                  BaseDialog dialog = new BaseDialog("@confirm");
                  dialog.setFillParent(true);
  
@@ -97,19 +97,10 @@ index 4707fbaae3b75f6b5a9c27efa66829c606943507..074511d19d9f2d2ffbb6be2c20fe42a6
  
              player.admin = false;
 diff --git a/core/src/mindustry/core/Renderer.java b/core/src/mindustry/core/Renderer.java
-index 4b41c4c0271d62790e64ffa59bab8b0b4036ca5f..76d3b6ab5fd2eeebb9ed2751f7d1d6da2386e4bb 100644
+index d23f3d6ed34059e716703d6458799f0af3ad6172..68635612754321a37bb649d7dbb625adc794fcc2 100644
 --- a/core/src/mindustry/core/Renderer.java
 +++ b/core/src/mindustry/core/Renderer.java
-@@ -44,7 +44,7 @@ public class Renderer implements ApplicationListener{
-     public boolean animateShields, drawWeather = true, drawStatus, enableEffects, drawDisplays = true, drawLight = true, pixelate = false;
-     public float weatherAlpha;
-     /** minZoom = zooming out, maxZoom = zooming in */
--    public float minZoom = 1.5f, maxZoom = 6f;
-+    public float minZoom = 0.25f, maxZoom = 20f;
-     public Seq<EnvRenderer> envRenderers = new Seq<>();
-     public ObjectMap<String, Runnable> customBackgrounds = new ObjectMap<>();
-     public TextureRegion[] bubbles = new TextureRegion[16], splashes = new TextureRegion[12];
-@@ -156,7 +156,7 @@ public class Renderer implements ApplicationListener{
+@@ -159,7 +159,7 @@ public class Renderer implements ApplicationListener{
              baseTarget = Mathf.lerp(minZoom, maxZoom, control.input.logicCutsceneZoom);
          }
  
@@ -118,20 +109,11 @@ index 4b41c4c0271d62790e64ffa59bab8b0b4036ca5f..76d3b6ab5fd2eeebb9ed2751f7d1d6da
          camerascale = Mathf.lerpDelta(camerascale, dest, 0.1f);
          if(Mathf.equal(camerascale, dest, 0.001f)) camerascale = dest;
          unitLaserOpacity = settings.getInt("unitlaseropacity") / 100f;
-@@ -481,7 +481,7 @@ public class Renderer implements ApplicationListener{
-     }
- 
-     public void scaleCamera(float amount){
--        targetscale *= (amount / 4) + 1;
-+        targetscale *= (amount / 6) + 1;
-         clampScale();
-     }
- 
 diff --git a/core/src/mindustry/core/UI.java b/core/src/mindustry/core/UI.java
-index 1eb38240d11937a92a6be0ce4dcae8847e56708f..39e55358714acfc59f87d956af227a9f14562baf 100644
+index c2e777ac5ee850a0a3af94ade3bd30bf4a35e0ae..7266031779aef1048f5045b26b5281a686edf9d8 100644
 --- a/core/src/mindustry/core/UI.java
 +++ b/core/src/mindustry/core/UI.java
-@@ -593,7 +593,7 @@ public class UI implements ApplicationListener, Loadable{
+@@ -595,7 +595,7 @@ public class UI implements ApplicationListener, Loadable{
          t.touchable = Touchable.disabled;
          t.margin(8f).add(text).style(Styles.outlineLabel).labelAlign(Align.center);
          t.update(() -> t.setPosition(Core.graphics.getWidth()/2f, Core.graphics.getHeight()/2f, Align.center));
@@ -140,7 +122,7 @@ index 1eb38240d11937a92a6be0ce4dcae8847e56708f..39e55358714acfc59f87d956af227a9f
          t.pack();
          t.act(0.1f);
          Core.scene.add(t);
-@@ -698,23 +698,7 @@ public class UI implements ApplicationListener, Loadable{
+@@ -734,23 +734,7 @@ public class UI implements ApplicationListener, Loadable{
      }
  
      public static String formatAmount(long number){
@@ -223,7 +205,7 @@ index e5f42b2c9ac63558d517625ba32d454577a1ba5c..900a84cff8870a64f11e9ed0dbdf3958
          float dy = (Core.camera.position.y / tilesize);
          dx = Mathf.clamp(dx, sz, world.width() - sz);
 diff --git a/core/src/mindustry/ui/dialogs/JoinDialog.java b/core/src/mindustry/ui/dialogs/JoinDialog.java
-index 3147a1c1964d54be686855f8ac76696769b3a44e..9b6a1d4af2f93e3b9a7c8cc5a783c4df1af15c76 100644
+index 093c36beb214adabf18f35c4bb4992e78969d1bc..087470ad988b649d17d02c6d252796d58c3db41e 100644
 --- a/core/src/mindustry/ui/dialogs/JoinDialog.java
 +++ b/core/src/mindustry/ui/dialogs/JoinDialog.java
 @@ -60,11 +60,9 @@ public class JoinDialog extends BaseDialog{
@@ -301,7 +283,7 @@ index 54a36cde6eee102c9c8f3bfd5e4c76a2f4d0f1e1..bd810004301a4534c6568fb0bcd85f4a
  
          table.margin(4f);
 diff --git a/core/src/mindustry/ui/fragments/ChatFragment.java b/core/src/mindustry/ui/fragments/ChatFragment.java
-index 30c344478857c5d20db41f89bc2358cee2c1c8e5..89b9a23ce2bb850df5c7ae99a5f964753a807662 100644
+index cfff9282efc61f93ebbfb1805a9c4ba76020b62d..61f2d769fa4bb807f58b67eea14072783acf2b6c 100644
 --- a/core/src/mindustry/ui/fragments/ChatFragment.java
 +++ b/core/src/mindustry/ui/fragments/ChatFragment.java
 @@ -5,6 +5,7 @@ import arc.Input.*;
@@ -312,7 +294,7 @@ index 30c344478857c5d20db41f89bc2358cee2c1c8e5..89b9a23ce2bb850df5c7ae99a5f96475
  import arc.math.*;
  import arc.scene.*;
  import arc.scene.ui.*;
-@@ -29,7 +30,7 @@ public class ChatFragment extends Table{
+@@ -30,7 +31,7 @@ public class ChatFragment extends Table{
      private boolean shown = false;
      private TextField chatfield;
      private Label fieldlabel = new Label(">");
@@ -321,7 +303,7 @@ index 30c344478857c5d20db41f89bc2358cee2c1c8e5..89b9a23ce2bb850df5c7ae99a5f96475
      private Font font;
      private GlyphLayout layout = new GlyphLayout();
      private float offsetx = Scl.scl(4), offsety = Scl.scl(4), fontoffsetx = Scl.scl(2), chatspace = Scl.scl(50);
-@@ -73,6 +74,8 @@ public class ChatFragment extends Table{
+@@ -74,6 +75,8 @@ public class ChatFragment extends Table{
                      historyPos--;
                      updateChat();
                  }
@@ -330,7 +312,7 @@ index 30c344478857c5d20db41f89bc2358cee2c1c8e5..89b9a23ce2bb850df5c7ae99a5f96475
                  if(input.keyTap(Binding.chat_mode)){
                      nextMode();
                  }
-@@ -287,7 +290,7 @@ public class ChatFragment extends Table{
+@@ -292,7 +295,7 @@ public class ChatFragment extends Table{
          if(scrollPos > 0) scrollPos++;
      }
  

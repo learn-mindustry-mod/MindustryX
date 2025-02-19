@@ -29,7 +29,7 @@ index 33fcc893c17585aef5f24f0282db5788410a5237..4012377fec3fb9161645e7d76616b2f7
      private @Nullable Schematic lastLoadout;
      private ItemSeq lastLaunchResources = new ItemSeq();
 diff --git a/core/src/mindustry/world/blocks/ConstructBlock.java b/core/src/mindustry/world/blocks/ConstructBlock.java
-index 0a49f8212f38c18f3df2293e46ea55eb09b7eb53..c0afb43544a5933a91301ee3d1f9894eb9865a2c 100644
+index 9d0cd7a47e280243d65e4ffd27491ff4b0a547e0..11ef2f9a52ed82aef9a9845f932af0b979a6e09b 100644
 --- a/core/src/mindustry/world/blocks/ConstructBlock.java
 +++ b/core/src/mindustry/world/blocks/ConstructBlock.java
 @@ -3,14 +3,17 @@ package mindustry.world.blocks;
@@ -221,10 +221,10 @@ index eced3dc7581a4916970634e600d0f5cd86f6ee7e..58e315a6d9ec8c4c32df8a8220a9ccbb
  
          public float estimateDps(){
 diff --git a/core/src/mindustry/world/blocks/defense/turrets/Turret.java b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
-index e7d42f773eab372a4a69ed3f1735958d259e8e82..95108c8e31a90d1923851e9c3ae8a23b812de47a 100644
+index 5db6510b6453d024d1f973bbf6d5f227fe176530..725439d42ac8444c15552d938b110f0d4f9052fc 100644
 --- a/core/src/mindustry/world/blocks/defense/turrets/Turret.java
 +++ b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
-@@ -380,6 +380,18 @@ public class Turret extends ReloadTurret{
+@@ -398,6 +398,18 @@ public class Turret extends ReloadTurret{
              drawer.draw(this);
          }
  
@@ -241,10 +241,10 @@ index e7d42f773eab372a4a69ed3f1735958d259e8e82..95108c8e31a90d1923851e9c3ae8a23b
 +        }
 +
          @Override
-         public void updateTile(){
-             if(!validateTarget()) target = null;
+         public void drawSelect(){
+             super.drawSelect();
 diff --git a/core/src/mindustry/world/blocks/production/Drill.java b/core/src/mindustry/world/blocks/production/Drill.java
-index 85e29932269c006ffa8bdc4f81d888ebb690dcb7..e2cf4a09930a218111f82ba2b93ba1546e638437 100644
+index 377641cd32a85e37cd99b09622c7ed1b8022a0d1..9188bfda2f06342825afba3231e5861bca09b6d1 100644
 --- a/core/src/mindustry/world/blocks/production/Drill.java
 +++ b/core/src/mindustry/world/blocks/production/Drill.java
 @@ -151,12 +151,12 @@ public class Drill extends Block{
@@ -291,7 +291,7 @@ index 85e29932269c006ffa8bdc4f81d888ebb690dcb7..e2cf4a09930a218111f82ba2b93ba154
          returnItem = null;
          returnCount = 0;
 diff --git a/core/src/mindustry/world/blocks/storage/CoreBlock.java b/core/src/mindustry/world/blocks/storage/CoreBlock.java
-index 5aff273ddcdfbedb9027ca61c2d4e4dd08fa2997..dfa60c02a0a798dcf79dc59377c1b6d42b9f75f5 100644
+index c7d7871c57b8e59b4dc3af2a04c4729e94ba17c1..8c6fdda2b8910aaf18d1231a9cd27b906c3c7f8a 100644
 --- a/core/src/mindustry/world/blocks/storage/CoreBlock.java
 +++ b/core/src/mindustry/world/blocks/storage/CoreBlock.java
 @@ -91,6 +91,7 @@ public class CoreBlock extends StorageBlock{
@@ -302,7 +302,7 @@ index 5aff273ddcdfbedb9027ca61c2d4e4dd08fa2997..dfa60c02a0a798dcf79dc59377c1b6d4
              Unit unit = spawnType.create(tile.team());
              unit.set(core);
              unit.rotation(90f);
-@@ -715,6 +716,14 @@ public class CoreBlock extends StorageBlock{
+@@ -723,6 +724,14 @@ public class CoreBlock extends StorageBlock{
                  outline.get(core);
                  core.proximity.each(storage -> storage.items == items, outline);
              });

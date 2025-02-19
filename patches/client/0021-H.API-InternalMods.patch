@@ -8,7 +8,7 @@ Subject: [PATCH] H.API: InternalMods
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/mod/Mods.java b/core/src/mindustry/mod/Mods.java
-index 70b83ab3c88ce56ac15b004bd0e7a6f53fcad3a8..06b1ae931d3c52db8ee3f152ea6de5b88830c1d8 100644
+index 45dc6530ab6cad1edd95648999b888d986a7d10d..831c8f5eb5f3e9104cf8670dd6b638a8d5c2e4d3 100644
 --- a/core/src/mindustry/mod/Mods.java
 +++ b/core/src/mindustry/mod/Mods.java
 @@ -459,7 +459,7 @@ public class Mods implements Loadable{
@@ -19,4 +19,4 @@ index 70b83ab3c88ce56ac15b004bd0e7a6f53fcad3a8..06b1ae931d3c52db8ee3f152ea6de5b8
 +        mods.addAll(mindustryX.features.InternalMods.load());
          // Add local mods
          Seq.with(modDirectory.list())
-         .retainAll(f -> f.extEquals("jar") || f.extEquals("zip") || (f.isDirectory() && Structs.contains(metaFiles, meta -> f.child(meta).exists())))
+         .retainAll(f -> f.extEquals("jar") || f.extEquals("zip") || (f.isDirectory() && Structs.contains(metaFiles, meta -> resolveRoot(f).child(meta).exists())))

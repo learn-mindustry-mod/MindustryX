@@ -9,7 +9,7 @@ Subject: [PATCH] HR: RenderExt
  2 files changed, 4 insertions(+), 2 deletions(-)
 
 diff --git a/core/src/mindustry/core/Renderer.java b/core/src/mindustry/core/Renderer.java
-index 00fb77bfaf8ecb1d063d9143c69efc2ff92d6e9d..10b5a25bb4c65fe3b066e037d8c99e3804a343c8 100644
+index f8babe63b5b995a878a7dc010b010a47be9dd113..de61aeb93845aea1a51d6232e528daac050e125e 100644
 --- a/core/src/mindustry/core/Renderer.java
 +++ b/core/src/mindustry/core/Renderer.java
 @@ -21,6 +21,7 @@ import mindustry.graphics.g3d.*;
@@ -20,7 +20,7 @@ index 00fb77bfaf8ecb1d063d9143c69efc2ff92d6e9d..10b5a25bb4c65fe3b066e037d8c99e38
  
  import static arc.Core.*;
  import static mindustry.Vars.*;
-@@ -387,7 +388,7 @@ public class Renderer implements ApplicationListener{
+@@ -392,7 +393,7 @@ public class Renderer implements ApplicationListener{
          Events.fire(Trigger.drawOver);
          blocks.drawBlocks();
  

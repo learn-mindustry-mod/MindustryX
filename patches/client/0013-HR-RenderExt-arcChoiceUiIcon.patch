@@ -18,7 +18,7 @@ Content-Transfer-Encoding: 8bit
  6 files changed, 16 insertions(+)
 
 diff --git a/core/src/mindustry/world/blocks/distribution/DirectionalUnloader.java b/core/src/mindustry/world/blocks/distribution/DirectionalUnloader.java
-index 92ccae0e1122e1501ab2d96facb3c0cef5ce8842..010404a6f75731b1f9ac504c1d4c55259f082827 100644
+index 313426c159312800d4dc398b971eb6bd919907d0..8b49617be34587a6b2d7e49e4ee10bc561331265 100644
 --- a/core/src/mindustry/world/blocks/distribution/DirectionalUnloader.java
 +++ b/core/src/mindustry/world/blocks/distribution/DirectionalUnloader.java
 @@ -14,6 +14,7 @@ import mindustry.world.blocks.*;
@@ -38,7 +38,7 @@ index 92ccae0e1122e1501ab2d96facb3c0cef5ce8842..010404a6f75731b1f9ac504c1d4c5525
                  Draw.rect(arrowRegion, x, y, rotdeg());
              }
 diff --git a/core/src/mindustry/world/blocks/distribution/DuctRouter.java b/core/src/mindustry/world/blocks/distribution/DuctRouter.java
-index 502915d2887c3a9a9f78fecc2841bbfdaf10cd26..401f813a015c2b8e313a914c71771ecee49c5ebd 100644
+index 5ba1ff7c212a0593ee841ec3888a8161f09c6a1a..1d12af8da5a3d7eb5f58048c1d821a18e823d3e0 100644
 --- a/core/src/mindustry/world/blocks/distribution/DuctRouter.java
 +++ b/core/src/mindustry/world/blocks/distribution/DuctRouter.java
 @@ -12,6 +12,7 @@ import mindustry.type.*;
@@ -58,7 +58,7 @@ index 502915d2887c3a9a9f78fecc2841bbfdaf10cd26..401f813a015c2b8e313a914c71771ece
                  Draw.rect(topRegion, x, y, rotdeg());
              }
 diff --git a/core/src/mindustry/world/blocks/distribution/Sorter.java b/core/src/mindustry/world/blocks/distribution/Sorter.java
-index 805fad17aa2548240be635f75085c158d100fb1f..c63355564e9c1f9419b8911af3f4a454681bac82 100644
+index c5f8f522482a476d27ee18eb4acdc52d722eda46..716c6645e5cf90a6dd4d4ec65b48ed2ef41d7227 100644
 --- a/core/src/mindustry/world/blocks/distribution/Sorter.java
 +++ b/core/src/mindustry/world/blocks/distribution/Sorter.java
 @@ -13,6 +13,7 @@ import mindustry.type.*;
@@ -78,7 +78,7 @@ index 805fad17aa2548240be635f75085c158d100fb1f..c63355564e9c1f9419b8911af3f4a454
  
              super.draw();
 diff --git a/core/src/mindustry/world/blocks/sandbox/ItemSource.java b/core/src/mindustry/world/blocks/sandbox/ItemSource.java
-index 28d42f86ec6509e16e387c95df2d0061ef94476a..962ba249a80bf0a35a690f486d08639fd4f2bb24 100644
+index b505c5f883e4dc5453ef677005ec9955c5dc52d9..78438212a0ab63f2411928695846cc8915679cc8 100644
 --- a/core/src/mindustry/world/blocks/sandbox/ItemSource.java
 +++ b/core/src/mindustry/world/blocks/sandbox/ItemSource.java
 @@ -11,6 +11,7 @@ import mindustry.type.*;
@@ -98,7 +98,7 @@ index 28d42f86ec6509e16e387c95df2d0061ef94476a..962ba249a80bf0a35a690f486d08639f
  
              super.draw();
 diff --git a/core/src/mindustry/world/blocks/storage/Unloader.java b/core/src/mindustry/world/blocks/storage/Unloader.java
-index 08a9880162a424f21906fb1d48d21516bfb66b15..eccb17f2542446a1e6fb2a4b0a90bfd08d3c860d 100644
+index 4732141ac7518a22c20a2b1d839626ad791e51c1..03770a18b7d547279f91731837d1d653a6defcd6 100644
 --- a/core/src/mindustry/world/blocks/storage/Unloader.java
 +++ b/core/src/mindustry/world/blocks/storage/Unloader.java
 @@ -18,6 +18,8 @@ import mindustry.world.meta.*;
@@ -122,7 +122,7 @@ index 08a9880162a424f21906fb1d48d21516bfb66b15..eccb17f2542446a1e6fb2a4b0a90bfd0
              Draw.rect(centerRegion, x, y);
              Draw.color();
 diff --git a/core/src/mindustry/world/blocks/units/UnitCargoUnloadPoint.java b/core/src/mindustry/world/blocks/units/UnitCargoUnloadPoint.java
-index d7a2e02c0d81c1935482c3bbb4edb7b555788a43..3b3e49cca2b424aeddd693d261b5e242cd344913 100644
+index b49ae76b4cd002127396b500c70c4cb1fb949f4e..612e4f724a2e0c6a2981780ddd953942704f52ba 100644
 --- a/core/src/mindustry/world/blocks/units/UnitCargoUnloadPoint.java
 +++ b/core/src/mindustry/world/blocks/units/UnitCargoUnloadPoint.java
 @@ -12,6 +12,7 @@ import mindustry.type.*;

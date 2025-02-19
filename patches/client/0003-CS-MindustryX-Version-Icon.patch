@@ -93,10 +93,10 @@ index 6dfb14b6bb9401ec083a0f6994ed9bab8b303c97..a68dd5cd58f7f012e3dd27750ae970b9
      processResources.configure {
          dependsOn(generateLocales, generateBasePartNames, writeVersion)
 diff --git a/core/src/mindustry/Vars.java b/core/src/mindustry/Vars.java
-index eacdd4bd2d79bf1b54a9bd63d2968bfc89a65c8f..b9330d11955f03f1c87563961ff02f17a720c0aa 100644
+index 8fef2f1616fb0509dd7ad8f5df8e9d1a80531ad6..946a23fbd3da66b408cf177e349d162c869b5b9f 100644
 --- a/core/src/mindustry/Vars.java
 +++ b/core/src/mindustry/Vars.java
-@@ -78,7 +78,7 @@ public class Vars implements Loadable{
+@@ -80,7 +80,7 @@ public class Vars implements Loadable{
      /** URLs to the JSON files containing the list of mods.  */
      public static final String[] modJsonURLs = {"https://raw.githubusercontent.com/Anuken/MindustryMods/master/mods.json", "https://cdn.jsdelivr.net/gh/anuken/mindustrymods/mods.json"};
      /** URL of the github issue report template.*/
@@ -156,10 +156,10 @@ index b4415862b13522a275b74b01405e812db95f1b4a..74dc9fde3061f2a524612c064120270b
      }
  }
 diff --git a/core/src/mindustry/net/NetworkIO.java b/core/src/mindustry/net/NetworkIO.java
-index 3dac1080905486d2228ec12c34671b15c1dbf5e8..e84b86d10ff75d0e1bd8283a541f83777ec67bd7 100644
+index 779d832c728cea9af3e0cd8f88deae6649a11510..cf02a7065ef114a1a6a3d01ac6d9f8d5c69e3ddb 100644
 --- a/core/src/mindustry/net/NetworkIO.java
 +++ b/core/src/mindustry/net/NetworkIO.java
-@@ -107,7 +107,7 @@ public class NetworkIO{
+@@ -109,7 +109,7 @@ public class NetworkIO{
          buffer.putInt(Core.settings.getInt("totalPlayers", Groups.player.size()));
          buffer.putInt(state.wave);
          buffer.putInt(Version.build);
@@ -182,14 +182,14 @@ index 2500d18e59a325d6f1a6286d4f0d214d65a78402..eba453ade66d5e72f44726f64a28a057
          }catch(Throwable e){
              handleCrash(e);
 diff --git a/gradle.properties b/gradle.properties
-index f14aa88a098b28e43179ddd21b6c4652226c420b..df0d1a187ba2d072de7663b3144fe3ec2611bac4 100644
+index af6835d8a565e794b8fabb25f65584d2f71164ba..359fc27efbf5228c1301aceeab3f2f8fbdc55d41 100644
 --- a/gradle.properties
 +++ b/gradle.properties
 @@ -27,3 +27,6 @@ org.gradle.internal.http.socketTimeout=100000
  org.gradle.internal.http.connectionTimeout=100000
  android.enableR8.fullMode=false
- archash=c8004178c4
+ archash=deacd9c98e
 +
-+upstreamBuild=25637
++upstreamBuild=25696
 +versionType=bleeding-edge
 \ No newline at end of file

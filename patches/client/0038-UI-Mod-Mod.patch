@@ -12,7 +12,7 @@ Content-Transfer-Encoding: 8bit
  1 file changed, 162 insertions(+), 104 deletions(-)
 
 diff --git a/core/src/mindustry/ui/dialogs/ModsDialog.java b/core/src/mindustry/ui/dialogs/ModsDialog.java
-index aa9593beaaedd26734ed563d3eca58f023e51e40..25ef46f2c54ae8838b7372f4f86f675ca954ac66 100644
+index 4d955d9fef1da95533a3ac03e1e34ffac60b5e76..934b93ef24f833ba02f70ccbbf5d9cb1517885d4 100644
 --- a/core/src/mindustry/ui/dialogs/ModsDialog.java
 +++ b/core/src/mindustry/ui/dialogs/ModsDialog.java
 @@ -1,6 +1,7 @@
@@ -53,16 +53,16 @@ index aa9593beaaedd26734ed563d3eca58f023e51e40..25ef46f2c54ae8838b7372f4f86f675c
  
          browser.cont.table(table -> {
              table.left();
-@@ -114,7 +124,7 @@ public class ModsDialog extends BaseDialog{
-         }
+@@ -118,7 +128,7 @@ public class ModsDialog extends BaseDialog{
+         getModList(0, listener);
      }
  
 -    void getModList(int index, Cons<Seq<ModListing>> listener){
-+    public void getModList(int index, Cons<Seq<ModListing>> listener){
++   public void getModList(int index, Cons<Seq<ModListing>> listener){
          if(index >= modJsonURLs.length) return;
  
          if(modList != null){
-@@ -160,8 +170,19 @@ public class ModsDialog extends BaseDialog{
+@@ -164,8 +174,19 @@ public class ModsDialog extends BaseDialog{
      }
  
      void setup(){
@@ -84,7 +84,7 @@ index aa9593beaaedd26734ed563d3eca58f023e51e40..25ef46f2c54ae8838b7372f4f86f675c
  
          cont.clear();
          cont.defaults().width(Math.min(Core.graphics.getWidth() / Scl.scl(1.05f), 556f)).pad(4);
-@@ -170,9 +191,9 @@ public class ModsDialog extends BaseDialog{
+@@ -174,9 +195,9 @@ public class ModsDialog extends BaseDialog{
  
          cont.table(buttons -> {
              buttons.left().defaults().growX().height(60f).uniformX();
@@ -95,7 +95,7 @@ index aa9593beaaedd26734ed563d3eca58f023e51e40..25ef46f2c54ae8838b7372f4f86f675c
  
              buttons.button("@mod.import", Icon.add, style, () -> {
                  BaseDialog dialog = new BaseDialog("@mod.import");
-@@ -217,125 +238,162 @@ public class ModsDialog extends BaseDialog{
+@@ -221,125 +242,162 @@ public class ModsDialog extends BaseDialog{
  
                  dialog.show();
  
