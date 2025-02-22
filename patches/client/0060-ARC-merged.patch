@@ -117,12 +117,12 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  .../ui/dialogs/SettingsMenuDialog.java        |  28 +-
  .../mindustry/ui/fragments/ChatFragment.java  |   9 +-
  .../ui/fragments/ConsoleFragment.java         |   3 +
- .../mindustry/ui/fragments/HudFragment.java   | 174 ++++++++++++-
+ .../mindustry/ui/fragments/HudFragment.java   | 167 +++++++++++-
  .../mindustry/ui/fragments/MenuFragment.java  |  51 +++-
  .../ui/fragments/PlacementFragment.java       | 163 ++++++++++--
  .../ui/fragments/PlayerListFragment.java      |  72 ++----
  core/src/mindustry/world/Block.java           |   7 +-
- 29 files changed, 1385 insertions(+), 169 deletions(-)
+ 29 files changed, 1378 insertions(+), 169 deletions(-)
 
 diff --git a/core/src/mindustry/ai/BlockIndexer.java b/core/src/mindustry/ai/BlockIndexer.java
 index 7f944a3eb06180f9e2b760bbd5aa41709ddf6611..4972f424edd41b8a29d926a09bc55987066d33aa 100644
@@ -2275,7 +2275,7 @@ index 823c2d70a68b63c1237a2d06744b876a577b2223..b0e2c07ae2016ab6329e23d8bb0baff6
          //special case for 'clear' command
          if(message.equals("clear")){
 diff --git a/core/src/mindustry/ui/fragments/HudFragment.java b/core/src/mindustry/ui/fragments/HudFragment.java
-index 345e19a0bf630125d772fddd395a054006bce745..49c86551c17870fb676b10c72564b66f85a3dfc2 100644
+index 4518f3d50c1c333438d2696b25c16fc2611e8376..91b8c703a303616761341043c985e725bfdc8776 100644
 --- a/core/src/mindustry/ui/fragments/HudFragment.java
 +++ b/core/src/mindustry/ui/fragments/HudFragment.java
 @@ -29,11 +29,13 @@ import mindustry.net.Packets.*;
@@ -2312,28 +2312,7 @@ index 345e19a0bf630125d772fddd395a054006bce745..49c86551c17870fb676b10c72564b66f
                      teams.button(Icon.downOpen, Styles.emptyi, () -> Core.settings.put("editor-blocks-shown", !Core.settings.getBool("editor-blocks-shown")))
                      .size(45f).update(m -> m.getStyle().imageUp = (Core.settings.getBool("editor-blocks-shown") ? Icon.upOpen : Icon.downOpen));
                  }).top().left().row();
-@@ -387,6 +393,8 @@ public class HudFragment{
-                 IntFormat mem = new IntFormat("memory");
-                 IntFormat memnative = new IntFormat("memory2");
- 
-+                info.add("MDTX~"+ Version.mdtXBuild).color(Pal.accent).left();
-+                info.row();
-                 info.label(() -> fps.get(Core.graphics.getFramesPerSecond())).left().style(Styles.outlineLabel).name("fps");
-                 info.row();
-                 info.label(() -> Strings.format("LG/DW/UI(ms) @/@/@", Time.nanosToMillis(DebugUtil.logicTime), Time.nanosToMillis(DebugUtil.rendererTime), Time.nanosToMillis(DebugUtil.uiTime)))
-@@ -396,6 +404,11 @@ public class HudFragment{
-                 DebugUtil.lastDrawRequests, DebugUtil.lastVertices, DebugUtil.lastSwitchTexture, DebugUtil.lastFlushCount)).left().style(Styles.outlineLabel).name("draw"), ()->DebugUtil.renderDebug);
-                 info.row();
- 
-+                if (!android){
-+                    info.label(() -> "缩放: " + String.format("%.2f", renderer.getScale())).left().style(Styles.outlineLabel);
-+                    info.row();
-+                }
-+
-                 if(android){
-                     info.label(() -> memnative.get((int)(Core.app.getJavaHeap() / 1024 / 1024), (int)(Core.app.getNativeHeap() / 1024 / 1024))).left().style(Styles.outlineLabel).name("memory2");
-                 }else{
-@@ -1008,6 +1021,163 @@ public class HudFragment{
+@@ -1015,6 +1021,163 @@ public class HudFragment{
          return table;
      }
  
@@ -2497,7 +2476,7 @@ index 345e19a0bf630125d772fddd395a054006bce745..49c86551c17870fb676b10c72564b66f
      private void addInfoTable(Table table){
          table.name = "infotable";
          table.left();
-@@ -1052,7 +1222,7 @@ public class HudFragment{
+@@ -1059,7 +1222,7 @@ public class HudFragment{
      }
  
      private boolean canSkipWave(){

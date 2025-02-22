@@ -8,11 +8,11 @@ Content-Transfer-Encoding: 8bit
 
 AuxiliaryTools, NewCoreItemsDisplay(新制核心资源显示), WaveInfoDisplay(波次信息显示), MarkType(标记功能)
 ---
- .../mindustry/ui/fragments/HudFragment.java   | 25 +++++++++++++------
- 1 file changed, 17 insertions(+), 8 deletions(-)
+ .../mindustry/ui/fragments/HudFragment.java   | 36 +++++++++++++------
+ 1 file changed, 26 insertions(+), 10 deletions(-)
 
 diff --git a/core/src/mindustry/ui/fragments/HudFragment.java b/core/src/mindustry/ui/fragments/HudFragment.java
-index c8679b9e5084d675a6b525e0df6ce88093db6117..345e19a0bf630125d772fddd395a054006bce745 100644
+index c8679b9e5084d675a6b525e0df6ce88093db6117..4518f3d50c1c333438d2696b25c16fc2611e8376 100644
 --- a/core/src/mindustry/ui/fragments/HudFragment.java
 +++ b/core/src/mindustry/ui/fragments/HudFragment.java
 @@ -196,13 +196,18 @@ public class HudFragment{
@@ -41,7 +41,39 @@ index c8679b9e5084d675a6b525e0df6ce88093db6117..345e19a0bf630125d772fddd395a0540
              t.top().right();
          });
  
-@@ -420,7 +425,11 @@ public class HudFragment{
+@@ -382,6 +387,8 @@ public class HudFragment{
+                 IntFormat mem = new IntFormat("memory");
+                 IntFormat memnative = new IntFormat("memory2");
+ 
++                info.add("MDTX~"+ Version.mdtXBuild).color(Pal.accent).left();
++                info.row();
+                 info.label(() -> fps.get(Core.graphics.getFramesPerSecond())).left().style(Styles.outlineLabel).name("fps");
+                 info.row();
+                 info.label(() -> Strings.format("LG/DW/UI(ms) @/@/@", Time.nanosToMillis(DebugUtil.logicTime), Time.nanosToMillis(DebugUtil.rendererTime), Time.nanosToMillis(DebugUtil.uiTime)))
+@@ -391,6 +398,11 @@ public class HudFragment{
+                 DebugUtil.lastDrawRequests, DebugUtil.lastVertices, DebugUtil.lastSwitchTexture, DebugUtil.lastFlushCount)).left().style(Styles.outlineLabel).name("draw"), ()->DebugUtil.renderDebug);
+                 info.row();
+ 
++                if (!android){
++                    info.label(() -> "缩放: " + String.format("%.2f", renderer.getScale())).left().style(Styles.outlineLabel);
++                    info.row();
++                }
++
+                 if(android){
+                     info.label(() -> memnative.get((int)(Core.app.getJavaHeap() / 1024 / 1024), (int)(Core.app.getNativeHeap() / 1024 / 1024))).left().style(Styles.outlineLabel).name("memory2");
+                 }else{
+@@ -400,8 +412,8 @@ public class HudFragment{
+ 
+                 info.label(() -> ping.get(netClient.getPing())).visible(net::client).left().style(Styles.outlineLabel).name("ping").row();
+                 info.label(() -> tps.get(state.serverTps == -1 ? 60 : state.serverTps)).visible(net::client).left().style(Styles.outlineLabel).name("tps").row();
+-
+-            }).top().left();
++            //MDTX: size 1 avoid affecting layout. And move up for mobile.
++            }).top().left().size(1).marginTop(mobile ? -dsize : 0);
+         });
+ 
+         //core info
+@@ -420,7 +432,11 @@ public class HudFragment{
  
              t.table(c -> {
                  //core items
