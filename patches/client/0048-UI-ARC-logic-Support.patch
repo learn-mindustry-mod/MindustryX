@@ -23,8 +23,8 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  core/src/mindustry/logic/LStatements.java     |  12 ++
  core/src/mindustry/logic/LogicDialog.java     | 145 +++++++++++++++++-
  .../world/blocks/logic/LogicBlock.java        |  66 +++++++-
- .../world/blocks/logic/MemoryBlock.java       |  72 ++++++++-
- 6 files changed, 339 insertions(+), 17 deletions(-)
+ .../world/blocks/logic/MemoryBlock.java       |  73 ++++++++-
+ 6 files changed, 340 insertions(+), 17 deletions(-)
 
 diff --git a/core/src/mindustry/logic/LCanvas.java b/core/src/mindustry/logic/LCanvas.java
 index 2bfd96ac4b9685bde38edee0d80be66380fdf6f2..ba5401c7c2ee4f8d9e7ffcc7da8ca3ad5bdb2a77 100644
@@ -537,7 +537,7 @@ index ee667f5f8b96bb248fa8b097a5b04c0428f34f7e..5cdee96ecda0ad4258821e12fec517bc
  
          public void showEditDialog(){
 diff --git a/core/src/mindustry/world/blocks/logic/MemoryBlock.java b/core/src/mindustry/world/blocks/logic/MemoryBlock.java
-index 44af66623aa1ebe735c7b063f0fa6af51fad0c3f..570924771231ca1c269a8931e9c8c774dee17f42 100644
+index 44af66623aa1ebe735c7b063f0fa6af51fad0c3f..042e493f9db77f140562d30cda90165fae2c458d 100644
 --- a/core/src/mindustry/world/blocks/logic/MemoryBlock.java
 +++ b/core/src/mindustry/world/blocks/logic/MemoryBlock.java
 @@ -1,11 +1,19 @@
@@ -578,7 +578,7 @@ index 44af66623aa1ebe735c7b063f0fa6af51fad0c3f..570924771231ca1c269a8931e9c8c774
  
          //massive byte size means picking up causes sync issues
          @Override
-@@ -71,6 +82,65 @@ public class MemoryBlock extends Block{
+@@ -71,6 +82,66 @@ public class MemoryBlock extends Block{
              }
          }
  
@@ -603,22 +603,23 @@ index 44af66623aa1ebe735c7b063f0fa6af51fad0c3f..570924771231ca1c269a8931e9c8c774
 +            table.background(Styles.black3);
 +            table.table(t -> {
 +                t.label(() -> "每行 " + numPerRow);
-+                t.slider(2, 15, 1, numPerRow, res -> {
-+                    numPerRow = (int)res;
-+                    vars.clear();
-+                    buildVarsPane(vars);
-+                });
++                t.slider(2, 15, 1, numPerRow, res -> numPerRow = (int)res);
 +
 +                t.label(() -> "保留小数: " + format.getDecimal());
 +                t.slider(0, 8, 1, format.getDecimal(), res -> format.setDecimal((int)res));
++
++                t.button(Icon.refresh, Styles.clearNonei, () -> {
++                    vars.clearChildren();
++                    buildVarsPane(vars);
++                });
 +            }).row();
-+            table.pane(Styles.noBarPane, vars).maxHeight(500f).pad(4).get().setScrollingDisabledX(true);
 +            buildVarsPane(vars);
++            table.pane(Styles.noBarPane, vars).maxHeight(500f).pad(4).get().setScrollingDisabledX(true);
 +            vars.update(() -> {
 +                vars.getCells().each(cell -> {
 +                    if(cell.prefWidth() > cell.maxWidth()){
 +                        cell.width(cell.prefWidth());
-+                        vars.invalidate();
++                        vars.invalidateHierarchy();
 +                    }
 +                });
 +                if(vars.needsLayout()) table.pack();
