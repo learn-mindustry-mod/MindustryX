@@ -62,14 +62,22 @@ public class Hooks implements ApplicationListener{
     public static @Nullable String onHandleSendMessage(String message, @Nullable Player sender){
         if(message == null) return null;
         if(Vars.ui != null){
-            if(MarkerType.resolveMessage(message)) return message;
-            try{
-                ArcMessageDialog.resolveMsg(message, sender);
-                if(sender != null){
-                    message = (sender.dead() ? Iconc.alphaaaa : sender.unit().type.emoji()) + " " + message;
+            if(!MarkerType.resolveMessage(message))
+                try{
+                    ArcMessageDialog.resolveMsg(message, sender);
+                }catch(Exception e){
+                    Log.err(e);
                 }
-            }catch(Exception e){
-                Log.err(e);
+            if(sender != null){
+                StringBuilder builder = new StringBuilder();
+                if(Vars.state.rules.pvp){
+                    builder.append("[#").append(sender.team().color).append("]");
+                    builder.append(sender.team() == Vars.player.team() ? "T" : Iconc.effect);
+                    builder.append("[]");
+                }
+                builder.append(sender.dead() ? Iconc.alphaaaa : sender.unit().type.emoji());
+                builder.append(" ").append(message);
+                message = builder.toString();
             }
         }
         return message;
