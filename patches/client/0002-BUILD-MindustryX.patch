@@ -18,7 +18,7 @@ way-zer <himc.wicp@gmail.com> on 2024/4/27 at 18:57
  4 files changed, 6 insertions(+), 10 deletions(-)
 
 diff --git a/build.gradle b/build.gradle
-index 31c5318bb29640dde16d33ddc81e4c82d8736933..c106887f71c6877fec692cd380dbd2c561038de6 100644
+index 56575297d72fa08f573bdec8ebdef3df86890676..fec635705881ad235b2af81af0e9e6819eb71b32 100644
 --- a/build.gradle
 +++ b/build.gradle
 @@ -13,8 +13,8 @@ buildscript{
@@ -47,7 +47,7 @@ index 31c5318bb29640dde16d33ddc81e4c82d8736933..c106887f71c6877fec692cd380dbd2c5
      jar{
          exclude("mindustry/entities/comp/**")
 diff --git a/core/build.gradle.kts b/core/build.gradle.kts
-index 52d6972f5111e55502e3187e3c600e1843f2ec3f..6dfb14b6bb9401ec083a0f6994ed9bab8b303c97 100644
+index 988cebaf5948bff23a01a6bdca87f99d4012ef9c..0881a8a6c843fe5c6bfd78cf5a0aeee834ccb769 100644
 --- a/core/build.gradle.kts
 +++ b/core/build.gradle.kts
 @@ -4,6 +4,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile

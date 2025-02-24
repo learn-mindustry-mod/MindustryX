@@ -11,9 +11,9 @@ way-zer <himc.wicp@gmail.com> on 2024/6/9
  android/proguard-rules.pro                    |   4 +
  .../com/github/bsideup/jabel/Desugar.java     |  13 +
  .../javax.annotation.processing.Processor     |   6 +
- build.gradle                                  | 247 ++-------------
+ build.gradle                                  | 263 ++--------------
  core/build.gradle                             |   2 -
- core/build.gradle.kts                         |  65 ++++
+ core/build.gradle.kts                         |  66 ++++
  desktop/build.gradle                          | 166 +----------
  gradle/wrapper/gradle-wrapper.jar             | Bin 59203 -> 43462 bytes
  gradlew                                       | 282 +++++++++++-------
@@ -23,7 +23,7 @@ way-zer <himc.wicp@gmail.com> on 2024/6/9
  settings.gradle                               |  10 +-
  tools/build.gradle                            |  44 ++-
  tools/src/mindustry/tools/Generators.java     |   2 +-
- 17 files changed, 384 insertions(+), 620 deletions(-)
+ 17 files changed, 393 insertions(+), 628 deletions(-)
  create mode 100644 annotations/src/main/java/com/github/bsideup/jabel/Desugar.java
  create mode 100644 annotations/src/main/resources/META-INF/services/javax.annotation.processing.Processor
  delete mode 100644 core/build.gradle
@@ -240,7 +240,7 @@ index 0000000000000000000000000000000000000000..181b87c1d5f3755f16a01c0528d0a89f
 +mindustry.annotations.misc.LogicStatementProcessor
 +mindustry.annotations.remote.RemoteProcess
 diff --git a/build.gradle b/build.gradle
-index 90e98a89dc933d3ddb500d1e78ea5948c8760029..31c5318bb29640dde16d33ddc81e4c82d8736933 100644
+index 90e98a89dc933d3ddb500d1e78ea5948c8760029..56575297d72fa08f573bdec8ebdef3df86890676 100644
 --- a/build.gradle
 +++ b/build.gradle
 @@ -10,19 +10,6 @@ buildscript{
@@ -395,7 +395,7 @@ index 90e98a89dc933d3ddb500d1e78ea5948c8760029..31c5318bb29640dde16d33ddc81e4c82
      }
  
      repositories{
-@@ -183,48 +49,30 @@ allprojects{
+@@ -183,49 +49,31 @@ allprojects{
          maven{ url 'https://jitpack.io' }
      }
  
@@ -407,7 +407,8 @@ index 90e98a89dc933d3ddb500d1e78ea5948c8760029..31c5318bb29640dde16d33ddc81e4c82
 -        }
 -    }
 -
-     tasks.withType(JavaCompile){
+-    tasks.withType(JavaCompile){
++    tasks.withType(JavaCompile).configureEach{
          targetCompatibility = 8
 -        sourceCompatibility = JavaVersion.VERSION_17
 +        if(project.name == "annotations"){
@@ -456,9 +457,11 @@ index 90e98a89dc933d3ddb500d1e78ea5948c8760029..31c5318bb29640dde16d33ddc81e4c82
 -        options.compilerArgs.addAll(['--release', '8'])
 -    }
 -
-     tasks.withType(Javadoc){
+-    tasks.withType(Javadoc){
++    tasks.withType(Javadoc).configureEach{
          options{
              addStringOption('Xdoclint:none', '-quiet')
+             addStringOption('-release', '17')
 @@ -234,11 +82,10 @@ configure(subprojects - project(":annotations")){
      }
  }
@@ -481,7 +484,7 @@ index 90e98a89dc933d3ddb500d1e78ea5948c8760029..31c5318bb29640dde16d33ddc81e4c82
          implementation "com.github.Anuken:steamworks4j:$steamworksVersion"
  
          implementation arcModule("backends:backend-sdl")
-@@ -267,16 +112,6 @@ project(":core"){
+@@ -267,17 +112,7 @@ project(":core"){
          }
      }
  
@@ -495,10 +498,24 @@ index 90e98a89dc933d3ddb500d1e78ea5948c8760029..31c5318bb29640dde16d33ddc81e4c82
 -        writePlugins()
 -    }
 -
-     task copyChangelog{
+-    task copyChangelog{
++    tasks.register('copyChangelog'){
          doLast{
              def props = loadVersionProps()
-@@ -301,18 +136,6 @@ project(":core"){
+             def androidVersion = props['androidBuildCode'].toInteger() - 2
+@@ -285,9 +120,9 @@ project(":core"){
+             def notice = "[This is a truncated changelog, see Github for full notes]"
+             def maxLength = 460
+ 
+-            def androidLogList = [notice] + loglines.findAll{ line -> !line.endsWith("]") || line.endsWith("[Mobile]") || line.endsWith("[Android]")}
++            def androidLogList = [notice] + loglines.findAll{ line -> !line.endsWith("]") || line.endsWith("[Mobile]") || line.endsWith("[Android]") }
+             def result = ""
+-            androidLogList.forEach{line ->
++            androidLogList.forEach{ line ->
+                 if(result.length() + line.length() + 1 < maxLength){
+                     result += line + "\n"
+                 }
+@@ -301,19 +136,7 @@ project(":core"){
          }
      }
  
@@ -514,9 +531,11 @@ index 90e98a89dc933d3ddb500d1e78ea5948c8760029..31c5318bb29640dde16d33ddc81e4c82
 -        }
 -    }
 -
-     task musicJar(type: Jar){
+-    task musicJar(type: Jar){
++    tasks.register('musicJar', Jar){
          archiveClassifier = 'music'
          from files("assets"){
+             include "music/*", "sounds/*"
 @@ -321,8 +144,6 @@ project(":core"){
      }
  
@@ -551,7 +570,7 @@ index 90e98a89dc933d3ddb500d1e78ea5948c8760029..31c5318bb29640dde16d33ddc81e4c82
  
              source rootProject.subprojects.collect{ project ->
                  if(!blacklist.contains(project) && project.hasProperty("sourceSets")){
-@@ -443,37 +262,11 @@ configure([":core", ":server"].collect{project(it)}){
+@@ -443,42 +262,16 @@ configure([":core", ":server"].collect{project(it)}){
          publications{
              maven(MavenPublication){
                  from components.java
@@ -586,9 +605,16 @@ index 90e98a89dc933d3ddb500d1e78ea5948c8760029..31c5318bb29640dde16d33ddc81e4c82
 -    }
 -}
 -
- task resolveDependencies{
+-task resolveDependencies{
++tasks.register('resolveDependencies'){
      doLast{
          rootProject.allprojects{ project ->
+             Set<Configuration> configurations = project.buildscript.configurations + project.configurations
+-            configurations.findAll{c -> c.canBeResolved}.forEach{c -> c.resolve()}
++            configurations.findAll{ c -> c.canBeResolved }.forEach{ c -> c.resolve() }
+         }
+     }
+ }
 diff --git a/core/build.gradle b/core/build.gradle
 deleted file mode 100644
 index f7f291ef1ab71577313759a7e9fdfd3c1e0833dc..0000000000000000000000000000000000000000
@@ -600,10 +626,10 @@ index f7f291ef1ab71577313759a7e9fdfd3c1e0833dc..00000000000000000000000000000000
 \ No newline at end of file
 diff --git a/core/build.gradle.kts b/core/build.gradle.kts
 new file mode 100644
-index 0000000000000000000000000000000000000000..52d6972f5111e55502e3187e3c600e1843f2ec3f
+index 0000000000000000000000000000000000000000..988cebaf5948bff23a01a6bdca87f99d4012ef9c
 --- /dev/null
 +++ b/core/build.gradle.kts
-@@ -0,0 +1,65 @@
+@@ -0,0 +1,66 @@
 +import org.gradle.jvm.tasks.Jar
 +import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 +
@@ -616,7 +642,7 @@ index 0000000000000000000000000000000000000000..52d6972f5111e55502e3187e3c600e18
 +    kotlin.setSrcDirs(listOf("src/", "../../src/"))
 +}
 +
-+tasks{
++tasks {
 +    withType<KotlinCompile>().configureEach {
 +        kotlinOptions {
 +            jvmTarget = "1.8"
@@ -653,6 +679,7 @@ index 0000000000000000000000000000000000000000..52d6972f5111e55502e3187e3c600e18
 +        property("modifier", findProperty("versionModifier") ?: "release")
 +        property("number", '7')
 +        property("build", findProperty("buildversion") ?: "custom build")
++        property("commitHash", "unknown") //TODO commitHash
 +    }
 +    processResources.configure {
 +        dependsOn(generateLocales, generateBasePartNames, writeVersion)

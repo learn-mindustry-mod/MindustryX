@@ -67,7 +67,7 @@ index d42ffe6d4a318ce558f1010eae46140f88ed5c99..bf44ead5c58abfb79c500e6daae30c3e
 +    <string name="app_name">MindustryX</string>
  </resources>
 diff --git a/build.gradle b/build.gradle
-index c106887f71c6877fec692cd380dbd2c561038de6..8c629d8d4b8b67461aacc4e0f791166bf915f427 100644
+index fec635705881ad235b2af81af0e9e6819eb71b32..b7a2bea39dcfe07ae0e19eb07005f36abf0f95df 100644
 --- a/build.gradle
 +++ b/build.gradle
 @@ -21,7 +21,7 @@ allprojects{
@@ -80,18 +80,18 @@ index c106887f71c6877fec692cd380dbd2c561038de6..8c629d8d4b8b67461aacc4e0f791166b
      ext{
          versionNumber = '7'
 diff --git a/core/build.gradle.kts b/core/build.gradle.kts
-index 6dfb14b6bb9401ec083a0f6994ed9bab8b303c97..a68dd5cd58f7f012e3dd27750ae970b97c5bae6c 100644
+index 0881a8a6c843fe5c6bfd78cf5a0aeee834ccb769..39332d4d175d89e93c48ebb7b9532c7dc17d77fd 100644
 --- a/core/build.gradle.kts
 +++ b/core/build.gradle.kts
-@@ -47,7 +47,7 @@ tasks{
+@@ -47,7 +47,7 @@ tasks {
          property("type", findProperty("versionType") ?: "official")
          property("modifier", findProperty("versionModifier") ?: "release")
          property("number", '7')
 -        property("build", findProperty("buildversion") ?: "custom build")
 +        property("build", findProperty("upstreamBuild") ?: "custom build")
+         property("commitHash", "unknown") //TODO commitHash
      }
      processResources.configure {
-         dependsOn(generateLocales, generateBasePartNames, writeVersion)
 diff --git a/core/src/mindustry/Vars.java b/core/src/mindustry/Vars.java
 index 8fef2f1616fb0509dd7ad8f5df8e9d1a80531ad6..946a23fbd3da66b408cf177e349d162c869b5b9f 100644
 --- a/core/src/mindustry/Vars.java
@@ -126,7 +126,7 @@ index 32c454304337cfcfcf2c15aca817edec0a309eda..aed03c684b1f88c15c3f90056ff9f733
          });
      }
 diff --git a/core/src/mindustry/core/Version.java b/core/src/mindustry/core/Version.java
-index b4415862b13522a275b74b01405e812db95f1b4a..74dc9fde3061f2a524612c064120270b10bdc9ff 100644
+index c79594eebd049ba73c62312a246eed6947cbb837..69d93243bc079903003bcd805345b0252e0993a0 100644
 --- a/core/src/mindustry/core/Version.java
 +++ b/core/src/mindustry/core/Version.java
 @@ -6,6 +6,7 @@ import arc.files.*;
