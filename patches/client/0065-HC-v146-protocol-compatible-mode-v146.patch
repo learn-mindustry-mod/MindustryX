@@ -13,10 +13,10 @@ Content-Transfer-Encoding: 8bit
  core/src/mindustry/core/NetClient.java        |  2 +
  core/src/mindustry/io/TypeIO.java             | 12 +++++-
  core/src/mindustry/net/Net.java               | 38 +++++++++++++++++--
- core/src/mindustry/net/NetworkIO.java         | 11 ++++++
+ core/src/mindustry/net/NetworkIO.java         | 13 ++++++-
  core/src/mindustry/net/Packets.java           |  2 +-
  .../world/blocks/units/UnitFactory.java       |  3 +-
- 7 files changed, 78 insertions(+), 7 deletions(-)
+ 7 files changed, 79 insertions(+), 8 deletions(-)
 
 diff --git a/core/src/mindustry/core/ContentLoader.java b/core/src/mindustry/core/ContentLoader.java
 index 4e2f86410a33f8189976a143d0cd697ec7c56de5..67b051c81d5ce7f0f134ab5cd99d4aa7ad9c7b92 100644
@@ -207,10 +207,18 @@ index 48c4d6749bd6f0776547fd633d7ac18c76af2452..14e2f7fc8790a36b7293334f7311b75f
  
          if(object instanceof StreamBegin b){
 diff --git a/core/src/mindustry/net/NetworkIO.java b/core/src/mindustry/net/NetworkIO.java
-index cf02a7065ef114a1a6a3d01ac6d9f8d5c69e3ddb..4434429e656efc8fd663bd0917ee4beba686b0e3 100644
+index fd0cdbaf51638cb37552b6e23ce4f11d25c56a56..4befd1b7fcb160ddc66eda4f2519ecf199b0885f 100644
 --- a/core/src/mindustry/net/NetworkIO.java
 +++ b/core/src/mindustry/net/NetworkIO.java
-@@ -14,6 +14,7 @@ import mindustry.logic.*;
+@@ -4,6 +4,7 @@ import arc.*;
+ import arc.util.*;
+ import arc.util.io.*;
+ import mindustry.*;
++import mindustry.content.*;
+ import mindustry.core.*;
+ import mindustry.ctype.*;
+ import mindustry.game.*;
+@@ -13,6 +14,7 @@ import mindustry.logic.*;
  import mindustry.maps.Map;
  import mindustry.net.Administration.*;
  import mindustry.type.*;
@@ -218,7 +226,7 @@ index cf02a7065ef114a1a6a3d01ac6d9f8d5c69e3ddb..4434429e656efc8fd663bd0917ee4beb
  
  import java.io.*;
  import java.nio.*;
-@@ -61,11 +62,19 @@ public class NetworkIO{
+@@ -60,12 +62,19 @@ public class NetworkIO{
          }
      }
  
@@ -228,17 +236,18 @@ index cf02a7065ef114a1a6a3d01ac6d9f8d5c69e3ddb..4434429e656efc8fd663bd0917ee4beb
          try(DataInputStream stream = new DataInputStream(is)){
              Time.clear();
              state.rules = JsonIO.read(Rules.class, stream.readUTF());
+-            state.mapLocales = JsonIO.read(MapLocales.class, stream.readUTF());
 +            if(LogicExt.v146Mode){
 +                //noinspection deprecation
 +                if(!state.rules.hiddenBuildItems.contains(Items.beryllium) && !state.rules.hiddenBuildItems.contains(Items.copper)){
 +                    state.rules.planet = Planets.sun;
 +                }
 +            }
-+            if(!LogicExt.v146Mode)
-             state.mapLocales = JsonIO.read(MapLocales.class, stream.readUTF());
++            if(!LogicExt.v146Mode) state.mapLocales = JsonIO.read(MapLocales.class, stream.readUTF());
              state.map = new Map(SaveIO.getSaveWriter().readStringMap(stream));
  
-@@ -87,11 +96,13 @@ public class NetworkIO{
+             state.wave = stream.readInt();
+@@ -86,11 +95,13 @@ public class NetworkIO{
              SaveIO.getSaveWriter().readContentHeader(stream);
              SaveIO.getSaveWriter().readMap(stream, world.context);
              SaveIO.getSaveWriter().readTeamBlocks(stream);

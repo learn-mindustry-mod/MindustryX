@@ -29,7 +29,7 @@ index 33fcc893c17585aef5f24f0282db5788410a5237..4012377fec3fb9161645e7d76616b2f7
      private @Nullable Schematic lastLoadout;
      private ItemSeq lastLaunchResources = new ItemSeq();
 diff --git a/core/src/mindustry/world/blocks/ConstructBlock.java b/core/src/mindustry/world/blocks/ConstructBlock.java
-index 9d0cd7a47e280243d65e4ffd27491ff4b0a547e0..11ef2f9a52ed82aef9a9845f932af0b979a6e09b 100644
+index fcecf4805e48cac201968b1caf61f58abad1dd97..3e9eb8ebf52ec2e1dee594e976b49ba200a69959 100644
 --- a/core/src/mindustry/world/blocks/ConstructBlock.java
 +++ b/core/src/mindustry/world/blocks/ConstructBlock.java
 @@ -3,14 +3,17 @@ package mindustry.world.blocks;
