@@ -23,8 +23,8 @@ import mindustry.world.blocks.storage.*;
 import mindustryX.features.*;
 import mindustryX.features.SettingsV2.*;
 
-import java.util.List;
 import java.util.*;
+import java.util.List;
 
 import static mindustry.Vars.*;
 
@@ -44,13 +44,17 @@ public class NewCoreItemsDisplay extends Table{
     private final ItemSeq planItems = new ItemSeq();
     private final ObjectIntMap<Block> planCounter = new ObjectIntMap<>();
 
-    private final SettingsV2.Data<Boolean> enable = CheckPref.INSTANCE.create("coreitems");//Origin Setting
+    private final SettingsV2.Data<Boolean> enable = CheckPref.INSTANCE.create("coreItems.enable", true);//Origin Setting
     private final SettingsV2.Data<Integer> columns = new SettingsV2.SliderPref(4, 15).create("coreItems.columns", 5);
     private final SettingsV2.Data<Boolean> showItem = CheckPref.INSTANCE.create("coreItems.showItem", true);
     private final SettingsV2.Data<Boolean> showUnit = CheckPref.INSTANCE.create("coreItems.showUnit", true);
     private final SettingsV2.Data<Boolean> showPlan = CheckPref.INSTANCE.create("coreItems.showPlan", true);
     private final SettingsV2.Data<Boolean> showPower = CheckPref.INSTANCE.create("coreItems.showPower", true);
     final List<Data<?>> settings = CollectionsKt.listOf(enable, columns, showItem, showUnit, showPlan, showPower);
+
+    {
+        enable.addFallbackName("coreitems");
+    }
 
     public NewCoreItemsDisplay(){
         itemDelta = new int[content.items().size];

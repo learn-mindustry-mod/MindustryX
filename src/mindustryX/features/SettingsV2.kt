@@ -13,6 +13,7 @@ import arc.util.Reflect
 import arc.util.Time
 import mindustry.Vars
 import mindustry.gen.Icon
+import mindustry.graphics.Pal
 import mindustry.ui.Styles
 import mindustry.ui.dialogs.BaseDialog
 
@@ -23,14 +24,14 @@ import mindustry.ui.dialogs.BaseDialog
  */
 
 object SettingsV2 {
-    data class Data<T>(val name: String, val def: T, val ext: SettingExt<T>, var persistentProvider: PersistentProvider? = PersistentProvider.Arc) {
+    data class Data<T>(val name: String, val def: T, val ext: SettingExt<T>, var persistentProvider: PersistentProvider = PersistentProvider.Arc) {
         private val changedSet = mutableSetOf<String>()
         var value: T = def
             set(value) {
                 val v = ext.transformValue(value)
                 if (v == field) return
                 field = value
-                persistentProvider?.set(name, value)
+                persistentProvider.set(name, value)
                 changedSet.clear()
             }
 
@@ -38,7 +39,7 @@ object SettingsV2 {
             if (name in ALL)
                 Log.warn("Settings initialized!: $name")
             ALL[name] = this
-            persistentProvider?.run {
+            persistentProvider.run {
                 value = get(name, def)
             }
         }
@@ -49,14 +50,15 @@ object SettingsV2 {
         }
 
         //util
+        val category: String get() = name.substringBefore('.', "")
         val title: String get() = Core.bundle.get("settingV2.${name}.name", name)
         fun resetDefault() {
-            persistentProvider?.reset(name)
+            persistentProvider.reset(name)
             value = def
         }
 
         fun buildUI(table: Table) {
-            Table().apply {
+            Table().left().apply {
                 button(Icon.undo, Styles.clearNonei) { resetDefault() }.tooltip("@settings.reset")
                     .fillY().disabled { value == def }
                 ext.build(this@Data, this)
@@ -64,8 +66,12 @@ object SettingsV2 {
                 Core.bundle.getOrNull("settingV2.${name}.description")?.let {
                     Vars.ui.addDescTooltip(this, it)
                 }
-                table.add(this).left().row()
+                table.add(this).fillX().row()
             }
+        }
+
+        fun addFallbackName(name: String) {
+            persistentProvider = PersistentProvider.WithFallback(name, persistentProvider)
         }
     }
 
@@ -73,6 +79,12 @@ object SettingsV2 {
         fun <T> get(name: String, def: T): T
         fun <T> set(name: String, value: T)
         fun reset(name: String)
+
+        data object Noop : PersistentProvider {
+            override fun <T> get(name: String, def: T): T = def
+            override fun <T> set(name: String, value: T) {}
+            override fun reset(name: String) {}
+        }
 
         data object Arc : PersistentProvider {
             override fun <T> get(name: String, def: T): T {
@@ -88,6 +100,21 @@ object SettingsV2 {
                 Core.settings.remove(name)
             }
         }
+
+        class WithFallback(private val fallback: String, private val impl: PersistentProvider) : PersistentProvider {
+            override fun <T> get(name: String, def: T): T {
+                return impl.get(name, impl.get(fallback, def))
+            }
+
+            override fun <T> set(name: String, value: T) {
+                impl.set(name, value)
+            }
+
+            override fun reset(name: String) {
+                impl.reset(name)
+                impl.reset(fallback)
+            }
+        }
     }
 
     sealed interface SettingExt<T> {
@@ -96,7 +123,7 @@ object SettingsV2 {
 
         //util
         fun create(name: String, def: T) = Data(name, def, this)
-        fun create(name: String, def: T, persistentProvider: PersistentProvider?) = Data(name, def, this, persistentProvider)
+        fun create(name: String, def: T, persistentProvider: PersistentProvider) = Data(name, def, this, persistentProvider)
     }
 
     data object CheckPref : SettingExt<Boolean> {
@@ -183,6 +210,42 @@ object SettingsV2 {
             table.setPosition(x, y, Align.center)
             table.keepInStage()
         }
+    }
+
+    private var settingSearch: String = ""
+
+    @JvmStatic
+    fun buildSettingsTable(table: Table) {
+        table.clearChildren()
+        val searchTable = table.table().fillX().get()
+        table.row()
+        val contentTable = table.table().fillX().get()
+        table.row()
+
+        fun rebuildContent() {
+            contentTable.clearChildren()
+            ALL.values.groupBy { it.category }.toSortedMap().forEach { (c, settings0) ->
+                val category = Core.bundle.get("settingV2.$c.category")
+                val categoryMatch = c.contains(settingSearch, ignoreCase = true) || category.contains(settingSearch, ignoreCase = true)
+                val settings = if (categoryMatch) settings0 else settings0.filter {
+                    if ("@modified" in settingSearch) return@filter it.changed()
+                    it.name.contains(settingSearch, true) || it.title.contains(settingSearch, true)
+                }
+                if (c.isNotEmpty() && settings.isNotEmpty()) {
+                    contentTable.add(category).color(Pal.accent).padTop(10f).padBottom(5f).center().row()
+                    contentTable.image().color(Pal.accent).fillX().height(3f).padBottom(10f).row()
+                }
+                settings.forEach { it.buildUI(contentTable) }
+            }
+        }
+        searchTable.apply {
+            image(Icon.zoom)
+            field(settingSearch, {
+                settingSearch = it
+                rebuildContent()
+            }).growX()
+        }
+        rebuildContent()
     }
 
     @JvmStatic

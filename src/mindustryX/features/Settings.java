@@ -3,6 +3,7 @@ package mindustryX.features;
 import arc.*;
 import arc.func.*;
 import arc.scene.style.*;
+import arc.scene.ui.layout.*;
 import arc.struct.*;
 import mindustry.*;
 import mindustry.game.EventType.*;
@@ -104,6 +105,22 @@ public class Settings{
             });
             c.sliderPref("limitdst", 10, 0, 100, 1, s -> s + "格");
         }));
+        categories.add(new LazySettingsCategory("@settings.category.settingV2", () -> Icon.box, (c) -> {
+        }){
+            @Override
+            public void init(){
+                super.init();
+                //noinspection deprecation
+                table = new SettingsTable(){
+                    @Override
+                    public Table rebuild2(){
+                        SettingsV2.buildSettingsTable(this);
+                        add().width(500).row();
+                        return this;
+                    }
+                };
+            }
+        });
         ArcOld.init(categories);
         Events.on(ClientLoadEvent.class, e -> {
             categories.each(LazySettingsCategory::init);

@@ -52,12 +52,17 @@ public class ArcRadar{
         case 0 -> "关闭";
         case 30 -> "瞬间完成";
         default -> "[lightgray]x[white]" + Strings.autoFixed(s * 0.2f, 1) + "倍搜索速度";
-    }).create("radarMode", 1),
+    }).create("radar.mode", 1),
     size = new SliderPref(0, 50, 1, s -> {
         if(s == 0) return "固定大小";
         return "[lightgray]x[white]" + Strings.autoFixed(s * 0.1f, 1) + "倍";
-    }).create("radarSize", 0);
+    }).create("radar.size", 0);
     public static List<SettingsV2.Data<?>> settings = CollectionsKt.listOf(mode, size);
+
+    {
+        mode.addFallbackName("radarMode");
+        size.addFallbackName("radarSize");
+    }
 
     static{
         Events.on(EventType.WorldLoadEvent.class, event -> scanTime = Math.max(Mathf.dst(world.width(), world.height()) / 20f, 7.5f));
