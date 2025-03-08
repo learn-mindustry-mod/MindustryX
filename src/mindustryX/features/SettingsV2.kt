@@ -49,7 +49,7 @@ object SettingsV2 {
         }
 
         //util
-        val title: String get() = Core.bundle.get("setting.${name}.name", name)
+        val title: String get() = Core.bundle.get("settingV2.${name}.name", name)
         fun resetDefault() {
             persistentProvider?.reset(name)
             value = def
@@ -61,7 +61,7 @@ object SettingsV2 {
                     .fillY().disabled { value == def }
                 ext.build(this@Data, this)
 
-                Core.bundle.getOrNull("setting.${name}.description")?.let {
+                Core.bundle.getOrNull("settingV2.${name}.description")?.let {
                     Vars.ui.addDescTooltip(this, it)
                 }
                 table.add(this).left().row()
