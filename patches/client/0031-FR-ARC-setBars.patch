@@ -20,7 +20,6 @@ Subject: [PATCH] FR: ARC setBars
  .../world/blocks/power/ImpactReactor.java     | 19 +++++++++++----
  .../world/blocks/power/PowerGenerator.java    |  3 +--
  .../world/blocks/production/BeamDrill.java    |  2 +-
- .../world/blocks/production/Drill.java        |  5 +++-
  .../blocks/production/GenericCrafter.java     | 14 +++++++++++
  .../world/blocks/production/HeatCrafter.java  |  5 ++--
  .../world/blocks/production/WallCrafter.java  |  2 +-
@@ -28,7 +27,7 @@ Subject: [PATCH] FR: ARC setBars
  .../world/blocks/units/Reconstructor.java     |  6 ++++-
  .../world/blocks/units/UnitAssembler.java     |  4 ++++
  .../world/blocks/units/UnitFactory.java       |  4 +++-
- 24 files changed, 133 insertions(+), 40 deletions(-)
+ 23 files changed, 129 insertions(+), 39 deletions(-)
 
 diff --git a/core/src/mindustry/entities/abilities/ShieldArcAbility.java b/core/src/mindustry/entities/abilities/ShieldArcAbility.java
 index a4d60c3eec14d87c8310b146ff1550e8145dbf89..0c05a4deafb47f756f1f3e31e26e3d4cec41ea7d 100644
@@ -426,22 +425,6 @@ index 469a04f54eb79b41a2ad382e9a989df6991b487e..ee2b3582267e994c22e6042e7ea0b4e0
      }
  
      @Override
-diff --git a/core/src/mindustry/world/blocks/production/Drill.java b/core/src/mindustry/world/blocks/production/Drill.java
-index f311c8fee60ee864ad1596858ac9d00d3ea7915a..377641cd32a85e37cd99b09622c7ed1b8022a0d1 100644
---- a/core/src/mindustry/world/blocks/production/Drill.java
-+++ b/core/src/mindustry/world/blocks/production/Drill.java
-@@ -117,7 +117,10 @@ public class Drill extends Block{
-         super.setBars();
- 
-         addBar("drillspeed", (DrillBuild e) ->
--             new Bar(() -> Core.bundle.format("bar.drillspeed", Strings.fixed(e.lastDrillSpeed * 60 * e.timeScale(), 2)), () -> Pal.ammo, () -> e.warmup));
-+             new Bar(() -> (e.dominantItem == null ? "挖掘速度：" : e.dominantItem.emoji()) +" "+ Strings.fixed(e.lastDrillSpeed * 60 * e.timeScale() , 2) + "/s", () -> Pal.ammo, () -> e.warmup));
-+        if(!(this instanceof BurstDrill) && Core.settings.getBool("arcDrillProgress"))
-+            addBar("progress", (DrillBuild e) ->
-+                new Bar(() -> e.dominantItem == null ? "":Iconc.production + " " + Math.round(e.progress / (drillTime + hardnessDrillMultiplier * e.dominantItem.hardness) * 100) + " %", () -> e.dominantItem == null ? Pal.ammo : e.dominantItem.color, () -> e.dominantItem == null ? 0 : e.progress / (drillTime + hardnessDrillMultiplier * e.dominantItem.hardness)));
-     }
- 
-     public Item getDrop(Tile tile){
 diff --git a/core/src/mindustry/world/blocks/production/GenericCrafter.java b/core/src/mindustry/world/blocks/production/GenericCrafter.java
 index cd7a7e469b80213696e2274c5fa9417f295fa358..085055dc4651360183045d91b680b86d97681551 100644
 --- a/core/src/mindustry/world/blocks/production/GenericCrafter.java

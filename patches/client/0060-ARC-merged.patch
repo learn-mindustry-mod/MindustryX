@@ -1581,7 +1581,7 @@ index 8c9e1a16c5d59272fa50610fab4aaab4fb8f5587..a4e1c2e8dfe2b0728d610eb32db8f5c5
          ruleInfo(cell, text);
          current.row();
 diff --git a/core/src/mindustry/ui/dialogs/DatabaseDialog.java b/core/src/mindustry/ui/dialogs/DatabaseDialog.java
-index 7292f92feb5ab6721ccd8aad8ce8c8e4c77e5aaf..1e845e5b8a3282d37f3863bc107d1c47bec06050 100644
+index dda529216bba00526564c87b983511cb2724ed73..cbb229b67d7f28ff19ec6ad9ee518717f5b704f3 100644
 --- a/core/src/mindustry/ui/dialogs/DatabaseDialog.java
 +++ b/core/src/mindustry/ui/dialogs/DatabaseDialog.java
 @@ -21,7 +21,6 @@ import mindustry.world.*;
@@ -1592,7 +1592,7 @@ index 7292f92feb5ab6721ccd8aad8ce8c8e4c77e5aaf..1e845e5b8a3282d37f3863bc107d1c47
  import static mindustry.Vars.*;
  
  public class DatabaseDialog extends BaseDialog{
-@@ -157,7 +156,7 @@ public class DatabaseDialog extends BaseDialog{
+@@ -156,7 +155,7 @@ public class DatabaseDialog extends BaseDialog{
                                  ui.content.show(unlock);
                              }
                          });

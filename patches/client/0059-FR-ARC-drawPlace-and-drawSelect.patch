@@ -191,7 +191,7 @@ index eaf49ff9cf59b90441654875483ab6b1147a2d52..a9b695cd8742f159da7cb890458f2a49
          indexer.eachBlock(player.team(), x * tilesize + offset, y * tilesize + offset, range, other -> other.block.canOverdrive, other -> Drawf.selected(other, Tmp.c1.set(baseColor).a(Mathf.absin(4f, 1f))));
      }
 diff --git a/core/src/mindustry/world/blocks/defense/turrets/BaseTurret.java b/core/src/mindustry/world/blocks/defense/turrets/BaseTurret.java
-index eced3dc7581a4916970634e600d0f5cd86f6ee7e..58e315a6d9ec8c4c32df8a8220a9ccbb564e862d 100644
+index 769e7d09ae63ac7ee4741a08ff21fd1d180ad70e..a13e73e2df99d12437489e3faf414b84e85c2328 100644
 --- a/core/src/mindustry/world/blocks/defense/turrets/BaseTurret.java
 +++ b/core/src/mindustry/world/blocks/defense/turrets/BaseTurret.java
 @@ -14,6 +14,7 @@ import mindustry.world.*;
@@ -206,7 +206,7 @@ index eced3dc7581a4916970634e600d0f5cd86f6ee7e..58e315a6d9ec8c4c32df8a8220a9ccbb
          if(fogRadiusMultiplier < 0.99f && state.rules.fog){
              Drawf.dashCircle(x * tilesize + offset, y * tilesize + offset, range * fogRadiusMultiplier, Pal.lightishGray);
          }
-+        if(Core.settings.getBool("arcTurretPlacementItem"))
++        if(SettingsV2.arcTurretShowAmmoRange.getValue())
 +            ArcBuilds.turretPlaceDraw(x * tilesize + offset, y * tilesize + offset, this);
      }
  
@@ -240,10 +240,10 @@ index 5db6510b6453d024d1f973bbf6d5f227fe176530..b458a8b73455e57a8552b3b6f51e1ca8
  
          @Override
 diff --git a/core/src/mindustry/world/blocks/production/Drill.java b/core/src/mindustry/world/blocks/production/Drill.java
-index 377641cd32a85e37cd99b09622c7ed1b8022a0d1..9188bfda2f06342825afba3231e5861bca09b6d1 100644
+index f311c8fee60ee864ad1596858ac9d00d3ea7915a..e22bd94e9a809de88c7a2341ac3b49eb6371480c 100644
 --- a/core/src/mindustry/world/blocks/production/Drill.java
 +++ b/core/src/mindustry/world/blocks/production/Drill.java
-@@ -151,12 +151,12 @@ public class Drill extends Block{
+@@ -148,12 +148,12 @@ public class Drill extends Block{
          countOre(tile);
  
          if(returnItem != null){
@@ -262,7 +262,7 @@ index 377641cd32a85e37cd99b09622c7ed1b8022a0d1..9188bfda2f06342825afba3231e5861b
  
              if(drawMineItem){
                  Draw.color(returnItem.color);
-@@ -167,7 +167,10 @@ public class Drill extends Block{
+@@ -164,7 +164,10 @@ public class Drill extends Block{
              Tile to = tile.getLinkedTilesAs(this, tempTiles).find(t -> t.drop() != null && (t.drop().hardness > tier || (blockedItems != null && blockedItems.contains(t.drop()))));
              Item item = to == null ? null : to.drop();
              if(item != null){
@@ -274,7 +274,7 @@ index 377641cd32a85e37cd99b09622c7ed1b8022a0d1..9188bfda2f06342825afba3231e5861b
              }
          }
      }
-@@ -200,6 +203,11 @@ public class Drill extends Block{
+@@ -197,6 +200,11 @@ public class Drill extends Block{
          return new TextureRegion[]{region, rotatorRegion, topRegion};
      }
  

@@ -13,7 +13,7 @@ Content-Transfer-Encoding: 8bit
  1 file changed, 3 insertions(+)
 
 diff --git a/core/src/mindustry/async/PhysicsProcess.java b/core/src/mindustry/async/PhysicsProcess.java
-index a38f28eeb2bb0559dc6a746af719494f0e4d8862..2b74b2c594beaedceaeceb5f1f90e1e3fb1c8558 100644
+index a38f28eeb2bb0559dc6a746af719494f0e4d8862..a781a5bba5475b7bf0d6f346f282f501a9a2f471 100644
 --- a/core/src/mindustry/async/PhysicsProcess.java
 +++ b/core/src/mindustry/async/PhysicsProcess.java
 @@ -1,5 +1,6 @@
@@ -27,7 +27,7 @@ index a38f28eeb2bb0559dc6a746af719494f0e4d8862..2b74b2c594beaedceaeceb5f1f90e1e3
          for(PhysicRef ref : refs){
              Physicsc entity = ref.entity;
  
-+            if(entity instanceof Unitc unit && unit.isLocal() && Core.settings.getBool("noPlayerHitBox")) continue;
++            if(entity instanceof Unitc unit && unit.isLocal() && mindustryX.features.SettingsV2.noPlayerHitBox.getValue()) continue;
 +
              //move by delta
              entity.move(ref.body.x - ref.x, ref.body.y - ref.y);

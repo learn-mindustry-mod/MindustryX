@@ -33,7 +33,6 @@ public class ArcOld{
             c.sliderPref("blockbarminhealth", 0, 0, 4000, 50, i -> i + "[red]HP");
             c.checkPref("blockBars_mend", false);
             c.checkPref("arcdrillmode", false);
-            c.checkPref("arcDrillProgress", false);
             c.checkPref("arcchoiceuiIcon", false);
             c.checkPref("arcPlacementEffect", false);
 
@@ -54,8 +53,6 @@ public class ArcOld{
             c.addCategory("arcAddTurretInfo");
             c.checkPref("showTurretAmmo", false);
             c.checkPref("showTurretAmmoAmount", false);
-            c.checkPref("arcTurretPlacementItem", false);
-            c.checkPref("arcTurretPlaceCheck", false);
             c.sliderPref("turretShowRange", 0, 0, 3, 1, s -> switch(s){
                 case 0 -> "关闭";
                 case 1 -> "仅对地";

@@ -45,7 +45,6 @@ public class Settings{
             c.checkPref("showQuickToolTable", true);
             c.sliderPref("itemSelectionHeight", 4, 4, 12, i -> i + "行");
             c.sliderPref("itemSelectionWidth", 4, 4, 12, i -> i + "列");
-            c.sliderPref("editorBrush", 6, 3, 12, i -> i + "");
             c.checkPref("researchViewer", false);
             c.sliderPref("maxSchematicSize", 64, 64, 257, 1, v -> {
                 maxSchematicSize = v == 257 ? Integer.MAX_VALUE : v;
@@ -62,8 +61,6 @@ public class Settings{
 
             c.addCategory("blockSettings");
             c.checkPref("rotateCanvas", false);
-            c.checkPref("staticShieldsBorder", false);
-            c.checkPref("arcTurretPlaceCheck", false);
             c.checkPref("arcchoiceuiIcon", false);
             c.sliderPref("HiddleItemTransparency", 0, 0, 100, 2, i -> i > 0 ? i + "%" : "关闭");
             c.sliderPref("overdrive_zone", 0, 0, 100, 2, i -> i > 0 ? i + "%" : "关闭");
@@ -80,7 +77,6 @@ public class Settings{
 
             c.addCategory("entitySettings");
             c.checkPref("bulletShow", true);
-            c.checkPref("noPlayerHitBox", false);
             c.checkPref("payloadpreview", true);
             c.checkPref("unithitbox", false);
             c.checkPref("unitHideExcludePlayers", true);

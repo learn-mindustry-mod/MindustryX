@@ -10,11 +10,11 @@ Content-Transfer-Encoding: 8bit
 ---
  core/src/mindustry/editor/EditorTool.java     |  5 ++-
  core/src/mindustry/editor/MapEditor.java      |  9 ++++--
- .../src/mindustry/editor/MapEditorDialog.java | 26 +++++++++++----
+ .../src/mindustry/editor/MapEditorDialog.java | 27 ++++++++++++----
  .../src/mindustry/editor/MapResizeDialog.java |  4 +--
  core/src/mindustry/editor/MapView.java        | 32 +++++++++++++++----
  core/src/mindustry/ui/GridImage.java          |  5 +--
- 6 files changed, 59 insertions(+), 22 deletions(-)
+ 6 files changed, 60 insertions(+), 22 deletions(-)
 
 diff --git a/core/src/mindustry/editor/EditorTool.java b/core/src/mindustry/editor/EditorTool.java
 index 50c7a2aca929b532c1762a399ebc68f779ef0670..cc25012e08ceb60057fb8fedaec5fa50d53999bf 100644
@@ -68,7 +68,7 @@ index 38839e610819e60fe2d9780f730404979fb48976..1145b88cd87b1c860facda79cf8f05a1
  
                  if(wx < 0 || wy < 0 || wx >= width() || wy >= height()){
 diff --git a/core/src/mindustry/editor/MapEditorDialog.java b/core/src/mindustry/editor/MapEditorDialog.java
-index ad35a4a45f633dd5aecd9d05fba9728ac80cdc41..f90a968fa4262828adc833c8bbc6b8fe1986529b 100644
+index ad35a4a45f633dd5aecd9d05fba9728ac80cdc41..5c2d108d43e31f40dfdeae20e4bd300c534ee31b 100644
 --- a/core/src/mindustry/editor/MapEditorDialog.java
 +++ b/core/src/mindustry/editor/MapEditorDialog.java
 @@ -30,6 +30,7 @@ import mindustry.world.*;
@@ -128,12 +128,20 @@ index ad35a4a45f633dd5aecd9d05fba9728ac80cdc41..f90a968fa4262828adc833c8bbc6b8fe
                      for(int j = 0; j < MapEditor.brushSizes.length; j++){
                          if(MapEditor.brushSizes[j] == editor.brushSize){
                              slider.setValue(j);
-@@ -769,7 +781,7 @@ public class MapEditorDialog extends Dialog implements Disposable{
+@@ -751,6 +763,7 @@ public class MapEditorDialog extends Dialog implements Disposable{
+         });
+ 
+         int i = 0;
++        int preRow = SettingsV2.editorBrush.getValue();
+ 
+         for(Block block : blocksOut){
+             TextureRegion region = block.uiIcon;
+@@ -769,7 +782,7 @@ public class MapEditorDialog extends Dialog implements Disposable{
  
              if(i == 0) editor.drawBlock = block;
  
 -            if(++i % 6 == 0){
-+            if(++i % Math.max(Core.settings.getInt("editorBrush"),3) == 0){
++            if(++i % preRow == 0){
                  blockSelection.row();
              }
          }

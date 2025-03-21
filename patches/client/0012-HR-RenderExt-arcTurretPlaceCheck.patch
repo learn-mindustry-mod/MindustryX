@@ -8,7 +8,7 @@ Subject: [PATCH] HR(RenderExt) arcTurretPlaceCheck
  1 file changed, 6 insertions(+)
 
 diff --git a/core/src/mindustry/world/blocks/defense/turrets/BaseTurret.java b/core/src/mindustry/world/blocks/defense/turrets/BaseTurret.java
-index dbe779461193af3f8b882a2db305eedfd457bd82..eced3dc7581a4916970634e600d0f5cd86f6ee7e 100644
+index dbe779461193af3f8b882a2db305eedfd457bd82..769e7d09ae63ac7ee4741a08ff21fd1d180ad70e 100644
 --- a/core/src/mindustry/world/blocks/defense/turrets/BaseTurret.java
 +++ b/core/src/mindustry/world/blocks/defense/turrets/BaseTurret.java
 @@ -1,5 +1,7 @@
@@ -23,7 +23,7 @@ index dbe779461193af3f8b882a2db305eedfd457bd82..eced3dc7581a4916970634e600d0f5cd
  
          Drawf.dashCircle(x * tilesize + offset, y * tilesize + offset, range, Pal.placing);
  
-+        if(state.rules.placeRangeCheck && Core.settings.getBool("arcTurretPlaceCheck")){
++        if(state.rules.placeRangeCheck && mindustryX.features.SettingsV2.arcTurretShowPlaceRange.getValue()){
 +            Draw.alpha(0.5f);
 +            Drawf.dashCircle(x * tilesize + offset, y * tilesize + offset, placeOverlapRange, Pal.remove);
 +        }

@@ -25,7 +25,7 @@ public class LogicExt{
                 limitTimer = 10;
             }
             worldCreator = Core.settings.getBool("worldCreator");
-            allUnlocked = Core.settings.getBool("allUnlocked");
+            allUnlocked = SettingsV2.allUnlocked.getValue();
             terrainSchematic = Core.settings.getBool("terrainSchematic");
             invertMapClick = Core.settings.getBool("invertMapClick");
             reliableSync = Core.settings.getBool("reliableSync");
