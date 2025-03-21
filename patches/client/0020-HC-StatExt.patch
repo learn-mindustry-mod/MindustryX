@@ -34,7 +34,7 @@ way-zer <himc.wicp@gmail.com> on 2024/5/4 at 22:17
  22 files changed, 286 insertions(+), 73 deletions(-)
 
 diff --git a/core/src/mindustry/type/Item.java b/core/src/mindustry/type/Item.java
-index 5d81790919f016776eff80c6d241b1d034f76d11..ff81bc3b9d0a54e7aa0e8dae9e12d48612a9d2ab 100644
+index 5d81790919f016776eff80c6d241b1d034f76d11..a301154d18daa5902d940ad2fa1eed0b603ea476 100644
 --- a/core/src/mindustry/type/Item.java
 +++ b/core/src/mindustry/type/Item.java
 @@ -12,6 +12,7 @@ import mindustry.graphics.MultiPacker.*;
@@ -51,13 +51,13 @@ index 5d81790919f016776eff80c6d241b1d034f76d11..ff81bc3b9d0a54e7aa0e8dae9e12d486
          stats.addPercent(Stat.charge, charge);
 +        stats.add(StatExt.cost, cost);
 +        stats.add(StatExt.hardness, hardness);
-+        stats.add(StatExt.healthScaling,healthScaling);
-+        stats.add(StatExt.buildable,buildable);
++        stats.add(StatExt.healthScaling, healthScaling);
++        stats.add(StatExt.buildable, buildable);
      }
  
      @Override
 diff --git a/core/src/mindustry/type/Liquid.java b/core/src/mindustry/type/Liquid.java
-index 9032b4bf9bdcacd31826eb95fedc7781465cc87a..ccb3c4b63be9aebc1c66f1003e4b17f10db1a2d7 100644
+index 9032b4bf9bdcacd31826eb95fedc7781465cc87a..3af24a74e8322e52e3cce807b7d9d49da5658a0d 100644
 --- a/core/src/mindustry/type/Liquid.java
 +++ b/core/src/mindustry/type/Liquid.java
 @@ -13,6 +13,7 @@ import mindustry.graphics.*;
@@ -72,7 +72,7 @@ index 9032b4bf9bdcacd31826eb95fedc7781465cc87a..ccb3c4b63be9aebc1c66f1003e4b17f1
          stats.addPercent(Stat.temperature, temperature);
          stats.addPercent(Stat.heatCapacity, heatCapacity);
          stats.addPercent(Stat.viscosity, viscosity);
-+        stats.add(StatExt.boilPoint,boilPoint);
++        stats.add(StatExt.boilPoint, boilPoint);
      }
  
      @Override

@@ -12,7 +12,7 @@ Content-Transfer-Encoding: 8bit
  1 file changed, 12 insertions(+), 4 deletions(-)
 
 diff --git a/core/src/mindustry/ui/Minimap.java b/core/src/mindustry/ui/Minimap.java
-index ee03fc2435166bbdb72f1f416c992efffa178371..037dea9ae4e54db3661071cb388d3850f6a156c0 100644
+index ee03fc2435166bbdb72f1f416c992efffa178371..e48a22d87fb903c0cd94b7c15db1dba07ca95d8c 100644
 --- a/core/src/mindustry/ui/Minimap.java
 +++ b/core/src/mindustry/ui/Minimap.java
 @@ -13,16 +13,15 @@ import mindustry.gen.*;
@@ -38,7 +38,7 @@ index ee03fc2435166bbdb72f1f416c992efffa178371..037dea9ae4e54db3661071cb388d3850
  
              @Override
              public void act(float delta){
-+                var size = Core.settings.getInt("minimapSize");
++                var size = SettingsV2.minimapSize.getValue();
 +                mapCell.size(size);
 +                setSize(Scl.scl(size));
                  setPosition(Scl.scl(margin), Scl.scl(margin));

@@ -273,4 +273,10 @@ object SettingsV2 {
         })
         button.addListener(button.clickListener)
     }
+
+    @JvmField
+    val blockInventoryWidth = SliderPref(3, 16).create("blockInventoryWidth", 3)
+
+    @JvmField
+    val minimapSize = SliderPref(40, 400, 10).create("minimapSize", 140)
 }

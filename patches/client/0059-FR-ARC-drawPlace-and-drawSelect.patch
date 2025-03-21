@@ -168,7 +168,7 @@ index 4bd399c1b344c4db2b7582a15e083e5bf4d15800..297d62456badce41055e6a03d9f6a72a
      }
  
 diff --git a/core/src/mindustry/world/blocks/defense/OverdriveProjector.java b/core/src/mindustry/world/blocks/defense/OverdriveProjector.java
-index 1d42c5aa400a046bb69da65ca96146893e50ad9c..9ef9bc840e4c6cc458bfa2791b6ad7481129b4aa 100644
+index eaf49ff9cf59b90441654875483ab6b1147a2d52..a9b695cd8742f159da7cb890458f2a4929c92ce4 100644
 --- a/core/src/mindustry/world/blocks/defense/OverdriveProjector.java
 +++ b/core/src/mindustry/world/blocks/defense/OverdriveProjector.java
 @@ -1,6 +1,5 @@

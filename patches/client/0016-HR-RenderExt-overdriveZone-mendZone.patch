@@ -4,11 +4,11 @@ Date: Sat, 17 Feb 2024 14:15:29 +0800
 Subject: [PATCH] HR(RenderExt) overdriveZone mendZone
 
 ---
- core/src/mindustry/core/Renderer.java         |  5 +++++
- core/src/mindustry/graphics/Layer.java        |  3 +++
- .../world/blocks/defense/MendProjector.java   |  8 ++++++++
- .../blocks/defense/OverdriveProjector.java    | 19 +++++++++++++++++++
- 4 files changed, 35 insertions(+)
+ core/src/mindustry/core/Renderer.java          |  5 +++++
+ core/src/mindustry/graphics/Layer.java         |  3 +++
+ .../world/blocks/defense/MendProjector.java    |  8 ++++++++
+ .../blocks/defense/OverdriveProjector.java     | 18 ++++++++++++++++++
+ 4 files changed, 34 insertions(+)
 
 diff --git a/core/src/mindustry/core/Renderer.java b/core/src/mindustry/core/Renderer.java
 index de61aeb93845aea1a51d6232e528daac050e125e..e4b6048c0204eff326a57ab377234d18009fd8e7 100644
@@ -67,7 +67,7 @@ index ff4696bbf4805936b93759ccdcb54c1d3d4e092a..7fd31c87cc58d06f121718414adaf9ef
  
              Draw.color(baseColor, phaseColor, phaseHeat);
 diff --git a/core/src/mindustry/world/blocks/defense/OverdriveProjector.java b/core/src/mindustry/world/blocks/defense/OverdriveProjector.java
-index d5261b0604dd7a8d32e2a0310c8c270f8fbc1e35..9073c18f5210770850c43e7c524949ff5715451a 100644
+index d5261b0604dd7a8d32e2a0310c8c270f8fbc1e35..40fd182a0a4f2ed73e5adde548bd4acc756971b6 100644
 --- a/core/src/mindustry/world/blocks/defense/OverdriveProjector.java
 +++ b/core/src/mindustry/world/blocks/defense/OverdriveProjector.java
 @@ -15,6 +15,7 @@ import mindustry.ui.*;
@@ -78,7 +78,7 @@ index d5261b0604dd7a8d32e2a0310c8c270f8fbc1e35..9073c18f5210770850c43e7c524949ff
  
  import static mindustry.Vars.*;
  
-@@ -138,6 +139,24 @@ public class OverdriveProjector extends Block{
+@@ -138,6 +139,23 @@ public class OverdriveProjector extends Block{
          public void draw(){
              super.draw();
  
@@ -87,13 +87,12 @@ index d5261b0604dd7a8d32e2a0310c8c270f8fbc1e35..9073c18f5210770850c43e7c524949ff
 +            if(realBoost() > 1 && pro_Transparency > 0){
 +                if(renderer.animateShields){
 +                    Draw.z(Layer.overdrive);
-+                    Draw.color(Color.valueOf("#ff8920"), phaseColor, 1 - pro_Transparency * realBoost() * realBoost() / 4.25f);
-+                    Fill.poly(x, y,50, realRange);
-+                    Draw.reset();
-+                    Draw.z(Layer.overdrive-0.3f);
-+                } else{
-+                    Draw.color(phaseHeat>0.2?Color.valueOf("FFA500"):Color.valueOf("FF8C00"), pro_Transparency);
-+                    Lines.stroke(1f);
++                    Draw.color(phaseHeat > 0.2 ? phaseColor : baseColor);
++                    Fill.circle(x, y, realRange);
++                    Draw.color();
++                    Draw.z(Layer.overdrive - 0.3f);
++                }else{
++                    Draw.color(phaseHeat > 0.2 ? phaseColor : baseColor, pro_Transparency);
 +                    Lines.circle(x, y, realRange);
 +                    Draw.alpha(pro_Transparency * 0.1f);
 +                    Fill.circle(x, y, realRange);

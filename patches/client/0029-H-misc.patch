@@ -270,7 +270,7 @@ index 58c186ff3151d8bba395b1bc1a51a821b81c40e1..b3e0318791e123b784e9953b9fb39ea2
              }
  
 diff --git a/core/src/mindustry/ui/fragments/BlockInventoryFragment.java b/core/src/mindustry/ui/fragments/BlockInventoryFragment.java
-index 54a36cde6eee102c9c8f3bfd5e4c76a2f4d0f1e1..bd810004301a4534c6568fb0bcd85f4a4a0c44ef 100644
+index 54a36cde6eee102c9c8f3bfd5e4c76a2f4d0f1e1..f06641d677746d1f70880bea7c972ab1f65970fa 100644
 --- a/core/src/mindustry/ui/fragments/BlockInventoryFragment.java
 +++ b/core/src/mindustry/ui/fragments/BlockInventoryFragment.java
 @@ -138,7 +138,7 @@ public class BlockInventoryFragment{
@@ -278,7 +278,7 @@ index 54a36cde6eee102c9c8f3bfd5e4c76a2f4d0f1e1..bd810004301a4534c6568fb0bcd85f4a
          });
  
 -        int cols = 3;
-+        int cols = Core.settings.getInt("blockInventoryWidth", 3);
++        int cols = mindustryX.features.SettingsV2.blockInventoryWidth.getValue();
          int row = 0;
  
          table.margin(4f);

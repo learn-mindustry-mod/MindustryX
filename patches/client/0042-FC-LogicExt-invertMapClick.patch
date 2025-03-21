@@ -9,7 +9,7 @@ Subject: [PATCH] FC(LogicExt) invertMapClick
  2 files changed, 9 insertions(+), 4 deletions(-)
 
 diff --git a/core/src/mindustry/ui/Minimap.java b/core/src/mindustry/ui/Minimap.java
-index 037dea9ae4e54db3661071cb388d3850f6a156c0..ad214460bb8458b1eb323c2d10d314fd6fec3522 100644
+index e48a22d87fb903c0cd94b7c15db1dba07ca95d8c..f6071356678dd4d7ba35a1f4f138121c1b8e266f 100644
 --- a/core/src/mindustry/ui/Minimap.java
 +++ b/core/src/mindustry/ui/Minimap.java
 @@ -9,11 +9,13 @@ import arc.scene.event.*;
@@ -22,7 +22,7 @@ index 037dea9ae4e54db3661071cb388d3850f6a156c0..ad214460bb8458b1eb323c2d10d314fd
  
  public class Minimap extends Table{
      private final Cell<?> mapCell;
-+    private ClickListener listener,listener2;
++    private ClickListener listener, listener2;
  
      public Minimap(){
          background(Tex.pane);

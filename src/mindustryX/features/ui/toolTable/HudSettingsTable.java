@@ -102,7 +102,7 @@ public class HudSettingsTable extends ToolTableBase{
 
         checkPref("blockWeaponTargetLine");
         checkPref("unitbuildplan");
-        sliderPref("minimapSize", 40, 400, 10, i -> i + "");
+        SettingsV2.minimapSize.buildUI(this);
         UIExt.quickToolOffset.buildUI(this);
     }
 

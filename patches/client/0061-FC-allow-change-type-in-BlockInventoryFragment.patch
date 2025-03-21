@@ -8,7 +8,7 @@ Subject: [PATCH] FC allow change type in BlockInventoryFragment
  1 file changed, 10 insertions(+), 2 deletions(-)
 
 diff --git a/core/src/mindustry/ui/fragments/BlockInventoryFragment.java b/core/src/mindustry/ui/fragments/BlockInventoryFragment.java
-index bd810004301a4534c6568fb0bcd85f4a4a0c44ef..5fc9f9400645a756460cb765838cb4949d79298f 100644
+index f06641d677746d1f70880bea7c972ab1f65970fa..d85892d44558b3d28060526eccd6e2f9cbb8996a 100644
 --- a/core/src/mindustry/ui/fragments/BlockInventoryFragment.java
 +++ b/core/src/mindustry/ui/fragments/BlockInventoryFragment.java
 @@ -72,6 +72,14 @@ public class BlockInventoryFragment{
