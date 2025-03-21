@@ -4,7 +4,6 @@ import arc.*;
 import arc.graphics.*;
 import arc.graphics.g2d.*;
 import arc.math.*;
-import arc.math.geom.*;
 import arc.util.*;
 import mindustry.ai.types.*;
 import mindustry.entities.units.*;
@@ -146,11 +145,11 @@ public class ArcUnits{
             if(ai.attackTarget != null){
                 Draw.color(unit.team.color);
                 if(ai.targetPos != null)
-                    drawLimitLineColor(unit, ai.attackTarget, unit.hitSize / 2f, 3.5f, unit.team.color);
+                    Drawf.limitLine(unit, ai.attackTarget, unit.hitSize / 2f, 3.5f, unit.team.color);
                 Drawf.target(ai.attackTarget.getX(), ai.attackTarget.getY(), 6f, unit.team.color);
             }else if(ai.targetPos != null){
                 Draw.color(unit.team.color);
-                drawLimitLineColor(unit, ai.targetPos, unit.hitSize / 2f, 3.5f, unit.team.color);
+                Drawf.limitLine(unit, ai.targetPos, unit.hitSize / 2f, 3.5f, unit.team.color);
                 Draw.color(unit.team.color);
                 Drawf.square(ai.targetPos.getX(), ai.targetPos.getY(), 3.5f, unit.team.color);
             }
@@ -163,7 +162,6 @@ public class ArcUnits{
         float y_corr = 0f;
         if(!player.dead() && unit.hitSize < 30f && unit.hitSize > 20f && unit.controller().isBeingControlled(player.unit())) y_corr = 2f;
         if(unit.health < unit.maxHealth){
-            Draw.reset();
             Lines.stroke(4f);
             Draw.color(unit.team.color, 0.5f);
             Lines.line(unit.x - unit.hitSize() * 0.6f, unit.y + (unit.hitSize() / 2f) + y_corr, unit.x + unit.hitSize() * 0.6f, unit.y + (unit.hitSize() / 2f) + y_corr);
@@ -173,6 +171,7 @@ public class ArcUnits{
             unit.x - unit.hitSize() * 0.6f, unit.y + (unit.hitSize() / 2f) + y_corr,
             unit.x + unit.hitSize() * (Math.min(Mathf.maxZero(unit.health), unit.maxHealth) * 1.2f / unit.maxHealth - 0.6f), unit.y + (unit.hitSize() / 2f) + y_corr);
             Lines.stroke(2f);
+            Draw.reset();
         }
         if(unit.shield > 0 && unit.shield < 1e20){
             for(int didgt = 1; didgt <= Mathf.digits((int)(unit.shield / unit.maxHealth)) + 1; didgt++){
@@ -191,23 +190,22 @@ public class ArcUnits{
                     unit.y + (unit.hitSize() / 2f) + (float)didgt * 2f + y_corr);
                 }
             }
+            Draw.color();
         }
-        Draw.reset();
 
-        float oldZ = Draw.z();
-        Draw.z(oldZ + 0.1f);//MDTX: There no replace for effect.uiIcon, so we offset the layer.
         float index = 0f;
         float iconSize = 4f;
         int iconColumns = Math.max((int)(unit.hitSize() / (iconSize + 1f)), 4);
         float iconWidth = Math.min(unit.hitSize() / iconColumns, iconSize + 1f);
         for(var entry : unit.statuses()){
-            Draw.rect(entry.effect.uiIcon,
+            Draw.color(entry.effect.color);
+            Draw.rect(entry.effect.fullIcon,
             unit.x - unit.hitSize() * 0.6f + iconWidth * (index % iconColumns),
             unit.y + (unit.hitSize() / 2f) + 3f + iconSize * Mathf.floor(index / iconColumns),
             iconSize, iconSize);
             index++;
         }
-        Draw.z(oldZ);
+        Draw.color();
 
         index = 0f;
         if(unit instanceof Payloadc payload && payload.payloads().any()){
@@ -219,7 +217,6 @@ public class ArcUnits{
                 index++;
             }
         }
-        Draw.reset();
     }
 
     private static void drawLogicMove(Unit unit, LogicAI ai){
@@ -240,17 +237,30 @@ public class ArcUnits{
 
     private static void drawBuildPlan(Unit unit){
         if(unit.plans().isEmpty()) return;
-        int counter = 0;
         if(unit != player.unit()){
+            int counter = maxBuildPlans;
             for(BuildPlan b : unit.plans()){
                 unit.drawPlan(b, 0.5f);
-                counter += 1;
-                if(counter >= maxBuildPlans) break;
+                counter--;
+                if(counter < 0) break;
             }
         }
-        counter = 0;
+        //外部描黑
         Draw.color(Pal.gray);
         Lines.stroke(2f);
+        drawBuildPlan0(unit);
+
+        //内部圆圈和线
+        Draw.color(unit.team.color);
+        Lines.stroke(0.75f);
+        drawBuildPlan0(unit);
+
+        Draw.color();
+        Lines.stroke(1f);
+    }
+
+    private static void drawBuildPlan0(Unit unit){
+        int counter = maxBuildPlans;
         float x = unit.x, y = unit.y, s = unit.hitSize / 2f;
         for(BuildPlan b : unit.plans()){
             Tmp.v2.trns(Angles.angle(x, y, b.drawx(), b.drawy()), s);
@@ -260,29 +270,9 @@ public class ArcUnits{
             x = b.drawx();
             y = b.drawy();
             s = b.block.size * 2f;
-            counter += 1;
-            if(counter >= maxBuildPlans) break;
+            counter--;
+            if(counter < 0) break;
         }
-
-        counter = 0;
-        Draw.color(unit.team.color);
-        Lines.stroke(0.75f);
-        x = unit.x;
-        y = unit.y;
-        s = unit.hitSize / 2f;
-        for(BuildPlan b : unit.plans()){
-            Tmp.v2.trns(Angles.angle(x, y, b.drawx(), b.drawy()), s);
-            Tmp.v3.trns(Angles.angle(x, y, b.drawx(), b.drawy()), b.block.size * 2f);
-            Lines.circle(b.drawx(), b.drawy(), b.block.size * 2f);
-            Draw.color(unit.team.color);
-            Lines.line(x + Tmp.v2.x, y + Tmp.v2.y, b.drawx() - Tmp.v3.x, b.drawy() - Tmp.v3.y);
-            x = b.drawx();
-            y = b.drawy();
-            s = b.block.size * 2f;
-            counter += 1;
-            if(counter >= maxBuildPlans) break;
-        }
-        Draw.reset();
     }
 
     private static void drawHitBox(Unit unit){
@@ -319,12 +309,5 @@ public class ArcUnits{
             Draw.rect(region, x + range * Mathf.cos((float)Math.toRadians(rot - frac)), y + range * Mathf.sin((float)Math.toRadians(rot - frac)), 12f, 12f);
         }
         Draw.reset();
-    }
-
-    private static void drawLimitLineColor(Position start, Position dest, float len1, float len2, Color color){
-        Tmp.v1.set(dest).sub(start).setLength(len1);
-        Tmp.v2.set(Tmp.v1).scl(-1f).setLength(len2);
-
-        Drawf.line(color, start.getX() + Tmp.v1.x, start.getY() + Tmp.v1.y, dest.getX() + Tmp.v2.x, dest.getY() + Tmp.v2.y);
     }
 }
