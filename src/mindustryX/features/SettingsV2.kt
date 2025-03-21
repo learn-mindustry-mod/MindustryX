@@ -59,7 +59,7 @@ object SettingsV2 {
 
         fun buildUI(table: Table) {
             Table().left().apply {
-                button(Icon.undo, Styles.clearNonei) { resetDefault() }.tooltip("@settings.reset")
+                button(Icon.undo, Styles.clearNonei) { resetDefault() }.tooltip("@settingsV2.reset")
                     .fillY().disabled { value == def }
                 ext.build(this@Data, this)
 
@@ -192,7 +192,7 @@ object SettingsV2 {
             cont.add(Table().also { t ->
                 settings.forEach { it.buildUI(t) }
             }).fill().row()
-            cont.button("@settingV2.reset") {
+            cont.button("@setting.reset") {
                 settings.forEach { it.resetDefault() }
             }
             addCloseButton()
