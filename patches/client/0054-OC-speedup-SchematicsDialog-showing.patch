@@ -9,10 +9,10 @@ Subject: [PATCH] OC: speedup SchematicsDialog showing.
  2 files changed, 5 insertions(+), 2 deletions(-)
 
 diff --git a/build.gradle b/build.gradle
-index b7a2bea39dcfe07ae0e19eb07005f36abf0f95df..9b2c1bec5a22dc37d218e71e069f982c4877c621 100644
+index 1857f4b1038ab0d2a4c3879998af273c5606346c..724b90d0f1e771124a3069f3a62bae8829a95796 100644
 --- a/build.gradle
 +++ b/build.gradle
-@@ -147,7 +147,7 @@ project(":core"){
+@@ -148,7 +148,7 @@ project(":core"){
          api "org.lz4:lz4-java:1.8.0"
          api arcModule("arc-core")
          api arcModule("extensions:flabel")

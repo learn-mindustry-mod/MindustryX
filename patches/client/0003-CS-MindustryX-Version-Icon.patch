@@ -67,10 +67,10 @@ index d42ffe6d4a318ce558f1010eae46140f88ed5c99..bf44ead5c58abfb79c500e6daae30c3e
 +    <string name="app_name">MindustryX</string>
  </resources>
 diff --git a/build.gradle b/build.gradle
-index fec635705881ad235b2af81af0e9e6819eb71b32..b7a2bea39dcfe07ae0e19eb07005f36abf0f95df 100644
+index 097f82cbcfb6c5fe7428dc81fe1047325ee4b1f1..1857f4b1038ab0d2a4c3879998af273c5606346c 100644
 --- a/build.gradle
 +++ b/build.gradle
-@@ -21,7 +21,7 @@ allprojects{
+@@ -22,7 +22,7 @@ allprojects{
      apply plugin: 'maven-publish'
  
      version = project.hasProperty("packageVersion") ? project.getProperty("packageVersion") : 'release'
