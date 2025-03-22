@@ -19,8 +19,8 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  core/src/mindustry/core/Version.java               | 6 +++++-
  core/src/mindustry/net/NetworkIO.java              | 2 +-
  desktop/src/mindustry/desktop/DesktopLauncher.java | 2 +-
- gradle.properties                                  | 5 ++++-
- 11 files changed, 20 insertions(+), 10 deletions(-)
+ gradle.properties                                  | 3 +++
+ 11 files changed, 19 insertions(+), 9 deletions(-)
 
 diff --git a/.gitignore b/.gitignore
 index 7d91d3191096c431b739d2d5ecd951a764feead3..ba271e6bd0dd06971fff6fa2314254149cc90087 100644
@@ -182,16 +182,14 @@ index 2500d18e59a325d6f1a6286d4f0d214d65a78402..eba453ade66d5e72f44726f64a28a057
          }catch(Throwable e){
              handleCrash(e);
 diff --git a/gradle.properties b/gradle.properties
-index af6835d8a565e794b8fabb25f65584d2f71164ba..3e8fc8cdb8c7d73d47d29a4a4a3fe0ca85e444d4 100644
+index 6f59bd86a27a116283ff2002bdac835994246cfc..f8521fd237f3e5c5223a073fdf34b80c11df926d 100644
 --- a/gradle.properties
 +++ b/gradle.properties
-@@ -26,4 +26,7 @@ org.gradle.caching=true
- org.gradle.internal.http.socketTimeout=100000
+@@ -27,3 +27,6 @@ org.gradle.internal.http.socketTimeout=100000
  org.gradle.internal.http.connectionTimeout=100000
  android.enableR8.fullMode=false
--archash=deacd9c98e
-+archash=39e83948b4
+ archash=fc46b1cb55
 +
-+upstreamBuild=25701
++upstreamBuild=25706
 +versionType=bleeding-edge
 \ No newline at end of file
