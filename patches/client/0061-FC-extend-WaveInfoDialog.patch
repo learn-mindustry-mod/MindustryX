@@ -11,11 +11,11 @@ Content-Transfer-Encoding: 8bit
 * 列表状波次浏览
 * 其他细节优化
 ---
- core/src/mindustry/editor/WaveInfoDialog.java | 159 +++++++++++++++++-
- 1 file changed, 152 insertions(+), 7 deletions(-)
+ core/src/mindustry/editor/WaveInfoDialog.java | 157 +++++++++++++++++-
+ 1 file changed, 151 insertions(+), 6 deletions(-)
 
 diff --git a/core/src/mindustry/editor/WaveInfoDialog.java b/core/src/mindustry/editor/WaveInfoDialog.java
-index b4bc26acc2d26abe0dc2630f332fc40da08cd94f..d34d4d053bdb859dc95fbe48236c07e1b744ce14 100644
+index b4bc26acc2d26abe0dc2630f332fc40da08cd94f..8512279187815a856365ee8bd8eb8825292a8010 100644
 --- a/core/src/mindustry/editor/WaveInfoDialog.java
 +++ b/core/src/mindustry/editor/WaveInfoDialog.java
 @@ -2,10 +2,10 @@ package mindustry.editor;
@@ -39,7 +39,7 @@ index b4bc26acc2d26abe0dc2630f332fc40da08cd94f..d34d4d053bdb859dc95fbe48236c07e1
  
  import static mindustry.Vars.*;
  import static mindustry.game.SpawnGroup.*;
-@@ -38,10 +40,16 @@ public class WaveInfoDialog extends BaseDialog{
+@@ -38,6 +40,11 @@ public class WaveInfoDialog extends BaseDialog{
      private boolean checkedSpawns;
      private WaveGraph graph = new WaveGraph();
  
@@ -51,12 +51,7 @@ index b4bc26acc2d26abe0dc2630f332fc40da08cd94f..d34d4d053bdb859dc95fbe48236c07e1
      public WaveInfoDialog(){
          super("@waves.title");
  
-         shown(() -> {
-+            groups = JsonIO.copy(state.rules.spawns.isEmpty() ? waves.get() : state.rules.spawns);
-             checkedSpawns = false;
-             setup();
-         });
-@@ -90,6 +98,11 @@ public class WaveInfoDialog extends BaseDialog{
+@@ -90,6 +97,11 @@ public class WaveInfoDialog extends BaseDialog{
              dialog.show();
          }).size(250f, 64f);
  
@@ -68,14 +63,6 @@ index b4bc26acc2d26abe0dc2630f332fc40da08cd94f..d34d4d053bdb859dc95fbe48236c07e1
          buttons.button(Core.bundle.get("waves.random"), Icon.refresh, () -> {
              groups.clear();
              groups = Waves.generate(1f / 10f);
-@@ -98,7 +111,6 @@ public class WaveInfoDialog extends BaseDialog{
-     }
- 
-     void setup(){
--        groups = JsonIO.copy(state.rules.spawns.isEmpty() ? waves.get() : state.rules.spawns);
-         if(groups == null) groups = new Seq<>();
- 
-         cont.clear();
 @@ -149,11 +161,50 @@ public class WaveInfoDialog extends BaseDialog{
              setAlignment(Align.center, Align.center);
          }}).width(390f).growY();
