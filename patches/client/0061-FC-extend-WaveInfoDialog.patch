@@ -11,11 +11,11 @@ Content-Transfer-Encoding: 8bit
 * 列表状波次浏览
 * 其他细节优化
 ---
- core/src/mindustry/editor/WaveInfoDialog.java | 150 +++++++++++++++++-
- 1 file changed, 143 insertions(+), 7 deletions(-)
+ core/src/mindustry/editor/WaveInfoDialog.java | 159 +++++++++++++++++-
+ 1 file changed, 152 insertions(+), 7 deletions(-)
 
 diff --git a/core/src/mindustry/editor/WaveInfoDialog.java b/core/src/mindustry/editor/WaveInfoDialog.java
-index b4bc26acc2d26abe0dc2630f332fc40da08cd94f..4c809eedc3a01d86396abf2be61b2e290c10209e 100644
+index b4bc26acc2d26abe0dc2630f332fc40da08cd94f..d34d4d053bdb859dc95fbe48236c07e1b744ce14 100644
 --- a/core/src/mindustry/editor/WaveInfoDialog.java
 +++ b/core/src/mindustry/editor/WaveInfoDialog.java
 @@ -2,10 +2,10 @@ package mindustry.editor;
@@ -157,7 +157,7 @@ index b4bc26acc2d26abe0dc2630f332fc40da08cd94f..4c809eedc3a01d86396abf2be61b2e29
                          b.button(Icon.copySmall, Styles.emptyi, () -> {
                              groups.insert(groups.indexOf(group) + 1, expandedGroup = group.copy());
                              buildGroups();
-@@ -339,7 +403,39 @@ public class WaveInfoDialog extends BaseDialog{
+@@ -339,7 +403,48 @@ public class WaveInfoDialog extends BaseDialog{
                                  dialog.show();
                              }).width(160f).height(36f).get().getLabel().setText(() -> group.spawn == -1 ? "@waves.spawn.all" : Point2.x(group.spawn) + ", " + Point2.y(group.spawn));
  
@@ -165,7 +165,6 @@ index b4bc26acc2d26abe0dc2630f332fc40da08cd94f..4c809eedc3a01d86396abf2be61b2e29
 +                        }).row();
 +
 +                        t.table(a -> {
-+                            if(group.payloads == null) group.payloads = Seq.with();
 +                            a.defaults().pad(2);
 +                            a.add("携带物品[gold]X[]: ");
 +
@@ -177,10 +176,16 @@ index b4bc26acc2d26abe0dc2630f332fc40da08cd94f..4c809eedc3a01d86396abf2be61b2e29
 +                            }
 +
 +                            a.add().growX();
-+                            a.button(Icon.settingsSmall, Styles.emptyi, iconSmall, () -> showItems((it) -> group.items = it, group.type.itemCapacity)).padLeft(6f);
++                            a.button(Icon.settingsSmall, Styles.emptyi, iconSmall, () -> {
++                                if(group.type.itemCapacity <= 0){
++                                    UIExt.announce("[red]该单位不可携带物品");
++                                    return;
++                                }
++                                showItems((it) -> group.items = it, group.type.itemCapacity);
++                            }).padLeft(6f);
 +                        }).margin(8).row();
 +
-+                        if(group.type.payloadCapacity > 0) t.table(a -> {
++                        t.table(a -> {
 +                            a.defaults().pad(2);
 +                            a.add("携带载荷[gold]X[]: ");
 +
@@ -191,6 +196,10 @@ index b4bc26acc2d26abe0dc2630f332fc40da08cd94f..4c809eedc3a01d86396abf2be61b2e29
 +
 +                            a.add().growX();
 +                            a.button(Icon.addSmall, Styles.emptyi, iconSmall, () -> showUnits((type) -> {
++                                if(group.type.payloadCapacity <= 0){
++                                    UIExt.announce("[red]该单位不可携带载荷");
++                                    return;
++                                }
 +                                if(group.payloads == null) group.payloads = Seq.with();
 +                                group.payloads.add(type);
 +                            }, false));
@@ -198,7 +207,7 @@ index b4bc26acc2d26abe0dc2630f332fc40da08cd94f..4c809eedc3a01d86396abf2be61b2e29
                      }
                  }).width(340f).pad(8);
  
-@@ -390,6 +486,46 @@ public class WaveInfoDialog extends BaseDialog{
+@@ -390,6 +495,46 @@ public class WaveInfoDialog extends BaseDialog{
          dialog.show();
      }
  
