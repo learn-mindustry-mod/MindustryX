@@ -152,16 +152,26 @@ public class RenderExt{
     public static void onBlockDraw(Tile tile, Block block, @Nullable Building build){
         if(blockRenderLevel < 2) return;
         block.drawBase(tile);
-        if(displayAllMessage && build instanceof MessageBuild)
-            Draw.draw(Layer.overlayUI - 0.1f, build::drawSelect);
-        if(arcDrillMode && build instanceof DrillBuild drill)
+        if(displayAllMessage && build instanceof MessageBuild){
+            Draw.z(Layer.overlayUI - 0.1f);
+            build.drawSelect();
+        }
+        if(arcDrillMode && build instanceof DrillBuild drill){
+            Draw.z(Layer.blockOver);
             arcDrillModeDraw(block, drill);
-        if(massDriverLine && build instanceof MassDriverBuild b)
+        }
+        if(massDriverLine && build instanceof MassDriverBuild b){
+            Draw.z(Layer.effect);
             drawMassDriverLine(b);
-        if(build != null && drawBars)
+        }
+        if(build != null && drawBars){
+            Draw.z(Layer.turret + 4f);
             drawBars(build);
-        if(build instanceof BaseTurretBuild turretBuild)
+        }
+        if(build instanceof BaseTurretBuild turretBuild){
+            Draw.z(Layer.turret);
             ArcBuilds.arcTurret(turretBuild);
+        }
     }
 
     private static void placementEffect(float x, float y, float lifetime, float range, Color color){
@@ -208,7 +218,6 @@ public class RenderExt{
 
     private static void drawMassDriverLine(MassDriverBuild build){
         if(build.waitingShooters.isEmpty()) return;
-        Draw.z(Layer.effect);
         float x = build.x, y = build.y, size = build.block.size;
         float sin = Mathf.absin(Time.time, 6f, 1f);
         for(var shooter : build.waitingShooters){
@@ -255,7 +264,6 @@ public class RenderExt{
     }
 
     private static void drawBar(Building build, Color bg, Color fg, Float ratio){
-        Draw.z(Layer.turret + 4f);
         float x = build.x, size = build.block.size * tilesize * 0.5f;
         float x1 = x - size * 0.6f, x2 = x + size * 0.6f, y = build.y + size * 0.8f;
         Draw.color(bg, 0.3f);

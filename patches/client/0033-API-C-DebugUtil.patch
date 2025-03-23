@@ -15,7 +15,7 @@ way-zer <himc.wicp@gmail.com> on 2024/7/21
  3 files changed, 11 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/ClientLauncher.java b/core/src/mindustry/ClientLauncher.java
-index 3af35def3785958e05ab0b8a668e721ab4d4dfbf..b5546786a0eb2de89f88f4fefa14827e7aaaa0df 100644
+index 083b73614519b257120f6d65e00115f8eaee77f4..823f481f8c43b199fd55ff29a13fe839eee26ffb 100644
 --- a/core/src/mindustry/ClientLauncher.java
 +++ b/core/src/mindustry/ClientLauncher.java
 @@ -79,7 +79,7 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform

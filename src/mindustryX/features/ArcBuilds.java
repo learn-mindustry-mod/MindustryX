@@ -50,7 +50,6 @@ public class ArcBuilds{
 
     public static void arcTurret(BaseTurret.BaseTurretBuild build){
         if(build == null || !(build.team == player.team() || RenderExt.showOtherInfo)) return;
-        Draw.z(Layer.turret);
 
         Vec2 targetPos = Vec2.ZERO;
         if(build.block instanceof Turret t){
@@ -98,8 +97,7 @@ public class ArcBuilds{
 
                 float leftAmmo = Mathf.lerp(0, 1, Math.min(1f, (float)entry.amount / ((ItemTurret)it.block).maxAmmo));
                 if(leftAmmo < 0.75f && showTurretAmmoAmount){
-                    Draw.alpha(0.5f);
-                    Draw.color(lastAmmo.color);
+                    Draw.color(lastAmmo.color, 0.5f);
                     Lines.stroke(Lines.getStroke() * build.block.size * 0.5f);
                     Lines.arc(ammoX, ammoY, size * 0.5f, leftAmmo);
                 }
@@ -123,8 +121,6 @@ public class ArcBuilds{
     }
 
     public static void turretPlaceDraw(float x, float y, BaseTurret block){
-        float oldZ = Draw.z();
-        Draw.z(oldZ+0.1f);//MDTX: There no replace for Icon.power, so we offset the layer.
         float iconSize = 6f + 2f * block.size, range = block.range;
         ObjectMap<? extends UnlockableContent, BulletType> ammoTypes;
         if(block instanceof ContinuousLiquidTurret t){
@@ -134,7 +130,10 @@ public class ArcBuilds{
         }else if(block instanceof ItemTurret t){
             ammoTypes = t.ammoTypes;
         }else if(block instanceof PowerTurret){
+            float oldZ = Draw.z();
+            Draw.z(oldZ + 0.01f);//MDTX: There no replace for Icon.power, so we offset the layer.
             turretBulletDraw(x, y, Icon.power.getRegion(), iconSize, range, 0f);
+            Draw.z(oldZ);
             return;
         }else return;
 
@@ -145,17 +144,16 @@ public class ArcBuilds{
             drawIndex += 1;
             if(!item.unlockedNow()) return;
             if(bulletType.rangeChange > 0) Drawf.dashCircle(x, y, range + bulletType.rangeChange, Pal.placing);
-            turretBulletDraw(x, y, item.uiIcon, iconSize, range + bulletType.rangeChange, (float)drawIndex / ammoTypes.size);
+            turretBulletDraw(x, y, item.fullIcon, iconSize, range + bulletType.rangeChange, (float)drawIndex / ammoTypes.size);
         }
-        Draw.z(oldZ);
     }
 
     private static void turretBulletDraw(float x, float y, TextureRegion icon, float iconSize, float range, float rotOffset){
         for(int i = 0; i < 4; i++){
             float rot = (i + rotOffset) * 90f + Time.time * 0.5f;
             Draw.rect(icon,
-            x + (Mathf.sin((float)Math.toRadians(rot)) * (range )),
-            y + (Mathf.cos((float)Math.toRadians(rot)) * (range )),
+            x + (Mathf.sin((float)Math.toRadians(rot)) * (range)),
+            y + (Mathf.cos((float)Math.toRadians(rot)) * (range)),
             iconSize, iconSize, -rot);
         }
     }

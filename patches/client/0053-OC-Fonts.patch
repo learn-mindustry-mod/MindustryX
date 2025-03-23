@@ -14,7 +14,7 @@ Content-Transfer-Encoding: 8bit
  3 files changed, 18 insertions(+), 22 deletions(-)
 
 diff --git a/core/src/mindustry/ClientLauncher.java b/core/src/mindustry/ClientLauncher.java
-index b3b534965d8197c0633237dd54ab40926c611fe2..4db49bd58a9d6c688fa6d17846ec79f642d30deb 100644
+index 75fd5ebb44895bf0d78504703c581d872c5a2d53..16b7b53064c591dbd8f4336411861ab0fc49bfa8 100644
 --- a/core/src/mindustry/ClientLauncher.java
 +++ b/core/src/mindustry/ClientLauncher.java
 @@ -155,10 +155,8 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform

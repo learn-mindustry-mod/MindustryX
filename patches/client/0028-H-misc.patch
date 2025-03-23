@@ -8,7 +8,7 @@ Content-Transfer-Encoding: 8bit
 
 每个改动仅限连续的一段，且前有注释说明改动内容
 ---
- core/src/mindustry/ClientLauncher.java        |  7 +++++++
+ core/src/mindustry/ClientLauncher.java        |  8 ++++++++
  core/src/mindustry/Vars.java                  |  5 +++++
  core/src/mindustry/core/Control.java          |  3 ++-
  core/src/mindustry/core/NetClient.java        |  4 ++++
@@ -24,10 +24,10 @@ Content-Transfer-Encoding: 8bit
  .../world/blocks/distribution/Router.java     |  3 ++-
  .../world/blocks/production/BeamDrill.java    | 12 ++++-------
  .../mindustry/desktop/DesktopLauncher.java    | 12 ++++++++++-
- 16 files changed, 79 insertions(+), 49 deletions(-)
+ 16 files changed, 80 insertions(+), 49 deletions(-)
 
 diff --git a/core/src/mindustry/ClientLauncher.java b/core/src/mindustry/ClientLauncher.java
-index 655d2b09e7cfc011efd194b2b65bc85584c8f7d8..3af35def3785958e05ab0b8a668e721ab4d4dfbf 100644
+index 655d2b09e7cfc011efd194b2b65bc85584c8f7d8..083b73614519b257120f6d65e00115f8eaee77f4 100644
 --- a/core/src/mindustry/ClientLauncher.java
 +++ b/core/src/mindustry/ClientLauncher.java
 @@ -36,6 +36,10 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
@@ -41,7 +41,12 @@ index 655d2b09e7cfc011efd194b2b65bc85584c8f7d8..3af35def3785958e05ab0b8a668e721a
          if(dataDir != null){
              Core.settings.setDataDirectory(files.absolute(dataDir));
          }
-@@ -255,6 +259,9 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
+@@ -251,10 +255,14 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
+         }
+ 
+         if(limitFps){
++            Gl.flush();//MDTX: flush GL, let the GPU do the work before swap buffer.
+             long current = Time.nanos();
              if(nextFrame > current){
                  long toSleep = nextFrame - current;
                  Threads.sleep(toSleep / 1000000, (int)(toSleep % 1000000));
