@@ -8,7 +8,7 @@ import java.util.*;
 
 //MDTX: add some DebugUtil count.
 //MDTX(WayZer): renderSort
-public class MySpriteBatch extends SpriteBatch{
+public class MySpriteBatch extends MySpriteBatchBase{
     private static final int PRIME2 = 0xb4b82e39;
     int[] extraZ = new int[10000];
     //增加小的delta，来保持原来的前后顺序
@@ -52,7 +52,7 @@ public class MySpriteBatch extends SpriteBatch{
         super.draw(texture, spriteVertices, offset, count);
         if(sort && !flushing && RenderExt.renderSort){
             int h = texture.hashCode() + hashZ;
-            extraZ[numRequests - 1] = ((orderZ++) << 16) | (h & 0xffff);
+            extraZ[numRequests - 1] = ((orderZ++) << 16) | (h & 0xfffc) | (blending == Blending.disabled ? 2 : 0) | (blending == Blending.additive ? 1 : 0);
         }
     }
 
