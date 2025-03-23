@@ -64,7 +64,7 @@ object AutoUpdate {
                 val json = Jval.read(res.resultAsString)
                 versions = json.asArray().map {
                     Release(it.getString("tag_name"), it.getString("name"), it)
-                }.toList()
+                }.sortedByDescending { it.version }
                 Core.app.post(::fetchSuccess)
             }
     }
