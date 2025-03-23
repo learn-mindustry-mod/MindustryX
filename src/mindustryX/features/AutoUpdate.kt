@@ -119,14 +119,14 @@ object AutoUpdate {
             }.width(50f)
 
             if (version == newVersion) {
-                row().check("跳过当前版本") {
-                    if (it) ignoreOnce.value = version.version
-                    else ignoreOnce.resetDefault()
-                }.checked { ignoreOnce.value == version.version }
-                row().check("7天不再提示") {
-                    if (it) ignoreOnce.value = (Instant.now() + Duration.ofDays(7)).toString()
-                    else ignoreUntil.resetDefault()
-                }.checked { kotlin.runCatching { Instant.parse(ignoreUntil.value) > Instant.now() }.getOrNull() == true }
+                table().fillX().get().apply {
+                    button("跳过当前版本") {
+                        ignoreOnce.value = version.version
+                    }
+                    button("7天不再提示") {
+                        ignoreOnce.value = (Instant.now() + Duration.ofDays(7)).toString()
+                    }
+                }
             }
 
             row().button("自动下载更新") {
@@ -162,8 +162,9 @@ object AutoUpdate {
         }
         Http.get(asset.url, { res ->
             length = res.contentLength.toFloat() / 1024 / 1024
-            file.write(false, 4096).use { out ->
-                Streams.copyProgress(res.resultAsStream, out, res.contentLength, 4096) { progress = it }
+            val buffer = 1024 * 1024
+            file.write(false, buffer).use { out ->
+                Streams.copyProgress(res.resultAsStream, out, res.contentLength, buffer) { progress = it }
             }
             if (canceled) return@get
             endDownload(file)
