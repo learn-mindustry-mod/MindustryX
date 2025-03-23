@@ -14,8 +14,8 @@ import mindustry.ui.*;
 import mindustry.ui.dialogs.*;
 import mindustry.world.*;
 import mindustry.world.blocks.environment.*;
-import mindustryX.features.Settings;
 import mindustryX.features.*;
+import mindustryX.features.Settings;
 
 import static arc.Core.*;
 import static mindustry.Vars.*;
@@ -60,8 +60,10 @@ public class HudSettingsTable extends ToolTableBase{
             SettingsV2.bindQuickSettings(b, ArcRadar.settings);
             t.button("" + Iconc.blockWorldProcessor, Styles.flatTogglet, () -> {
                 Settings.toggle("removeLogicLock");
-                control.input.logicCutscene = false;
-                ui.announce("已移除逻辑视角锁定");
+                if(Core.settings.getBool("removeLogicLock")){
+                    control.input.logicCutscene = false;
+                    ui.announce("已移除逻辑视角锁定");
+                }
             }).checked(a -> Core.settings.getBool("removeLogicLock")).tooltip("逻辑锁定");
             t.button(Blocks.worldMessage.emoji(), Styles.flatTogglet, () -> Settings.toggle("displayallmessage")).checked(a -> RenderExt.displayAllMessage).tooltip("开关信息板全显示");
             t.button("" + Iconc.itemCopper, Styles.flatBordert, this::floorStatisticDialog).tooltip("矿物信息");
