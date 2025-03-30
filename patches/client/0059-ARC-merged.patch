@@ -119,10 +119,10 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  .../ui/fragments/ConsoleFragment.java         |   3 +
  .../mindustry/ui/fragments/HudFragment.java   | 167 +++++++++++-
  .../mindustry/ui/fragments/MenuFragment.java  |  51 +++-
- .../ui/fragments/PlacementFragment.java       | 163 ++++++++++--
+ .../ui/fragments/PlacementFragment.java       | 164 ++++++++++--
  .../ui/fragments/PlayerListFragment.java      |  72 ++----
  core/src/mindustry/world/Block.java           |   7 +-
- 29 files changed, 1378 insertions(+), 169 deletions(-)
+ 29 files changed, 1379 insertions(+), 169 deletions(-)
 
 diff --git a/core/src/mindustry/ai/BlockIndexer.java b/core/src/mindustry/ai/BlockIndexer.java
 index 7f944a3eb06180f9e2b760bbd5aa41709ddf6611..4972f424edd41b8a29d926a09bc55987066d33aa 100644
@@ -2606,7 +2606,7 @@ index 7ad999d0abdbc3b4d6098c689f0a11734ee798ab..06ad7e2d3d0db7e6df5fcf9aea12c099
      }
  
 diff --git a/core/src/mindustry/ui/fragments/PlacementFragment.java b/core/src/mindustry/ui/fragments/PlacementFragment.java
-index a1a1ab8a54afee42855b423e6212dd8806d6c26b..b7a44970a7a70505676dc32092e1a126f382de59 100644
+index a1a1ab8a54afee42855b423e6212dd8806d6c26b..0d020dca2efc79a292100cb7b0d353af4e78f0a8 100644
 --- a/core/src/mindustry/ui/fragments/PlacementFragment.java
 +++ b/core/src/mindustry/ui/fragments/PlacementFragment.java
 @@ -1,6 +1,7 @@
@@ -2749,7 +2749,7 @@ index a1a1ab8a54afee42855b423e6212dd8806d6c26b..b7a44970a7a70505676dc32092e1a126
                                          }
  
                                      }).fillX().padTop(4f).left();
-@@ -596,13 +631,66 @@ public class PlacementFragment{
+@@ -596,13 +631,67 @@ public class PlacementFragment{
                                                  Call.setUnitStance(player, units.mapInt(un -> un.id).toArray(), stance);
                                              }).checked(i -> currentStance[0] == stance).size(50f).tooltip(stance.localized(), true);
  
@@ -2769,7 +2769,8 @@ index a1a1ab8a54afee42855b423e6212dd8806d6c26b..b7a44970a7a70505676dc32092e1a126
 +                                            });
 +                                        }
 +
-+                                        if(units.count(unit -> unit.type.commands.contains(UnitCommand.assistCommand)) != units.size){
++                                        int assistCount = units.count(unit -> unit.type.commands.contains(UnitCommand.assistCommand));
++                                        if(assistCount > 0 && assistCount != units.size){
 +                                            sp.table(spp -> {
 +                                                arcSelectUnits(spp, "\uE86E", "进攻性单位", unit -> !unit.type.commands.contains(UnitCommand.assistCommand));
 +                                                arcSelectUnits(spp, "\uE86B", "辅助性单位", unit -> unit.type.commands.contains(UnitCommand.assistCommand));
@@ -2817,7 +2818,7 @@ index a1a1ab8a54afee42855b423e6212dd8806d6c26b..b7a44970a7a70505676dc32092e1a126
                          };
  
                          u.update(() -> {
-@@ -671,7 +759,7 @@ public class PlacementFragment{
+@@ -671,7 +760,7 @@ public class PlacementFragment{
                  {
                      blockCatTable.table(Tex.pane2, blocksSelect -> {
                          blocksSelect.margin(4).marginTop(0);
@@ -2826,7 +2827,7 @@ index a1a1ab8a54afee42855b423e6212dd8806d6c26b..b7a44970a7a70505676dc32092e1a126
                              if(pane.hasScroll()){
                                  Element result = Core.scene.getHoverElement();
                                  if(result == null || !result.isDescendantOf(pane)){
-@@ -709,6 +797,17 @@ public class PlacementFragment{
+@@ -709,6 +798,17 @@ public class PlacementFragment{
                          boolean needsAssign = categoryEmpty[currentCategory.ordinal()];
  
                          int f = 0;
@@ -2844,7 +2845,7 @@ index a1a1ab8a54afee42855b423e6212dd8806d6c26b..b7a44970a7a70505676dc32092e1a126
                          for(Category cat : getCategories()){
                              if(f++ % 2 == 0) categories.row();
  
-@@ -767,8 +866,9 @@ public class PlacementFragment{
+@@ -767,8 +867,9 @@ public class PlacementFragment{
      }
  
      boolean hasInfoBox(){
@@ -2855,7 +2856,7 @@ index a1a1ab8a54afee42855b423e6212dd8806d6c26b..b7a44970a7a70505676dc32092e1a126
      }
  
      /** @return the thing being hovered over. */
-@@ -778,25 +878,40 @@ public class PlacementFragment{
+@@ -778,25 +879,40 @@ public class PlacementFragment{
          //if the mouse intersects the table or the UI has the mouse, no hovering can occur
          if(Core.scene.hasMouse(Core.input.mouseX(), Core.input.mouseY()) || topTable.hit(v.x, v.y, false) != null) return null;
  
