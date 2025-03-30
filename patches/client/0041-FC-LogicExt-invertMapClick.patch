@@ -4,12 +4,12 @@ Date: Sat, 3 Aug 2024 00:17:31 +0800
 Subject: [PATCH] FC(LogicExt) invertMapClick
 
 ---
- core/src/mindustry/ui/Minimap.java                   | 8 ++++++--
- core/src/mindustry/ui/fragments/MinimapFragment.java | 5 +++--
- 2 files changed, 9 insertions(+), 4 deletions(-)
+ core/src/mindustry/ui/Minimap.java                | 15 +++++++++++++--
+ .../mindustry/ui/fragments/MinimapFragment.java   |  5 +++--
+ 2 files changed, 16 insertions(+), 4 deletions(-)
 
 diff --git a/core/src/mindustry/ui/Minimap.java b/core/src/mindustry/ui/Minimap.java
-index e48a22d87fb903c0cd94b7c15db1dba07ca95d8c..f6071356678dd4d7ba35a1f4f138121c1b8e266f 100644
+index e48a22d87fb903c0cd94b7c15db1dba07ca95d8c..613deb3cedeef954042710e483aab91193a24c8b 100644
 --- a/core/src/mindustry/ui/Minimap.java
 +++ b/core/src/mindustry/ui/Minimap.java
 @@ -9,11 +9,13 @@ import arc.scene.event.*;
@@ -35,7 +35,21 @@ index e48a22d87fb903c0cd94b7c15db1dba07ca95d8c..f6071356678dd4d7ba35a1f4f138121c
                      @Override
                      public void clicked(InputEvent event, float cx, float cy){
                          var region = renderer.minimap.getRegion();
-@@ -45,6 +47,8 @@ public class Minimap extends Table{
+@@ -36,6 +38,13 @@ public class Minimap extends Table{
+ 
+                         control.input.panCamera(Tmp.v1.set(scaledX, scaledY));
+                     }
++
++                    //MDTX: continuously drag the minimap to move the camera
++                    @Override
++                    public void touchDragged(InputEvent event, float x, float y, int pointer){
++                        super.touchDragged(event, x, y, pointer);
++                        if(pointer != pressedPointer && pressed) clicked(event, x, y);
++                    }
+                 });
+             }
+ 
+@@ -45,6 +54,8 @@ public class Minimap extends Table{
                  mapCell.size(size);
                  setSize(Scl.scl(size));
                  setPosition(Scl.scl(margin), Scl.scl(margin));
@@ -44,7 +58,7 @@ index e48a22d87fb903c0cd94b7c15db1dba07ca95d8c..f6071356678dd4d7ba35a1f4f138121c
  
                  super.act(delta);
              }
-@@ -81,7 +85,7 @@ public class Minimap extends Table{
+@@ -81,7 +92,7 @@ public class Minimap extends Table{
              }
          });
  
