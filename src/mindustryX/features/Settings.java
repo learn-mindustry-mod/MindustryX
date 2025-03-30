@@ -107,7 +107,7 @@ public class Settings{
                 //noinspection deprecation
                 table = new SettingsTable(){
                     @Override
-                    public Table rebuild2(){
+                    public Table build(){
                         SettingsV2.buildSettingsTable(this);
                         add().width(500).row();
                         return this;
