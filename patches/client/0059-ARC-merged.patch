@@ -2606,7 +2606,7 @@ index 7ad999d0abdbc3b4d6098c689f0a11734ee798ab..06ad7e2d3d0db7e6df5fcf9aea12c099
      }
  
 diff --git a/core/src/mindustry/ui/fragments/PlacementFragment.java b/core/src/mindustry/ui/fragments/PlacementFragment.java
-index a1a1ab8a54afee42855b423e6212dd8806d6c26b..8d7c7035eed99a920a6e69ce392be2bebcf3475b 100644
+index a1a1ab8a54afee42855b423e6212dd8806d6c26b..b7a44970a7a70505676dc32092e1a126f382de59 100644
 --- a/core/src/mindustry/ui/fragments/PlacementFragment.java
 +++ b/core/src/mindustry/ui/fragments/PlacementFragment.java
 @@ -1,6 +1,7 @@
@@ -2769,10 +2769,10 @@ index a1a1ab8a54afee42855b423e6212dd8806d6c26b..8d7c7035eed99a920a6e69ce392be2be
 +                                            });
 +                                        }
 +
-+                                        if (units.contains(unit -> unit.type.commands.size > 1) && units.contains(unit -> unit.type.commands.size <= 1)){
-+                                            sp.table(spp->{
-+                                                arcSelectUnits(spp,"\uE86E","进攻性单位", unit -> unit.type.commands.size <= 1);
-+                                                arcSelectUnits(spp,"\uE86B","辅助性单位", unit -> unit.type.commands.size > 1);
++                                        if(units.count(unit -> unit.type.commands.contains(UnitCommand.assistCommand)) != units.size){
++                                            sp.table(spp -> {
++                                                arcSelectUnits(spp, "\uE86E", "进攻性单位", unit -> !unit.type.commands.contains(UnitCommand.assistCommand));
++                                                arcSelectUnits(spp, "\uE86B", "辅助性单位", unit -> unit.type.commands.contains(UnitCommand.assistCommand));
 +                                            });
 +                                        }
 +
