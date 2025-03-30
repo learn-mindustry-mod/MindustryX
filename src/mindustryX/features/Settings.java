@@ -101,10 +101,10 @@ public class Settings{
         }));
         categories.add(new LazySettingsCategory("@settings.category.settingV2", () -> Icon.box, (c) -> {
         }){
+            @SuppressWarnings({"deprecation"})
             @Override
             public void init(){
                 super.init();
-                //noinspection deprecation
                 table = new SettingsTable(){
                     @Override
                     public Table build(){
