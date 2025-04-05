@@ -4,22 +4,13 @@ Date: Fri, 2 Aug 2024 23:36:02 +0800
 Subject: [PATCH] FR(RenderExt) deadOverlay
 
 ---
- core/src/mindustry/graphics/OverlayRenderer.java | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ core/src/mindustry/graphics/OverlayRenderer.java | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/graphics/OverlayRenderer.java b/core/src/mindustry/graphics/OverlayRenderer.java
-index f2630eee5304e0df93763e533be8dd8b9f49a5dd..68c834ef7f96262d4bc13b9b336f9eaed58adff2 100644
+index f2630eee5304e0df93763e533be8dd8b9f49a5dd..a04a3dd119a2e341f5a71ce9ce347f56ee6a896d 100644
 --- a/core/src/mindustry/graphics/OverlayRenderer.java
 +++ b/core/src/mindustry/graphics/OverlayRenderer.java
-@@ -71,7 +71,7 @@ public class OverlayRenderer{
-     public void drawBottom(){
-         InputHandler input = control.input;
- 
--        if(player.dead()) return;
-+        if(player.dead() && !RenderExt.deadOverlay) return;
- 
-         if(player.isBuilder()){
-             player.unit().drawBuildPlans();
 @@ -113,7 +113,7 @@ public class OverlayRenderer{
              }
          }

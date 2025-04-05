@@ -28,10 +28,10 @@ way-zer <himc.wicp@gmail.com> on 2024/5/4 at 22:17
  .../world/consumers/ConsumeItemDynamic.java   |   2 +-
  .../world/consumers/ConsumeItems.java         |   2 +-
  .../consumers/ConsumePayloadDynamic.java      |   2 +-
- core/src/mindustry/world/meta/Stat.java       |  21 +-
+ core/src/mindustry/world/meta/Stat.java       |  21 ++-
  core/src/mindustry/world/meta/StatCat.java    |   5 +-
- core/src/mindustry/world/meta/StatValues.java | 199 ++++++++++++++----
- 22 files changed, 287 insertions(+), 70 deletions(-)
+ core/src/mindustry/world/meta/StatValues.java | 177 +++++++++++++-----
+ 22 files changed, 264 insertions(+), 71 deletions(-)
 
 diff --git a/core/src/mindustry/type/Item.java b/core/src/mindustry/type/Item.java
 index 5d81790919f016776eff80c6d241b1d034f76d11..a301154d18daa5902d940ad2fa1eed0b603ea476 100644
@@ -97,7 +97,7 @@ index 05dc34595d11d67a878c5dbaef8340fe6becf3ce..423eece86780e56801cae15e5870bc25
          if(damage < 0) stats.add(Stat.healing, -damage * 60f, StatUnit.perSecond);
  
 diff --git a/core/src/mindustry/type/UnitType.java b/core/src/mindustry/type/UnitType.java
-index 5425212ea4b00324c546c9b820f3759693620366..dd6155a15d28cf0ef5a89c6554549129546455f9 100644
+index 5425212ea4b00324c546c9b820f3759693620366..42e1a44e52bc2b3b0d4d93af0e4072c79cba9ab2 100644
 --- a/core/src/mindustry/type/UnitType.java
 +++ b/core/src/mindustry/type/UnitType.java
 @@ -37,6 +37,7 @@ import mindustry.world.blocks.payloads.*;
@@ -167,7 +167,7 @@ index 5425212ea4b00324c546c9b820f3759693620366..dd6155a15d28cf0ef5a89c6554549129
          }
  
 +        if(targetFlags.length > 0 && targetFlags[0] != null){
-+            stats.add(StatExt.targets, StatValues.targets(targetFlags));
++            stats.add(StatExt.targets, StatExt.targets(targetFlags));
 +        }
 +
          if(immunities.size > 0){
@@ -559,7 +559,7 @@ index 416df5a20af4767cdfdc2646bce19468ad11cd28..239311eea91980f2c3e0facd6613b237
      public final String name;
      public final int id;
 diff --git a/core/src/mindustry/world/meta/StatValues.java b/core/src/mindustry/world/meta/StatValues.java
-index 00ac191ac9c51aefea887c083f8513686eb098d6..e87dd2b35343ba6228a7e1f013c69ca6ee3a5335 100644
+index 00ac191ac9c51aefea887c083f8513686eb098d6..9da31a69e1f5911aea0546dd6ba70a17b484316a 100644
 --- a/core/src/mindustry/world/meta/StatValues.java
 +++ b/core/src/mindustry/world/meta/StatValues.java
 @@ -25,6 +25,8 @@ import mindustry.ui.*;
@@ -598,7 +598,7 @@ index 00ac191ac9c51aefea887c083f8513686eb098d6..e87dd2b35343ba6228a7e1f013c69ca6
                      .with(s -> s.sort(f -> f.attributes.get(attr)));
  
                      if(blocks.any()){
-@@ -574,22 +587,57 @@ public class StatValues{
+@@ -574,19 +587,30 @@ public class StatValues{
          };
      }
  
@@ -617,6 +617,11 @@ index 00ac191ac9c51aefea887c083f8513686eb098d6..e87dd2b35343ba6228a7e1f013c69ca6
                  for(Ability ability : abilities){
                      if(ability.display){
 -                        ability.display(t);
+-
+-                        if((++count) == 2){
+-                            count = 0;
+-                            t.row();
+-                        }
 +                        t.table(Styles.grayPanel, a -> {
 +                            a.left().top().defaults().left();
 +                            a.add("[accent]" + ability.localized()).minWidth(100).padBottom(4);
@@ -628,41 +633,10 @@ index 00ac191ac9c51aefea887c083f8513686eb098d6..e87dd2b35343ba6228a7e1f013c69ca6
 +                            ability.addStats(a);
 +                        }).pad(5).margin(10).growX().top();
 +                        t.row();
-+                    }
-+                }
-+            });
-+        };
-+    }
- 
--                        if((++count) == 2){
--                            count = 0;
--                            t.row();
-+    public static StatValue targets(BlockFlag[] targetFlags){
-+        return table -> {
-+            table.row();
-+            table.table(t -> {
-+                t.background(Styles.grayPanel);
-+                for(BlockFlag flag : targetFlags){
-+                    if(flag == null) continue;
-+                    t.add(flag.name()).width(150f).padBottom(5f);
-+                    int count = 0;
-+                    for(Block block : content.blocks()){
-+                        if(block.flags.contains(flag)){
-+                            if(count >= 3){
-+                                t.add("\uE813").width(30f);
-+                                break;
-+                            }else t.add(block.emoji()).width(30f);
-+                            count += 1;
-                         }
                      }
-+                    t.row();
                  }
--            });
-+            }).padLeft(12f);
-         };
-     }
- 
-@@ -630,7 +678,9 @@ public class StatValues{
+             });
+@@ -630,7 +654,9 @@ public class StatValues{
                          bt.row();
                      }
  
@@ -673,7 +647,7 @@ index 00ac191ac9c51aefea887c083f8513686eb098d6..e87dd2b35343ba6228a7e1f013c69ca6
                          if(type.continuousDamage() > 0){
                              bt.add(Core.bundle.format("bullet.damage", type.continuousDamage()) + StatUnit.perSecond.localized());
                          }else{
-@@ -639,11 +689,11 @@ public class StatValues{
+@@ -639,11 +665,11 @@ public class StatValues{
                      }
  
                      if(type.buildingDamageMultiplier != 1){
@@ -687,7 +661,7 @@ index 00ac191ac9c51aefea887c083f8513686eb098d6..e87dd2b35343ba6228a7e1f013c69ca6
                      }
  
                      if(type.shieldDamageMultiplier != 1){
-@@ -659,8 +709,7 @@ public class StatValues{
+@@ -659,8 +685,7 @@ public class StatValues{
                      }
  
                      if(!compact && !Mathf.equal(type.reloadMultiplier, 1f)){
@@ -697,7 +671,7 @@ index 00ac191ac9c51aefea887c083f8513686eb098d6..e87dd2b35343ba6228a7e1f013c69ca6
                      }
  
                      if(type.knockback > 0){
-@@ -675,8 +724,24 @@ public class StatValues{
+@@ -675,8 +700,24 @@ public class StatValues{
                          sep(bt, Core.bundle.format("bullet.healamount", Strings.autoFixed(type.healAmount, 2)));
                      }
  
@@ -724,7 +698,7 @@ index 00ac191ac9c51aefea887c083f8513686eb098d6..e87dd2b35343ba6228a7e1f013c69ca6
                      }
  
                      if(type.incendAmount > 0){
-@@ -684,11 +749,11 @@ public class StatValues{
+@@ -684,11 +725,11 @@ public class StatValues{
                      }
  
                      if(type.homingPower > 0.01f){
@@ -739,7 +713,7 @@ index 00ac191ac9c51aefea887c083f8513686eb098d6..e87dd2b35343ba6228a7e1f013c69ca6
                      }
  
                      if(type.pierceArmor){
-@@ -717,39 +782,51 @@ public class StatValues{
+@@ -717,39 +758,51 @@ public class StatValues{
                      }
  
                      if(type.intervalBullet != null){
@@ -817,7 +791,7 @@ index 00ac191ac9c51aefea887c083f8513686eb098d6..e87dd2b35343ba6228a7e1f013c69ca6
                      }
                  }).padLeft(5).padTop(5).padBottom(compact ? 0 : 5).growX().margin(compact ? 0 : 10);
                  table.row();
-@@ -757,12 +834,48 @@ public class StatValues{
+@@ -757,12 +810,48 @@ public class StatValues{
          };
      }
  

@@ -93,7 +93,7 @@ way-zer <himc.wicp@gmail.com> on 2024/7/28
 * 更改开雾功能实现
 way-zer <himc.wicp@gmail.com> on 2024/9/8
 ---
- core/src/mindustry/ai/BlockIndexer.java       |  13 +
+ core/src/mindustry/ai/BlockIndexer.java       |   8 +
  core/src/mindustry/editor/MapInfoDialog.java  |   9 +-
  .../mindustry/entities/comp/BuildingComp.java |  18 +-
  .../mindustry/entities/comp/ShieldComp.java   |  10 +
@@ -101,7 +101,7 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  core/src/mindustry/game/Schematic.java        | 104 ++++++++
  .../src/mindustry/graphics/BlockRenderer.java |  17 +-
  .../mindustry/graphics/OverlayRenderer.java   |  39 ++-
- core/src/mindustry/input/DesktopInput.java    |  82 +++++-
+ core/src/mindustry/input/DesktopInput.java    |  79 +++++-
  core/src/mindustry/input/InputHandler.java    |  45 +++-
  core/src/mindustry/input/MobileInput.java     |  16 +-
  core/src/mindustry/logic/LExecutor.java       |  12 +-
@@ -117,15 +117,14 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  .../ui/dialogs/SettingsMenuDialog.java        |  28 +-
  .../mindustry/ui/fragments/ChatFragment.java  |   9 +-
  .../ui/fragments/ConsoleFragment.java         |   3 +
- .../mindustry/ui/fragments/HudFragment.java   | 167 +++++++++++-
+ .../mindustry/ui/fragments/HudFragment.java   | 169 +++++++++++-
  .../mindustry/ui/fragments/MenuFragment.java  |  51 +++-
  .../ui/fragments/PlacementFragment.java       | 164 ++++++++++--
  .../ui/fragments/PlayerListFragment.java      |  72 ++----
- core/src/mindustry/world/Block.java           |   7 +-
- 29 files changed, 1275 insertions(+), 168 deletions(-)
+ 28 files changed, 1263 insertions(+), 167 deletions(-)
 
 diff --git a/core/src/mindustry/ai/BlockIndexer.java b/core/src/mindustry/ai/BlockIndexer.java
-index 1206dc71d1d87b2a5432898a3991a93260b475e7..a4667fba1a0bb1406fb73bd332dc90323f7d7a9d 100644
+index 1206dc71d1d87b2a5432898a3991a93260b475e7..a0718183a603e9cd1dd1eaa0e5e52d9b7e534d13 100644
 --- a/core/src/mindustry/ai/BlockIndexer.java
 +++ b/core/src/mindustry/ai/BlockIndexer.java
 @@ -49,6 +49,9 @@ public class BlockIndexer{
@@ -164,18 +163,6 @@ index 1206dc71d1d87b2a5432898a3991a93260b475e7..a4667fba1a0bb1406fb73bd332dc9032
                  }
              }
  
-@@ -260,6 +268,11 @@ public class BlockIndexer{
-         return allWallOres.get(item) > 0;
-     }
- 
-+    @Deprecated//ARC
-+    public boolean hasOreWall(Item item){
-+        return hasWallOre(item);
-+    }
-+
-     /** Returns all damaged tiles by team. */
-     public Seq<Building> getDamaged(Team team){
-         if(damagedTiles[team.id] == null){
 diff --git a/core/src/mindustry/editor/MapInfoDialog.java b/core/src/mindustry/editor/MapInfoDialog.java
 index ebc1f0b300d295e45333f1db38ea299c9658ec20..e7cba056743979206c84fc6d00472c2c44b565f6 100644
 --- a/core/src/mindustry/editor/MapInfoDialog.java
@@ -485,7 +472,7 @@ index 50051d1ffebc609cee8be5158ccbfbbacd2d8c74..5bad4061338d21001d083cd00fe67f0d
                  }
                  Draw.reset();
 diff --git a/core/src/mindustry/graphics/OverlayRenderer.java b/core/src/mindustry/graphics/OverlayRenderer.java
-index 68c834ef7f96262d4bc13b9b336f9eaed58adff2..3451b370c7073a7cb8299ee04487a840ade1222d 100644
+index a04a3dd119a2e341f5a71ce9ce347f56ee6a896d..2ddfbd62c50f9a940e99a62ad81a9b5f68f9581a 100644
 --- a/core/src/mindustry/graphics/OverlayRenderer.java
 +++ b/core/src/mindustry/graphics/OverlayRenderer.java
 @@ -17,6 +17,7 @@ import mindustry.gen.*;
@@ -580,7 +567,7 @@ index 68c834ef7f96262d4bc13b9b336f9eaed58adff2..3451b370c7073a7cb8299ee04487a840
  
      public void checkApplySelection(Unit u){
 diff --git a/core/src/mindustry/input/DesktopInput.java b/core/src/mindustry/input/DesktopInput.java
-index c0212b80814b19c35ba2a45bbce633e8aa4014b3..beaf3b5344af605731f48f5edbe70ff87ec7e87a 100644
+index c0212b80814b19c35ba2a45bbce633e8aa4014b3..d8d9df8b01bf4e8bc05b243bb446c279581b942f 100644
 --- a/core/src/mindustry/input/DesktopInput.java
 +++ b/core/src/mindustry/input/DesktopInput.java
 @@ -14,17 +14,25 @@ import arc.scene.ui.layout.*;
@@ -630,17 +617,7 @@ index c0212b80814b19c35ba2a45bbce633e8aa4014b3..beaf3b5344af605731f48f5edbe70ff8
              }).margin(6f);
          });
      }
-@@ -425,7 +440,8 @@ public class DesktopInput extends InputHandler{
-             }
-         }
- 
--        if(player.dead() || locked){
-+        //if(player.dead() || locked){
-+        if(locked){
-             cursorType = SystemCursor.arrow;
-             if(!Core.scene.hasMouse()){
-                 Core.graphics.cursor(cursorType);
-@@ -812,6 +828,14 @@ public class DesktopInput extends InputHandler{
+@@ -812,6 +827,14 @@ public class DesktopInput extends InputHandler{
                  Core.settings.put("lasersopacity", 0);
              }
          }
@@ -655,7 +632,7 @@ index c0212b80814b19c35ba2a45bbce633e8aa4014b3..beaf3b5344af605731f48f5edbe70ff8
      }
  
      @Override
-@@ -886,7 +910,7 @@ public class DesktopInput extends InputHandler{
+@@ -886,7 +909,7 @@ public class DesktopInput extends InputHandler{
      }
  
      protected void updateMovement(Unit unit){
@@ -664,7 +641,7 @@ index c0212b80814b19c35ba2a45bbce633e8aa4014b3..beaf3b5344af605731f48f5edbe70ff8
  
          float speed = unit.speed();
          float xa = Core.input.axis(Binding.move_x);
-@@ -909,21 +933,63 @@ public class DesktopInput extends InputHandler{
+@@ -909,21 +932,63 @@ public class DesktopInput extends InputHandler{
              }
          }
  
@@ -735,7 +712,7 @@ index c0212b80814b19c35ba2a45bbce633e8aa4014b3..beaf3b5344af605731f48f5edbe70ff8
          player.mouseY = unit.aimY();
  
 diff --git a/core/src/mindustry/input/InputHandler.java b/core/src/mindustry/input/InputHandler.java
-index f095acffde3fdb5845ec0a664ff24e0897969641..c4380297dd95c8d4427596acebd6f5892a3d26e1 100644
+index ae6d76d4a07b6417d67d4081aad28bc9d87a5f7d..17bf4a0bbae16c3f927a0790e5a99c8e5391aa79 100644
 --- a/core/src/mindustry/input/InputHandler.java
 +++ b/core/src/mindustry/input/InputHandler.java
 @@ -37,11 +37,13 @@ import mindustry.world.*;
@@ -913,7 +890,7 @@ index ae4be3bb800bc4492918e10bdf33e6ed125f9f6f..d7e089b4457562374d69155b618b0cda
          unit.movePref(movement);
  
 diff --git a/core/src/mindustry/logic/LExecutor.java b/core/src/mindustry/logic/LExecutor.java
-index 1a4f9ba1d3c32feb70f076f0bf85f54b4fce0ce9..eb4959f38e2e2a8b60954cfb23bf86f36c15604f 100644
+index a35e10d0902516ddd701fe53c720914ed25e9415..24d831243cdf4b09e62603445659e302190a7173 100644
 --- a/core/src/mindustry/logic/LExecutor.java
 +++ b/core/src/mindustry/logic/LExecutor.java
 @@ -10,6 +10,7 @@ import arc.util.*;
@@ -950,7 +927,7 @@ index 1a4f9ba1d3c32feb70f076f0bf85f54b4fce0ce9..eb4959f38e2e2a8b60954cfb23bf86f3
                  //TODO desync?
                  case mission -> state.rules.mission = text;
 diff --git a/core/src/mindustry/type/UnitType.java b/core/src/mindustry/type/UnitType.java
-index dd6155a15d28cf0ef5a89c6554549129546455f9..68a2c327a646d41e7e00900cb7a7bf9048455495 100644
+index 42e1a44e52bc2b3b0d4d93af0e4072c79cba9ab2..f7e734d3a1109fb3288db998ae3ff8b8633f6fdb 100644
 --- a/core/src/mindustry/type/UnitType.java
 +++ b/core/src/mindustry/type/UnitType.java
 @@ -38,6 +38,7 @@ import mindustry.world.blocks.units.*;
@@ -2153,7 +2130,7 @@ index 0374fdae62346126bbeafcc0820058cfc268fbd7..23c35234f44f48478cdc71b7513c74c4
          //special case for 'clear' command
          if(message.equals("clear")){
 diff --git a/core/src/mindustry/ui/fragments/HudFragment.java b/core/src/mindustry/ui/fragments/HudFragment.java
-index 315f2448279e5c3d4f0feb3d91f02440f039fbb6..5c55991fdc09a5d2cece8371ee5905113849f74b 100644
+index 315f2448279e5c3d4f0feb3d91f02440f039fbb6..ad292c494a4601fc1e2b566c82a665aeb1b74742 100644
 --- a/core/src/mindustry/ui/fragments/HudFragment.java
 +++ b/core/src/mindustry/ui/fragments/HudFragment.java
 @@ -29,9 +29,11 @@ import mindustry.net.Packets.*;
@@ -2168,6 +2145,15 @@ index 315f2448279e5c3d4f0feb3d91f02440f039fbb6..5c55991fdc09a5d2cece8371ee590511
  
  import static mindustry.Vars.*;
  import static mindustry.gen.Tex.*;
+@@ -196,7 +198,7 @@ public class HudFragment{
+             //position
+             t.table(tt -> {
+                 tt.label(() ->
+-                (Core.settings.getBool("position") ? player.unit().type.emoji() + player.tileX() + "," + player.tileY() + "\n" : "") +
++                (Core.settings.getBool("position") ? Iconc.players + player.tileX() + "," + player.tileY() + "\n" : "") +
+                 (Core.settings.getBool("mouseposition") ? "[lightgray]" + "♐" + World.toTile(Core.input.mouseWorldX()) + "," + World.toTile(Core.input.mouseWorldY()) : ""))
+                 .visible(() -> Core.settings.getBool("position") || Core.settings.getBool("mouseposition"))
+                 .touchable(Touchable.disabled).style(Styles.outlineLabel).minWidth(120f);
 @@ -320,6 +322,10 @@ public class HudFragment{
              wavesMain.top().left().name = "waves";
  
@@ -2941,21 +2927,3 @@ index 58d82ae32d4a37b4e2bea1559c854b775048350f..9b0966bfb36da990de4bd410317c3528
              content.row();
          }
  
-diff --git a/core/src/mindustry/world/Block.java b/core/src/mindustry/world/Block.java
-index 174b7fa2552b57989df85c7b20f4857b7ae632a2..fb73e0091b4cda5130653d068bb59b22acf20604 100644
---- a/core/src/mindustry/world/Block.java
-+++ b/core/src/mindustry/world/Block.java
-@@ -751,7 +751,12 @@ public class Block extends UnlockableContent implements Senseable{
- 
-     public void drawPlan(BuildPlan plan, Eachable<BuildPlan> list, boolean valid, float alpha){
-         Draw.reset();
--        Draw.mixcol(!valid ? Pal.breakInvalid : Color.white, (!valid ? 0.4f : 0.24f) + Mathf.absin(Time.globalTime, 6f, 0.28f));
-+        if (!valid)  Draw.mixcol(Pal.breakInvalid, 0.4f + Mathf.absin(Time.globalTime, 6f, 0.28f));
-+        else {
-+            if (player.unit().within(plan.x * tilesize,plan.y * tilesize,player.unit().type.buildRange))
-+                Draw.mixcol(Color.white, 0.24f + Mathf.absin(Time.globalTime, 6f, 0.28f));
-+            else Draw.mixcol(Color.valueOf("#FFE4B5"), 0.33f + Mathf.absin(Time.globalTime, 6f, 0.28f));
-+        }
-         Draw.alpha(alpha);
-         float prevScale = Draw.scl;
-         Draw.scl *= plan.animScale;

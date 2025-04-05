@@ -4,9 +4,11 @@ import arc.util.*;
 import mindustry.entities.abilities.*;
 import mindustry.entities.pattern.*;
 import mindustry.type.*;
+import mindustry.ui.*;
+import mindustry.world.*;
 import mindustry.world.meta.*;
 
-import static mindustry.Vars.tilesize;
+import static mindustry.Vars.*;
 
 public class StatExt{
     public static Stat
@@ -79,6 +81,30 @@ public class StatExt{
             );
         }
         return null;
+    }
+
+    public static StatValue targets(BlockFlag[] targetFlags){
+        return table -> {
+            table.row();
+            table.table(t -> {
+                t.background(Styles.grayPanel);
+                for(BlockFlag flag : targetFlags){
+                    if(flag == null) continue;
+                    t.add(flag.name()).width(150f).padBottom(5f);
+                    int count = 0;
+                    for(Block block : content.blocks()){
+                        if(block.flags.contains(flag)){
+                            if(count >= 3){
+                                t.add("\uE813").width(30f);
+                                break;
+                            }else t.add(block.emoji()).width(30f);
+                            count += 1;
+                        }
+                    }
+                    t.row();
+                }
+            }).padLeft(12f);
+        };
     }
 
     public static int totalShots(ShootPattern pattern){
