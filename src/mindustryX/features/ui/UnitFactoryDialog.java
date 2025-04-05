@@ -33,7 +33,7 @@ import mindustryX.features.func.*;
 import static mindustry.Vars.*;
 
 public class UnitFactoryDialog extends BaseDialog{
-    private static final int maxCount = 50;
+    public static final int maxCount = 50;
 
     UnitStack selected = UnitStack.vanillaStack;
 
@@ -130,7 +130,7 @@ public class UnitFactoryDialog extends BaseDialog{
     private void rebuild(){
         Table main = new Table();
 
-        float width = Core.scene.getWidth() * (Core.scene.getWidth() > 1500 ? 0.7f : 0.9f) / Scl.scl();
+        float rightWidth = Math.min(Core.scene.getWidth() * (Core.scene.getWidth() > 700 ? 0.6f : 0.9f) / Scl.scl(), 700);
 
         cont.clearChildren();
         main.defaults().growX().expandY().top();
@@ -138,7 +138,7 @@ public class UnitFactoryDialog extends BaseDialog{
         if(Core.graphics.isPortrait()){
             cont.pane(Styles.noBarPane, main).growX();
         }else{
-            cont.add(main).width(width).growY();
+            cont.add(main).growY();
         }
 
         Table rightTable = new Table();
@@ -164,11 +164,15 @@ public class UnitFactoryDialog extends BaseDialog{
 
         rightTable.table(bottomTable -> {
             bottomTable.left();
-            bottomTable.defaults().top().left();
+            bottomTable.defaults().grow().uniformY();
 
-            bottomTable.add(effectTable);
+            if(Core.graphics.isPortrait()){
+                bottomTable.defaults().height(350f);
+            }
 
-            bottomTable.defaults().padLeft(16f);
+            bottomTable.add(effectTable).row();
+
+            bottomTable.defaults().padTop(16f);
             bottomTable.add(payloadTable);
         }).padTop(8f).fillY();
 
@@ -178,19 +182,15 @@ public class UnitFactoryDialog extends BaseDialog{
             main.row();
         }
 
-        if(Core.graphics.isPortrait()){
-            unitPropsTable = main.add(rightTable);
-        }else{
-            unitPropsTable = main.pane(Styles.noBarPane, rightTable).scrollX(false);
-        }
+        unitPropsTable = main.add(rightTable);
 
         if(Core.graphics.isPortrait()){
             selectionCell.maxHeight(10 * 64f);
             selectionCell.padBottom(8f);
         }else{
             selectionCell.padRight(8f);
-            selectionCell.width(width * 0.3f).growY();
-            unitPropsTable.width(width * 0.65f).growY();
+            selectionCell.width(rightWidth * 0.6f).growY();
+            unitPropsTable.width(rightWidth).growY();
         }
 
         Core.app.post(this::rebuildUnitSelection);
@@ -223,11 +223,10 @@ public class UnitFactoryDialog extends BaseDialog{
         selection.clearChildren();
 
         Table unitSelectTable = new Table(Tex.whiteui);
-        unitSelectTable.setColor(Pal.gray);
+        unitSelectTable.top().setColor(Pal.darkerGray);
 
         selection.table(Tex.whiteui, stackSelectTable -> {
             stackSelectTable.left();
-            stackSelectTable.setColor(Pal.gray);
 
             final int[] i = {0};
             float width = selection.getWidth();
@@ -249,9 +248,9 @@ public class UnitFactoryDialog extends BaseDialog{
                     stackSelectTable.row();
                 }
             });
-        }).fillX().row();
+        }).color(Pal.gray).fillX().row();
 
-        selection.pane(Styles.noBarPane, unitSelectTable).scrollX(false).pad(8).padTop(0).growX();
+        selection.pane(Styles.noBarPane, unitSelectTable).scrollX(false).padLeft(8).padRight(8).grow();
         Core.app.post(() -> rebuildSelectTable(selected, unitSelectTable));
 
         selection.row();
@@ -490,17 +489,15 @@ public class UnitFactoryDialog extends BaseDialog{
             }
         };
 
-        effectTable.defaults().growX();
+        effectTable.table(Tex.whiteui, leftTable -> {
+            leftTable.top();
+            leftTable.setColor(Pal.gray);
+            leftTable.defaults().fillY();
 
-        effectTable.table(Tex.whiteui, topTable -> {
-            topTable.top();
-            topTable.setColor(Pal.gray);
-            topTable.defaults().fillY();
+            leftTable.table(topTable -> {
+                topTable.top();
 
-            topTable.table(leftTable -> {
-                leftTable.top();
-
-                leftTable.table(statusTable -> {
+                topTable.table(statusTable -> {
                     statusTable.image(StatusEffects.burning.uiIcon).size(64).scaling(Scaling.fit).expandX().left();
 
                     statusTable.button(Icon.refresh, Styles.cleari, 48f, () -> {
@@ -510,12 +507,14 @@ public class UnitFactoryDialog extends BaseDialog{
                     }).size(64f).pad(8f);
                 }).growX();
 
-                leftTable.row();
+                topTable.row();
 
-                leftTable.add(effectInfo).fill().pad(8f);
+                topTable.add(effectInfo).fill().pad(8f);
             });
 
-            topTable.pane(Styles.noBarPane, selection -> {
+            leftTable.row();
+
+            leftTable.pane(Styles.noBarPane, selection -> {
                 int i = 0;
                 for(StatusEffect effect : content.statusEffects()){
                     Cell<ImageButton> cell = selection.button(new TextureRegionDrawable(effect.uiIcon), Styles.cleari, 32f, () -> {
@@ -530,16 +529,14 @@ public class UnitFactoryDialog extends BaseDialog{
                         cell.disabled(b -> unit.statuses().contains(e -> e.effect == effect));
                     }
 
-                    if(++i % 3 == 0){
+                    if(++i % 4 == 0){
                         selection.row();
                     }
                 }
-            }).pad(8f).maxHeight(48f * 4).expandX().right();
+            }).pad(8f).fill().right();
         });
 
-        effectTable.row();
-
-        effectTable.add(settingTable).fillY();
+        effectTable.pane(Styles.noBarPane, settingTable).grow();
 
         rebuildInfo.run();
         rebuildEffectSettingTable(unitStatus, settingTable, rebuildInfo);
@@ -547,6 +544,7 @@ public class UnitFactoryDialog extends BaseDialog{
 
     private void rebuildEffectSettingTable(Seq<StatusEntry> unitStatus, Table table, Runnable onChanged){
         table.clearChildren();
+        table.top().background(Tex.whiteui).setColor(Pal.darkerGray);
         table.defaults().growX();
 
         unitStatus.each(entry -> {
@@ -633,7 +631,6 @@ public class UnitFactoryDialog extends BaseDialog{
             })).padLeft(8f).padRight(8f).fillX();
 
             table.row();
-
         });
     }
 
@@ -646,55 +643,56 @@ public class UnitFactoryDialog extends BaseDialog{
         Table settingTable = new Table(Tex.whiteui);
         settingTable.setColor(Pal.gray);
 
-        payloadTable.defaults().growX();
+        payloadTable.table(Tex.whiteui, table -> {
+            table.top();
+            table.setColor(Pal.gray);
 
-        payloadTable.table(Tex.whiteui, topTable -> {
-            topTable.top();
-            topTable.setColor(Pal.gray);
+            table.image(Blocks.payloadLoader.uiIcon).size(64).scaling(Scaling.fit).expandX().left();
 
-            topTable.image(Blocks.payloadLoader.uiIcon).size(64).scaling(Scaling.fit).expandX().left();
-
-            topTable.button(Icon.refresh, Styles.cleari, 48f, () -> {
+            table.button(Icon.refresh, Styles.cleari, 48f, () -> {
                 payloads.clear();
                 rebuildPayloadSettingTable(payloads, settingTable);
             }).size(64f).pad(8f);
 
-            topTable.row();
+            table.row();
 
-            topTable.table(Styles.grayPanel, buttons -> {
-                buttons.defaults().size(48f).pad(8f);
+            table.table(Styles.grayPanel, buttons -> {
+                buttons.defaults().height(48f).pad(4f).growX();
 
-                buttons.button(new TextureRegionDrawable(Blocks.siliconSmelter.uiIcon), Styles.cleari, 32, () -> UIExt.contentSelector.select(content.blocks(), block -> true, block -> {
+                buttons.button("装载建筑", new TextureRegionDrawable(Blocks.siliconSmelter.uiIcon), Styles.flatt, 32,
+                () -> UIExt.contentSelector.select(content.blocks(), block -> true, block -> {
                     BuildPayload payload = new BuildPayload(block, payloadUnit.team);
                     payloads.add(payload);
                     rebuildPayloadSettingTable(payloads, settingTable);
-                    return true;
-                }));
+                    return false;
+                })).row();
 
-                buttons.button(new TextureRegionDrawable(UnitTypes.alpha.uiIcon), Styles.cleari, 32f, () -> UIExt.contentSelector.select(content.units(), unitType -> true, unitType -> {
+                buttons.button("装载单位", new TextureRegionDrawable(UnitTypes.alpha.uiIcon), Styles.flatt, 32f,
+                () -> UIExt.contentSelector.select(content.units(), unitType -> true, unitType -> {
                     UnitPayload payload = new UnitPayload(unitType.create(payloadUnit.team));
                     payloads.add(payload);
                     rebuildPayloadSettingTable(payloads, settingTable);
-                    return true;
-                }));
+                    return false;
+                })).row();
 
-                buttons.button("装载自己", Styles.cleart, () -> {
+                buttons.button("装载自己", Icon.add, Styles.flatt, () -> {
                     payloads.add(new UnitPayload(cloneUnit(payloadUnit)));
                     rebuildPayloadSettingTable(payloads, settingTable);
-                }).width(72f);
-            }).pad(8f).colspan(2);
-        });
+                }).row();
+            }).pad(8f).colspan(2).fill();
+        }).fillY();
 
-        payloadTable.row();
-
-        payloadTable.pane(Styles.noBarPane, settingTable).fillY();
+        payloadTable.pane(Styles.noBarPane, settingTable).grow();
 
         rebuildPayloadSettingTable(payloads, settingTable);
     }
 
     private void rebuildPayloadSettingTable(Seq<Payload> payloads, Table table){
         table.clearChildren();
+        table.top().background(Tex.whiteui).setColor(Pal.darkerGray);
+        table.defaults().pad(8).growX().uniformX();
 
+        int i = 0;
         for(Payload payload : payloads){
             table.table(Tex.whiteui, t -> {
                 t.setColor(Pal.lightishGray);
@@ -720,9 +718,16 @@ public class UnitFactoryDialog extends BaseDialog{
 
                     rebuildPayloadSettingTable(payloads, table);
                 });
-            }).pad(8).growX();
+            });
 
-            table.row();
+            if(++i % 2 == 0){
+                table.row();
+            }
+        }
+
+        if(i == 1){
+            // 占位
+            table.add();
         }
     }
 
@@ -731,8 +736,8 @@ public class UnitFactoryDialog extends BaseDialog{
 
         Table main = new Table();
 
-        float width = Core.scene.getWidth() * (Core.scene.getWidth() > 1500 ? 0.6f : 0.9f) / Scl.scl(1);
-        dialog.cont.pane(Styles.noBarPane, main).scrollX(false).width(width).growY();
+        float width = Math.min(Core.scene.getWidth() * (Core.scene.getWidth() > 700 ? 0.6f : 0.9f) / Scl.scl(), 700);
+        dialog.cont.add(main).width(width).growY();
 
         main.top();
         main.defaults().growX();
@@ -748,11 +753,11 @@ public class UnitFactoryDialog extends BaseDialog{
 
         main.table(bottomTable -> {
             bottomTable.left();
-            bottomTable.defaults().top().left();
+            bottomTable.defaults().grow().uniformY();
 
-            bottomTable.table(effectTable -> rebuildEffectsTable(unit, effectTable));
+            bottomTable.table(effectTable -> rebuildEffectsTable(unit, effectTable)).row();
 
-            bottomTable.defaults().padLeft(16f);
+            bottomTable.defaults().padTop(16f);
             bottomTable.table(payloadTable -> rebuildPayloadTable(unit, payloadTable));
         }).padTop(8f).fillY();
 
