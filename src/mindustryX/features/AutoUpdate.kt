@@ -131,9 +131,11 @@ object AutoUpdate {
                 row().table().fillX().get().apply {
                     button("跳过当前版本") {
                         ignoreOnce.value = version.version
+                        dialog.hide()
                     }
                     button("7天不再提示") {
                         ignoreOnce.value = (Instant.now() + Duration.ofDays(7)).toString()
+                        dialog.hide()
                     }
                 }
             }
