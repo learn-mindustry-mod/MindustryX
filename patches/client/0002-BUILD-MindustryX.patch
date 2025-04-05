@@ -11,28 +11,17 @@ buildPlugins & Kotlin 1.9.20
 patchArc改写成transform
 way-zer <himc.wicp@gmail.com> on 2024/4/27 at 18:57
 ---
- build.gradle          | 11 ++---------
- core/build.gradle.kts |  1 +
- gradle.properties     |  2 +-
- settings.gradle       |  2 ++
- 4 files changed, 6 insertions(+), 10 deletions(-)
+ build.gradle          | 6 ------
+ core/build.gradle.kts | 1 +
+ gradle.properties     | 2 +-
+ settings.gradle       | 2 ++
+ 4 files changed, 4 insertions(+), 7 deletions(-)
 
 diff --git a/build.gradle b/build.gradle
-index a04c52bbbfb5fec495215a0b3df92039a184f637..097f82cbcfb6c5fe7428dc81fe1047325ee4b1f1 100644
+index 42526fba40e1c2a4aed99351ddd30da06b3e5a1b..732a40718528b0f73643a001d3b45f55af6ecfdf 100644
 --- a/build.gradle
 +++ b/build.gradle
-@@ -14,8 +14,8 @@ buildscript{
- }
- 
- plugins{
--    id "org.jetbrains.kotlin.jvm" version "1.6.0"
--    id "org.jetbrains.kotlin.kapt" version "1.6.0"
-+    id "org.jetbrains.kotlin.jvm" version "1.9.20"
-+    id "org.jetbrains.kotlin.kapt" version "1.9.20"
- }
- 
- allprojects{
-@@ -182,13 +182,6 @@ project(":core"){
+@@ -182,12 +182,6 @@ project(":core"){
          }
      }
  
@@ -40,7 +29,6 @@ index a04c52bbbfb5fec495215a0b3df92039a184f637..097f82cbcfb6c5fe7428dc81fe104732
 -        //these are completely unnecessary
 -        tasks.kaptGenerateStubsKotlin.onlyIf{ false }
 -        tasks.compileKotlin.onlyIf{ false }
--        tasks.inspectClassesForKotlinIC.onlyIf{ false }
 -    }
 -
      //comp** classes are only used for code generation

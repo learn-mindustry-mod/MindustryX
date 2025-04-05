@@ -14,10 +14,10 @@ Content-Transfer-Encoding: 8bit
  1 file changed, 3 insertions(+), 3 deletions(-)
 
 diff --git a/core/src/mindustry/graphics/MinimapRenderer.java b/core/src/mindustry/graphics/MinimapRenderer.java
-index 900a84cff8870a64f11e9ed0dbdf39581fe1fc93..09fa87b04fda133713f17fc84f6c11b8b5f7f156 100644
+index 2897710efebae4825f399a67c230856e0457c883..60fb3d01999782b560c90cc870dc640e2ce3aafe 100644
 --- a/core/src/mindustry/graphics/MinimapRenderer.java
 +++ b/core/src/mindustry/graphics/MinimapRenderer.java
-@@ -174,7 +174,7 @@ public class MinimapRenderer{
+@@ -166,7 +166,7 @@ public class MinimapRenderer{
              Draw.reset();
          }
  
@@ -26,7 +26,7 @@ index 900a84cff8870a64f11e9ed0dbdf39581fe1fc93..09fa87b04fda133713f17fc84f6c11b8
              for(Player player : Groups.player){
                  if(!player.dead()){
                      drawLabel(player.x, player.y, player.name, player.color);
-@@ -221,10 +221,10 @@ public class MinimapRenderer{
+@@ -213,10 +213,10 @@ public class MinimapRenderer{
          }
  
          //TODO might be useful in the standard minimap too

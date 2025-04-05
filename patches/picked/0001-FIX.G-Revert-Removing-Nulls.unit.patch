@@ -12,10 +12,10 @@ This reverts commit 29557314
  4 files changed, 87 insertions(+), 2 deletions(-)
 
 diff --git a/annotations/src/main/java/mindustry/annotations/entity/EntityProcess.java b/annotations/src/main/java/mindustry/annotations/entity/EntityProcess.java
-index a6b1d95d67bfbeb17753ef3eee94e4e6d820da0a..a2ef6d1844ffe14b7cb3c1a7235404878ff38f77 100644
+index bd0e7a46309bda54e447c32e37257b5ec6c16b3d..68138f45d67fc043ab794fc6a5019deba3da5506 100644
 --- a/annotations/src/main/java/mindustry/annotations/entity/EntityProcess.java
 +++ b/annotations/src/main/java/mindustry/annotations/entity/EntityProcess.java
-@@ -852,6 +852,89 @@ public class EntityProcess extends BaseProcessor{
+@@ -872,6 +872,89 @@ public class EntityProcess extends BaseProcessor{
              for(TypeSpec.Builder b : baseClasses){
                  write(b, imports.toSeq());
              }
@@ -123,10 +123,10 @@ index 834d4c239aa261afd9828f0b4d17a97fb8809621..7f989fa8dfb2f6c9c2b1c0e7c88bf903
          if(isLocal() && unit == justSwitchFrom && justSwitchFrom != null && justSwitchTo != null){
              return;
 diff --git a/core/src/mindustry/input/InputHandler.java b/core/src/mindustry/input/InputHandler.java
-index 36c55360cd776260ad615cbd3654f5b7ed78f814..a1dcfc3c2e5f3a57a7067f8c7a3d5846fcf16d0a 100644
+index fc5fde33a7ea97fa2483bfff73127465deaa2caa..81f6d4f5a727a593709a4bd0a107e29abd585b17 100644
 --- a/core/src/mindustry/input/InputHandler.java
 +++ b/core/src/mindustry/input/InputHandler.java
-@@ -704,7 +704,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -711,7 +711,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
  
              player.unit(unit);
  
@@ -136,10 +136,10 @@ index 36c55360cd776260ad615cbd3654f5b7ed78f814..a1dcfc3c2e5f3a57a7067f8c7a3d5846
                      unit.dockedType = before.type;
                  }else if(before.dockedType != null && before.dockedType.coreUnitDock){
 diff --git a/core/src/mindustry/logic/LExecutor.java b/core/src/mindustry/logic/LExecutor.java
-index 1ba96cc93a7f085c363d5a8ceedfc33960462bf3..ea65ed2759e1836f8fdbe846851cc37bc87bf9b0 100644
+index dfc32d96bb4f219808f36d4f2a7b8823fdad345c..026f380e3f442c45da2821286814f14a6d72f7bc 100644
 --- a/core/src/mindustry/logic/LExecutor.java
 +++ b/core/src/mindustry/logic/LExecutor.java
-@@ -1292,7 +1292,7 @@ public class LExecutor{
+@@ -1294,7 +1294,7 @@ public class LExecutor{
                          result.setobj(units == null || i < 0 || i >= units.size ? null : units.get(i));
                      }
                  }

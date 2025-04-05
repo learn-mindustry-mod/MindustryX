@@ -38,7 +38,7 @@ index 313426c159312800d4dc398b971eb6bd919907d0..8b49617be34587a6b2d7e49e4ee10bc5
                  Draw.rect(arrowRegion, x, y, rotdeg());
              }
 diff --git a/core/src/mindustry/world/blocks/distribution/DuctRouter.java b/core/src/mindustry/world/blocks/distribution/DuctRouter.java
-index 5ba1ff7c212a0593ee841ec3888a8161f09c6a1a..1d12af8da5a3d7eb5f58048c1d821a18e823d3e0 100644
+index 97bef1ebe97f67b37ddc9c1fc1a83c8b7d3373a8..9920882552d131a9c8d6e6bfeb603fe56527695e 100644
 --- a/core/src/mindustry/world/blocks/distribution/DuctRouter.java
 +++ b/core/src/mindustry/world/blocks/distribution/DuctRouter.java
 @@ -12,6 +12,7 @@ import mindustry.type.*;

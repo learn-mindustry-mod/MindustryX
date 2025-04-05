@@ -23,7 +23,7 @@ index 63e6c3ef13f839f531387b10789d135585b19863..8b1de1fbe09758f1d78f5ec01b442c11
  
          input.updateState();
 diff --git a/core/src/mindustry/core/World.java b/core/src/mindustry/core/World.java
-index a9e858a0c746ff10dc43a44be69d9a836f63e1da..cfae059fc4e0b8eebae340f8e5fcb93f30b1c79d 100644
+index 37794f84133a498c36cc9aae13ce959eefd20214..190960672db76a78dcb2fc612fbe8f99e60132af 100644
 --- a/core/src/mindustry/core/World.java
 +++ b/core/src/mindustry/core/World.java
 @@ -233,6 +233,7 @@ public class World{
@@ -35,10 +35,10 @@ index a9e858a0c746ff10dc43a44be69d9a836f63e1da..cfae059fc4e0b8eebae340f8e5fcb93f
      }
  
 diff --git a/core/src/mindustry/game/FogControl.java b/core/src/mindustry/game/FogControl.java
-index 0753b44ee87fc2ffb5201a5dc4cef4055d9d463c..9e22fbe55e2c2e51dd03f128a2e15fed7f87cc55 100644
+index 8d67a35d7f009edb61bed84d75297886d9aa77b3..1406fb765640e7e77caff95edc0803245f334df1 100644
 --- a/core/src/mindustry/game/FogControl.java
 +++ b/core/src/mindustry/game/FogControl.java
-@@ -311,7 +311,9 @@ public final class FogControl implements CustomChunk{
+@@ -338,7 +338,9 @@ public final class FogControl implements CustomChunk{
  
                      updateStatic();
                      //ignore, don't want to crash this thread

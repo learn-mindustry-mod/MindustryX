@@ -9,7 +9,7 @@ Subject: [PATCH] HR: RenderExt
  2 files changed, 4 insertions(+), 2 deletions(-)
 
 diff --git a/core/src/mindustry/core/Renderer.java b/core/src/mindustry/core/Renderer.java
-index f8babe63b5b995a878a7dc010b010a47be9dd113..de61aeb93845aea1a51d6232e528daac050e125e 100644
+index e7e5ebe317df39229512783e4638285e44cd5d98..c25a43ef581741eb5372d7bca8708c5370b23673 100644
 --- a/core/src/mindustry/core/Renderer.java
 +++ b/core/src/mindustry/core/Renderer.java
 @@ -21,6 +21,7 @@ import mindustry.graphics.g3d.*;
@@ -20,7 +20,7 @@ index f8babe63b5b995a878a7dc010b010a47be9dd113..de61aeb93845aea1a51d6232e528daac
  
  import static arc.Core.*;
  import static mindustry.Vars.*;
-@@ -392,7 +393,7 @@ public class Renderer implements ApplicationListener{
+@@ -394,7 +395,7 @@ public class Renderer implements ApplicationListener{
          Events.fire(Trigger.drawOver);
          blocks.drawBlocks();
  
@@ -30,7 +30,7 @@ index f8babe63b5b995a878a7dc010b010a47be9dd113..de61aeb93845aea1a51d6232e528daac
          Draw.reset();
          Draw.flush();
 diff --git a/core/src/mindustry/graphics/BlockRenderer.java b/core/src/mindustry/graphics/BlockRenderer.java
-index 10e29ef135cfbcbfa7ef4e5acf8a083e062e9110..757434cb5bd9d951f773cd92a73fd0e0bdf8dad6 100644
+index 4949a90bc375ec0d7fb7bc8f3ac49d8f9c42459b..b88bd5bbd47e5659390c711fa86adc2ec8b9b059 100644
 --- a/core/src/mindustry/graphics/BlockRenderer.java
 +++ b/core/src/mindustry/graphics/BlockRenderer.java
 @@ -18,6 +18,7 @@ import mindustry.gen.*;
@@ -41,7 +41,7 @@ index 10e29ef135cfbcbfa7ef4e5acf8a083e062e9110..757434cb5bd9d951f773cd92a73fd0e0
  
  import static arc.Core.*;
  import static mindustry.Vars.*;
-@@ -417,7 +418,7 @@ public class BlockRenderer{
+@@ -427,7 +428,7 @@ public class BlockRenderer{
  
              //comment wasVisible part for hiding?
              if(block != Blocks.air && (visible || build.wasVisible)){

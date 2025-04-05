@@ -11,10 +11,10 @@ Subject: [PATCH] HG: Hooks
  4 files changed, 7 insertions(+)
 
 diff --git a/core/src/mindustry/ClientLauncher.java b/core/src/mindustry/ClientLauncher.java
-index 3e2fbca7df76607c76f27133d60686e4d4833cb5..655d2b09e7cfc011efd194b2b65bc85584c8f7d8 100644
+index 8990cb0200e7e19a0f3af54485e020cbe76cecc6..a64b7b36fdd74a29a3caae54a1f1a514039b891f 100644
 --- a/core/src/mindustry/ClientLauncher.java
 +++ b/core/src/mindustry/ClientLauncher.java
-@@ -176,6 +176,7 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
+@@ -177,6 +177,7 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
          add(ui = new UI());
          add(netServer = new NetServer());
          add(netClient = new NetClient());
@@ -23,10 +23,10 @@ index 3e2fbca7df76607c76f27133d60686e4d4833cb5..655d2b09e7cfc011efd194b2b65bc855
          assets.load(schematics);
  
 diff --git a/core/src/mindustry/Vars.java b/core/src/mindustry/Vars.java
-index 946a23fbd3da66b408cf177e349d162c869b5b9f..526e9358bf858b5365c8273aea00fe0ec365686f 100644
+index 803a14d9b46ab338bec1378fa0cd119df3d35b5a..ac225f81d9c245937c23985a62db7857d5292d51 100644
 --- a/core/src/mindustry/Vars.java
 +++ b/core/src/mindustry/Vars.java
-@@ -276,6 +276,7 @@ public class Vars implements Loadable{
+@@ -277,6 +277,7 @@ public class Vars implements Loadable{
      }
  
      public static void init(){
@@ -35,7 +35,7 @@ index 946a23fbd3da66b408cf177e349d162c869b5b9f..526e9358bf858b5365c8273aea00fe0e
  
          if(loadLocales){
 diff --git a/core/src/mindustry/core/NetClient.java b/core/src/mindustry/core/NetClient.java
-index aed03c684b1f88c15c3f90056ff9f73377d9f368..2d1f5fc5606f8239dff13363e1c855fae3a2a687 100644
+index 7e3a1a0c0410a2e5af371a418004e4b1807f28cb..ee88ab4f21ea7d51f12350ecf89e688c0d6555ca 100644
 --- a/core/src/mindustry/core/NetClient.java
 +++ b/core/src/mindustry/core/NetClient.java
 @@ -230,6 +230,8 @@ public class NetClient implements ApplicationListener{

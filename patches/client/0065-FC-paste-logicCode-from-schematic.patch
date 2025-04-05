@@ -53,7 +53,7 @@ index a24c659a8ee848c12921e5bc3afae83972b3d2a7..eb07ca6105752d7e7299a355895905c9
              if(!Mathf.zero(cons) || !Mathf.zero(prod)){
                  cont.table(t -> {
 diff --git a/core/src/mindustry/world/blocks/logic/LogicBlock.java b/core/src/mindustry/world/blocks/logic/LogicBlock.java
-index 5cdee96ecda0ad4258821e12fec517bc9288477e..bc930a1c1dca2af380972eb220f9e945452edae4 100644
+index 52c9aa636a6ee1d3aed436445186efc2b476bb88..4b9bb74e44c99fb0d2c3d784ca101a0eb019c2f6 100644
 --- a/core/src/mindustry/world/blocks/logic/LogicBlock.java
 +++ b/core/src/mindustry/world/blocks/logic/LogicBlock.java
 @@ -22,6 +22,7 @@ import mindustry.io.*;
@@ -93,7 +93,7 @@ index 5cdee96ecda0ad4258821e12fec517bc9288477e..bc930a1c1dca2af380972eb220f9e945
                      }
 @@ -556,7 +557,7 @@ public class LogicBlock extends Block{
                  running = true;
-                 for(int i = 0; i < (int)accumulator; i++){
+                 while(accumulator >= 1f){
                      executor.runOnce();
 -                    accumulator --;
 +                    accumulator--;

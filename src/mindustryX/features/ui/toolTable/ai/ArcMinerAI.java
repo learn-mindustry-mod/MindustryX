@@ -40,7 +40,7 @@ public class ArcMinerAI extends AIController{
         }else if(unit.type.mineWalls){
             canMineList = oreWallList.map(b -> b.itemDrop).select(i -> unit.canMine(i));
         }
-        return canMineList.select(i -> (unit.type.mineFloor ? indexer.hasOre(i) : indexer.hasOreWall(i))
+        return canMineList.select(i -> (unit.type.mineFloor ? indexer.hasOre(i) : indexer.hasWallOre(i))
         && (canMineNonBuildable || i.buildable)
         && unit.core().acceptItem(null, i)
         ).reverse().min(i -> unit.core().items.get(i));

@@ -9,14 +9,13 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 ---
- core/src/mindustry/core/ContentLoader.java    | 17 +++++++++
- core/src/mindustry/core/NetClient.java        |  2 +
- core/src/mindustry/io/TypeIO.java             | 12 +++++-
- core/src/mindustry/net/Net.java               | 38 +++++++++++++++++--
- core/src/mindustry/net/NetworkIO.java         | 13 ++++++-
- core/src/mindustry/net/Packets.java           |  2 +-
- .../world/blocks/units/UnitFactory.java       |  3 +-
- 7 files changed, 79 insertions(+), 8 deletions(-)
+ core/src/mindustry/core/ContentLoader.java | 17 ++++++++++
+ core/src/mindustry/core/NetClient.java     |  2 ++
+ core/src/mindustry/io/TypeIO.java          | 12 +++++--
+ core/src/mindustry/net/Net.java            | 38 ++++++++++++++++++++--
+ core/src/mindustry/net/NetworkIO.java      | 13 +++++++-
+ core/src/mindustry/net/Packets.java        |  2 +-
+ 6 files changed, 77 insertions(+), 7 deletions(-)
 
 diff --git a/core/src/mindustry/core/ContentLoader.java b/core/src/mindustry/core/ContentLoader.java
 index 4e2f86410a33f8189976a143d0cd697ec7c56de5..67b051c81d5ce7f0f134ab5cd99d4aa7ad9c7b92 100644
@@ -54,7 +53,7 @@ index 4e2f86410a33f8189976a143d0cd697ec7c56de5..67b051c81d5ce7f0f134ab5cd99d4aa7
  
      /** @return the last registered content with the specified name. Note that the content loader makes no attempt to resolve name conflicts. This method can be unreliable. */
 diff --git a/core/src/mindustry/core/NetClient.java b/core/src/mindustry/core/NetClient.java
-index 074511d19d9f2d2ffbb6be2c20fe42a649a091af..0bac9d883ddadf259b66b2a7bb617c4dceb4c01f 100644
+index e80d5029613f62f112e4f2c8e1be25eeca91dd4e..3a55382ddd0f404bf97d7c25d99507ed2942ae01 100644
 --- a/core/src/mindustry/core/NetClient.java
 +++ b/core/src/mindustry/core/NetClient.java
 @@ -520,6 +520,8 @@ public class NetClient implements ApplicationListener{
@@ -274,17 +273,3 @@ index 1b445b3ff268b1d626cf9ba84797560c04e9bb0a..8f91b6abf01af158cb8b2c81d10b55b3
              TypeIO.writeString(buffer, name);
              TypeIO.writeString(buffer, locale);
              TypeIO.writeString(buffer, usid);
-diff --git a/core/src/mindustry/world/blocks/units/UnitFactory.java b/core/src/mindustry/world/blocks/units/UnitFactory.java
-index 54dd64382d99f65a1d396516e664d008fcf38010..90282e3fcb0cdb727b6384c8dad5081ee16c80fc 100644
---- a/core/src/mindustry/world/blocks/units/UnitFactory.java
-+++ b/core/src/mindustry/world/blocks/units/UnitFactory.java
-@@ -55,7 +55,8 @@ public class UnitFactory extends UnitBlock{
-             if(build.currentPlan == i) return;
-             build.currentPlan = i < 0 || i >= plans.size ? -1 : i;
-             build.progress = 0;
--            if(build.command != null && !build.unit().commands.contains(build.command)){
-+            //MDTX: v146 use this for clear, we don't NPE here
-+            if(build.command != null && build.unit()!=null && !build.unit().commands.contains(build.command)){
-                 build.command = null;
-             }
-         });

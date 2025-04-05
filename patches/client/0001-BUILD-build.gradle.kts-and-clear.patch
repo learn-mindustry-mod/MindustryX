@@ -30,10 +30,10 @@ way-zer <himc.wicp@gmail.com> on 2024/6/9
  create mode 100644 core/build.gradle.kts
 
 diff --git a/.gitignore b/.gitignore
-index dd3f2a0f065d3f774ea84fbc932e337160e4b307..7d91d3191096c431b739d2d5ecd951a764feead3 100644
+index 4ebcbb7233a1be2c705599122f1532323be8e516..8ac18c9b219a2fb5a51ab1885b864da3b7d798c4 100644
 --- a/.gitignore
 +++ b/.gitignore
-@@ -28,6 +28,7 @@ saves/
+@@ -29,6 +29,7 @@ saves/
  /core/assets-raw/fontgen/out/
  /core/assets-raw/fontgen/icons/
  /core/assets-raw/fontgen/icon_parts/
@@ -41,7 +41,7 @@ index dd3f2a0f065d3f774ea84fbc932e337160e4b307..7d91d3191096c431b739d2d5ecd951a7
  core/assets/saves/
  /core/assets/saves/
  steam_appid.txt
-@@ -35,7 +36,6 @@ steam_appid.txt
+@@ -36,7 +37,6 @@ steam_appid.txt
  /android/assets/mindustry-maps/
  /android/assets/mindustry-saves/
  /core/assets/gifexport/
@@ -240,7 +240,7 @@ index 0000000000000000000000000000000000000000..181b87c1d5f3755f16a01c0528d0a89f
 +mindustry.annotations.misc.LogicStatementProcessor
 +mindustry.annotations.remote.RemoteProcess
 diff --git a/build.gradle b/build.gradle
-index 90e98a89dc933d3ddb500d1e78ea5948c8760029..a04c52bbbfb5fec495215a0b3df92039a184f637 100644
+index 27106c2f57aea8b01092f24b90c4c2b7a3b7eead..42526fba40e1c2a4aed99351ddd30da06b3e5a1b 100644
 --- a/build.gradle
 +++ b/build.gradle
 @@ -5,24 +5,12 @@ buildscript{
@@ -577,7 +577,7 @@ index 90e98a89dc933d3ddb500d1e78ea5948c8760029..a04c52bbbfb5fec495215a0b3df92039
  
              source rootProject.subprojects.collect{ project ->
                  if(!blacklist.contains(project) && project.hasProperty("sourceSets")){
-@@ -443,42 +263,16 @@ configure([":core", ":server"].collect{project(it)}){
+@@ -442,42 +262,16 @@ configure([":core", ":server"].collect{project(it)}){
          publications{
              maven(MavenPublication){
                  from components.java
@@ -705,7 +705,7 @@ index 0000000000000000000000000000000000000000..988cebaf5948bff23a01a6bdca87f99d
 +}
 \ No newline at end of file
 diff --git a/desktop/build.gradle b/desktop/build.gradle
-index b4d9955e70e7cfbf4792d5196bbe17e06c3762bd..0b9db141c3842afa73b8b1e14f31c5d244970ddb 100644
+index b3f192bc75d3c1775179a7252c02f7ce0a39ff7e..b47e0569d82a8cc6331a1fe36952c206e3660901 100644
 --- a/desktop/build.gradle
 +++ b/desktop/build.gradle
 @@ -3,14 +3,9 @@ sourceSets.main.java.srcDirs = ["src/"]
@@ -731,10 +731,10 @@ index b4d9955e70e7cfbf4792d5196bbe17e06c3762bd..0b9db141c3842afa73b8b1e14f31c5d2
      from {configurations.runtimeClasspath.collect{ it.isDirectory() ? it : zipTree(it) }}
 -    from files(project.assetsDir)
 +    from(files(tasks.getByPath(":core:allAssets")))
+     exclude("config/**")
      duplicatesStrategy = DuplicatesStrategy.EXCLUDE
  
-     //don't include steam shared libraries unless necessary
-@@ -57,157 +52,4 @@ task dist(type: Jar, dependsOn: configurations.runtimeClasspath){
+@@ -58,157 +53,4 @@ task dist(type: Jar, dependsOn: configurations.runtimeClasspath){
      manifest{
          attributes 'Main-Class': project.mainClassName
      }
@@ -3111,7 +3111,7 @@ index 107acd32c4e687021ef32db511e8a206129b88ec..25da30dbdeee93f6eaceea674c3b635d
  :mainEnd
  if "%OS%"=="Windows_NT" endlocal
 diff --git a/ios/build.gradle b/ios/build.gradle
-index d0ec38f0a9c9f7d07c240a3d0c8c24bd0f6c1ebf..44d6d24b5b4d43514c8c5bf535bf707729361f97 100644
+index 931168d9470385e787bab73ea1a96df8024bc8ce..e621bb96c1b8c415d9d9622338d7247d939ce891 100644
 --- a/ios/build.gradle
 +++ b/ios/build.gradle
 @@ -77,7 +77,7 @@ task deploy{
@@ -3124,7 +3124,7 @@ index d0ec38f0a9c9f7d07c240a3d0c8c24bd0f6c1ebf..44d6d24b5b4d43514c8c5bf535bf7077
  launchIPhoneSimulator.dependsOn build
  launchIPadSimulator.dependsOn build
 diff --git a/server/build.gradle b/server/build.gradle
-index f348e41dbf38a2ad4c676ce243e1fe4389bfefaf..079379178548b8c3fc9257668f85c3bf9935c9cc 100644
+index 45b887b1a75559db50435bb23156523e30ce50ee..91a4a0f02776a87bee4323993c19ba5e7a7609b4 100644
 --- a/server/build.gradle
 +++ b/server/build.gradle
 @@ -3,10 +3,6 @@ sourceSets.main.java.srcDirs = ["src/"]
@@ -3151,7 +3151,7 @@ index f348e41dbf38a2ad4c676ce243e1fe4389bfefaf..079379178548b8c3fc9257668f85c3bf
      exclude("sprites/**")
      exclude("music/**")
      exclude("sounds/**")
-@@ -53,40 +50,3 @@ task dist(type: Jar, dependsOn: configurations.runtimeClasspath){
+@@ -54,40 +51,3 @@ task dist(type: Jar, dependsOn: configurations.runtimeClasspath){
          attributes 'Main-Class': project.mainClassName
      }
  }
@@ -3407,10 +3407,10 @@ index b02926630256dec9f95c9e6eed2b35d0ea496db9..c7239ea7f5200afabe3b8756f28c39a3
                      for(int j = 0; j < 4 - hex.length(); j++){
                          outBuffer.append('0')
 diff --git a/tools/src/mindustry/tools/Generators.java b/tools/src/mindustry/tools/Generators.java
-index 108784fe478d349ae944eef423b709c7978e55ea..7ef8ce8d9b61ca9bdb764281a6306391a1e79902 100644
+index 5fc22be5fa06e8a8f11366bc406a76c53c3839c6..5d380a97aad14ac0d002cb42492b049c17d4689e 100644
 --- a/tools/src/mindustry/tools/Generators.java
 +++ b/tools/src/mindustry/tools/Generators.java
-@@ -416,7 +416,7 @@ public class Generators{
+@@ -417,7 +417,7 @@ public class Generators{
                  }
              }
  

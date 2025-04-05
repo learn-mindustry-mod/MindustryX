@@ -138,7 +138,7 @@ index 177eafc2d311ab2c64adfbc638250c3019ba690d..a5b800876084c1bc10be7000bfc24717
      }
  
 diff --git a/core/src/mindustry/world/blocks/defense/MendProjector.java b/core/src/mindustry/world/blocks/defense/MendProjector.java
-index 4bd399c1b344c4db2b7582a15e083e5bf4d15800..297d62456badce41055e6a03d9f6a72ab5a42f37 100644
+index 0c22a5196673c56ecf9c73ec1278ad8592b84e1a..b113bad311f4bafacefe3122449783e912514dd7 100644
 --- a/core/src/mindustry/world/blocks/defense/MendProjector.java
 +++ b/core/src/mindustry/world/blocks/defense/MendProjector.java
 @@ -1,5 +1,6 @@
@@ -148,7 +148,7 @@ index 4bd399c1b344c4db2b7582a15e083e5bf4d15800..297d62456badce41055e6a03d9f6a72a
  import arc.graphics.*;
  import arc.graphics.g2d.*;
  import arc.math.*;
-@@ -21,7 +22,7 @@ import static mindustry.Vars.*;
+@@ -22,7 +23,7 @@ import static mindustry.Vars.*;
  public class MendProjector extends Block{
      public final int timerUse = timers++;
      public Color baseColor = Color.valueOf("84f491");
@@ -157,7 +157,7 @@ index 4bd399c1b344c4db2b7582a15e083e5bf4d15800..297d62456badce41055e6a03d9f6a72a
      public @Load("@-top") TextureRegion topRegion;
      public float reload = 250f;
      public float range = 60f;
-@@ -79,7 +80,9 @@ public class MendProjector extends Block{
+@@ -81,7 +82,9 @@ public class MendProjector extends Block{
          super.drawPlace(x, y, rotation, valid);
          
          Drawf.dashCircle(x * tilesize + offset, y * tilesize + offset, range, baseColor);
@@ -168,7 +168,7 @@ index 4bd399c1b344c4db2b7582a15e083e5bf4d15800..297d62456badce41055e6a03d9f6a72a
      }
  
 diff --git a/core/src/mindustry/world/blocks/defense/OverdriveProjector.java b/core/src/mindustry/world/blocks/defense/OverdriveProjector.java
-index eaf49ff9cf59b90441654875483ab6b1147a2d52..a9b695cd8742f159da7cb890458f2a4929c92ce4 100644
+index 4a35c8aeeebc86eff2d0fed53782b99c57702dd0..40fc3f66f6d35e2dfada669551a3aa8b9e26a4e4 100644
 --- a/core/src/mindustry/world/blocks/defense/OverdriveProjector.java
 +++ b/core/src/mindustry/world/blocks/defense/OverdriveProjector.java
 @@ -1,6 +1,5 @@
@@ -178,7 +178,7 @@ index eaf49ff9cf59b90441654875483ab6b1147a2d52..a9b695cd8742f159da7cb890458f2a49
  import arc.graphics.*;
  import arc.graphics.g2d.*;
  import arc.math.*;
-@@ -57,6 +56,11 @@ public class OverdriveProjector extends Block{
+@@ -54,6 +53,11 @@ public class OverdriveProjector extends Block{
          super.drawPlace(x, y, rotation, valid);
  
          Drawf.dashCircle(x * tilesize + offset, y * tilesize + offset, range, baseColor);
@@ -236,10 +236,10 @@ index dbe779461193af3f8b882a2db305eedfd457bd82..a13e73e2df99d12437489e3faf414b84
  
          public float estimateDps(){
 diff --git a/core/src/mindustry/world/blocks/defense/turrets/Turret.java b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
-index 5db6510b6453d024d1f973bbf6d5f227fe176530..b458a8b73455e57a8552b3b6f51e1ca8a83159af 100644
+index 860284e9b0722c2b3c1bca3399bc0de3f6b97835..1acb685ab182f18d2e05d162c4f48c18a855b540 100644
 --- a/core/src/mindustry/world/blocks/defense/turrets/Turret.java
 +++ b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
-@@ -405,6 +405,14 @@ public class Turret extends ReloadTurret{
+@@ -428,6 +428,14 @@ public class Turret extends ReloadTurret{
              if(drawMinRange){
                  Drawf.dashCircle(x, y, minRange(), team.color);
              }
@@ -302,18 +302,18 @@ index f311c8fee60ee864ad1596858ac9d00d3ea7915a..e22bd94e9a809de88c7a2341ac3b49eb
          returnItem = null;
          returnCount = 0;
 diff --git a/core/src/mindustry/world/blocks/storage/CoreBlock.java b/core/src/mindustry/world/blocks/storage/CoreBlock.java
-index c7d7871c57b8e59b4dc3af2a04c4729e94ba17c1..8c6fdda2b8910aaf18d1231a9cd27b906c3c7f8a 100644
+index c9411718a55d17c06ff2ad92ea084a915c3ee202..f6298e6a079db07c8e67f5c4b40e0eed98f69566 100644
 --- a/core/src/mindustry/world/blocks/storage/CoreBlock.java
 +++ b/core/src/mindustry/world/blocks/storage/CoreBlock.java
-@@ -91,6 +91,7 @@ public class CoreBlock extends StorageBlock{
+@@ -89,6 +89,7 @@ public class CoreBlock extends StorageBlock{
          player.set(core);
  
          if(!net.client()){
 +            player.team(tile.team());
              Unit unit = spawnType.create(tile.team());
-             unit.set(core);
-             unit.rotation(90f);
-@@ -723,6 +724,14 @@ public class CoreBlock extends StorageBlock{
+             //reset reload so that the player can't shoot immediately
+             for(var mount : unit.mounts){
+@@ -724,6 +725,14 @@ public class CoreBlock extends StorageBlock{
                  outline.get(core);
                  core.proximity.each(storage -> storage.items == items, outline);
              });

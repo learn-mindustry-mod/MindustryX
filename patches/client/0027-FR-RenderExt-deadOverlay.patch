@@ -8,7 +8,7 @@ Subject: [PATCH] FR(RenderExt) deadOverlay
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/core/src/mindustry/graphics/OverlayRenderer.java b/core/src/mindustry/graphics/OverlayRenderer.java
-index 6ec2d283acf2d661e1c06a7d53b86570e78d36bf..046ab73d7a5b2a3cc09f3ac10b5eb3032692eccd 100644
+index f2630eee5304e0df93763e533be8dd8b9f49a5dd..68c834ef7f96262d4bc13b9b336f9eaed58adff2 100644
 --- a/core/src/mindustry/graphics/OverlayRenderer.java
 +++ b/core/src/mindustry/graphics/OverlayRenderer.java
 @@ -71,7 +71,7 @@ public class OverlayRenderer{

@@ -9,7 +9,7 @@ Subject: [PATCH] OC: no bullet create when hidden
  2 files changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/entities/bullet/BulletType.java b/core/src/mindustry/entities/bullet/BulletType.java
-index d28a8e829243ece02898f4291fc3207eb0d3a7e1..5e0359ab01f14f10a4e0edb6e4d4da5d6d7926e6 100644
+index 76a0f1a42796f1ffb933733b55885dc422960cf2..65983a0029484cf4885fac787ee79feb8e6f0e92 100644
 --- a/core/src/mindustry/entities/bullet/BulletType.java
 +++ b/core/src/mindustry/entities/bullet/BulletType.java
 @@ -22,6 +22,7 @@ import mindustry.graphics.*;
@@ -20,19 +20,19 @@ index d28a8e829243ece02898f4291fc3207eb0d3a7e1..5e0359ab01f14f10a4e0edb6e4d4da5d
  
  import static mindustry.Vars.*;
  
-@@ -803,6 +804,7 @@ public class BulletType extends Content implements Cloneable{
+@@ -864,6 +865,7 @@ public class BulletType extends Content implements Cloneable{
          @Nullable Entityc owner, @Nullable Entityc shooter, Team team, float x, float y, float angle, float damage, float velocityScl,
          float lifetimeScl, Object data, @Nullable Mover mover, float aimX, float aimY, @Nullable Teamc target
      ){
 +        if(!RenderExt.bulletShow && net.client()) return null;
+         angle += angleOffset + Mathf.range(randomAngleOffset);
+ 
          if(!Mathf.chance(createChance)) return null;
-         if(ignoreSpawnAngle) angle = 0;
-         if(spawnUnit != null){
 diff --git a/core/src/mindustry/type/Weapon.java b/core/src/mindustry/type/Weapon.java
-index 36ddd96f325b49b989b910ca80d0c9ee08744098..87d4b92337dd7e43fade327f20077ab947983157 100644
+index 1bb5af3a7f362f1df2a44732c7c59d0315394ae6..5d19ab5fe98f282f1d97dcfd73190a6d433e475a 100644
 --- a/core/src/mindustry/type/Weapon.java
 +++ b/core/src/mindustry/type/Weapon.java
-@@ -523,7 +523,7 @@ public class Weapon implements Cloneable{
+@@ -528,7 +528,7 @@ public class Weapon implements Cloneable{
  
      //override to do special things to a bullet after spawning
      protected void handleBullet(Unit unit, WeaponMount mount, Bullet bullet){

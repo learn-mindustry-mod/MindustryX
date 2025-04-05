@@ -11,18 +11,14 @@ Content-Transfer-Encoding: 8bit
 * 列表状波次浏览
 * 其他细节优化
 ---
- core/src/mindustry/editor/WaveInfoDialog.java | 157 +++++++++++++++++-
- 1 file changed, 151 insertions(+), 6 deletions(-)
+ core/src/mindustry/editor/WaveInfoDialog.java | 156 +++++++++++++++++-
+ 1 file changed, 151 insertions(+), 5 deletions(-)
 
 diff --git a/core/src/mindustry/editor/WaveInfoDialog.java b/core/src/mindustry/editor/WaveInfoDialog.java
-index b4bc26acc2d26abe0dc2630f332fc40da08cd94f..8512279187815a856365ee8bd8eb8825292a8010 100644
+index 55e675caa05e8b7fb43b92bc2460e19daae7840e..2955efa7ee997307b2b056d44685ca59ff57a32b 100644
 --- a/core/src/mindustry/editor/WaveInfoDialog.java
 +++ b/core/src/mindustry/editor/WaveInfoDialog.java
-@@ -2,10 +2,10 @@ package mindustry.editor;
- 
- import arc.*;
- import arc.func.*;
--import arc.graphics.*;
+@@ -6,6 +6,7 @@ import arc.graphics.*;
  import arc.input.*;
  import arc.math.*;
  import arc.math.geom.*;
@@ -30,7 +26,7 @@ index b4bc26acc2d26abe0dc2630f332fc40da08cd94f..8512279187815a856365ee8bd8eb8825
  import arc.scene.event.*;
  import arc.scene.style.*;
  import arc.scene.ui.*;
-@@ -22,6 +22,8 @@ import mindustry.io.*;
+@@ -22,6 +23,8 @@ import mindustry.io.*;
  import mindustry.type.*;
  import mindustry.ui.*;
  import mindustry.ui.dialogs.*;
@@ -39,7 +35,7 @@ index b4bc26acc2d26abe0dc2630f332fc40da08cd94f..8512279187815a856365ee8bd8eb8825
  
  import static mindustry.Vars.*;
  import static mindustry.game.SpawnGroup.*;
-@@ -38,6 +40,11 @@ public class WaveInfoDialog extends BaseDialog{
+@@ -38,6 +41,11 @@ public class WaveInfoDialog extends BaseDialog{
      private boolean checkedSpawns;
      private WaveGraph graph = new WaveGraph();
  
@@ -51,7 +47,7 @@ index b4bc26acc2d26abe0dc2630f332fc40da08cd94f..8512279187815a856365ee8bd8eb8825
      public WaveInfoDialog(){
          super("@waves.title");
  
-@@ -90,6 +97,11 @@ public class WaveInfoDialog extends BaseDialog{
+@@ -90,6 +98,11 @@ public class WaveInfoDialog extends BaseDialog{
              dialog.show();
          }).size(250f, 64f);
  
@@ -63,7 +59,7 @@ index b4bc26acc2d26abe0dc2630f332fc40da08cd94f..8512279187815a856365ee8bd8eb8825
          buttons.button(Core.bundle.get("waves.random"), Icon.refresh, () -> {
              groups.clear();
              groups = Waves.generate(1f / 10f);
-@@ -149,11 +161,50 @@ public class WaveInfoDialog extends BaseDialog{
+@@ -149,11 +162,50 @@ public class WaveInfoDialog extends BaseDialog{
              setAlignment(Align.center, Align.center);
          }}).width(390f).growY();
  
@@ -115,7 +111,7 @@ index b4bc26acc2d26abe0dc2630f332fc40da08cd94f..8512279187815a856365ee8bd8eb8825
      void buildGroups(){
          table.clear();
          table.top();
-@@ -172,12 +223,25 @@ public class WaveInfoDialog extends BaseDialog{
+@@ -172,12 +224,25 @@ public class WaveInfoDialog extends BaseDialog{
                      t.button(b -> {
                          b.left();
                          b.image(group.type.uiIcon).size(32f).padRight(3).scaling(Scaling.fit);
@@ -144,7 +140,7 @@ index b4bc26acc2d26abe0dc2630f332fc40da08cd94f..8512279187815a856365ee8bd8eb8825
                          b.button(Icon.copySmall, Styles.emptyi, () -> {
                              groups.insert(groups.indexOf(group) + 1, expandedGroup = group.copy());
                              buildGroups();
-@@ -339,7 +403,48 @@ public class WaveInfoDialog extends BaseDialog{
+@@ -346,7 +411,48 @@ public class WaveInfoDialog extends BaseDialog{
                                  dialog.show();
                              }).width(160f).height(36f).get().getLabel().setText(() -> group.spawn == -1 ? "@waves.spawn.all" : Point2.x(group.spawn) + ", " + Point2.y(group.spawn));
  
@@ -194,7 +190,7 @@ index b4bc26acc2d26abe0dc2630f332fc40da08cd94f..8512279187815a856365ee8bd8eb8825
                      }
                  }).width(340f).pad(8);
  
-@@ -390,6 +495,46 @@ public class WaveInfoDialog extends BaseDialog{
+@@ -397,6 +503,46 @@ public class WaveInfoDialog extends BaseDialog{
          dialog.show();
      }
  

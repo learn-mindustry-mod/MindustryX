@@ -9,7 +9,7 @@ Subject: [PATCH] FC(LogicExt) invertMapClick
  2 files changed, 16 insertions(+), 4 deletions(-)
 
 diff --git a/core/src/mindustry/ui/Minimap.java b/core/src/mindustry/ui/Minimap.java
-index e48a22d87fb903c0cd94b7c15db1dba07ca95d8c..613deb3cedeef954042710e483aab91193a24c8b 100644
+index b7bca8bd4b40739013f94b889352f8085e3d5698..e7b82356c37f2f58102521ae9a6ef7670f623d6b 100644
 --- a/core/src/mindustry/ui/Minimap.java
 +++ b/core/src/mindustry/ui/Minimap.java
 @@ -9,11 +9,13 @@ import arc.scene.event.*;
@@ -68,7 +68,7 @@ index e48a22d87fb903c0cd94b7c15db1dba07ca95d8c..613deb3cedeef954042710e483aab911
                  tapSquareSize = Scl.scl(11f);
              }
 diff --git a/core/src/mindustry/ui/fragments/MinimapFragment.java b/core/src/mindustry/ui/fragments/MinimapFragment.java
-index 2fe8df586eb0a3907334e45b1639b9534e4b292c..89e00d6356c65d1bff200857e3769583a78aa316 100644
+index d595b9beaeb1073646f721c0385352bcd634e601..d82ea0ea4633d3987090871a8fe018cf773b4099 100644
 --- a/core/src/mindustry/ui/fragments/MinimapFragment.java
 +++ b/core/src/mindustry/ui/fragments/MinimapFragment.java
 @@ -13,6 +13,7 @@ import arc.util.*;

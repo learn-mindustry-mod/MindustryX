@@ -8,7 +8,7 @@ Subject: [PATCH] F.API: Add `LogicBlock.running`
  1 file changed, 5 insertions(+)
 
 diff --git a/core/src/mindustry/world/blocks/logic/LogicBlock.java b/core/src/mindustry/world/blocks/logic/LogicBlock.java
-index b978be999320695d1fcc6a7abfb19b463411d97d..3f83e47e8f34230fe6a6df99ff871b48dcaa932b 100644
+index d4de29df11d657fbc769f14e185a4d54b6838001..b8e8358fab4bf9ca833c6b4de7f54b1972043fa2 100644
 --- a/core/src/mindustry/world/blocks/logic/LogicBlock.java
 +++ b/core/src/mindustry/world/blocks/logic/LogicBlock.java
 @@ -24,6 +24,7 @@ import mindustry.ui.*;
@@ -33,7 +33,7 @@ index b978be999320695d1fcc6a7abfb19b463411d97d..3f83e47e8f34230fe6a6df99ff871b48
                  if(accumulator > maxInstructionScale * ipt) accumulator = maxInstructionScale * ipt;
  
 +                running = true;
-                 for(int i = 0; i < (int)accumulator; i++){
+                 while(accumulator >= 1f){
                      executor.runOnce();
                      accumulator --;
 @@ -547,6 +551,7 @@ public class LogicBlock extends Block{

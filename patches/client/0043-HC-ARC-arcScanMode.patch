@@ -49,7 +49,7 @@ index fa11e9f00f1e62b7bfb78067d1da88e405f91ab3..0bb4a1343cd3d5a030fd1ced72173172
      }
  }
 diff --git a/core/src/mindustry/world/blocks/distribution/MassDriver.java b/core/src/mindustry/world/blocks/distribution/MassDriver.java
-index 7fc0d5f0ec12e7d2aaa70d32beebed9027914449..f749a280f0307a1c44294b6ebcba25808f429ef0 100644
+index 4aef759357661787b2b61e542671f1c6f78d5dc1..2b29f1128fb6bee59fe1d22ee81fb14618edf686 100644
 --- a/core/src/mindustry/world/blocks/distribution/MassDriver.java
 +++ b/core/src/mindustry/world/blocks/distribution/MassDriver.java
 @@ -335,6 +335,9 @@ public class MassDriver extends Block{

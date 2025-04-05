@@ -6,12 +6,12 @@ Subject: [PATCH] FS: Add icons.properties,bundles,block_colors.png to server
 
 ---
  core/src/mindustry/net/Administration.java    |  1 +
- server/build.gradle                           | 24 +++++++++----------
+ server/build.gradle                           | 25 +++++++++----------
  .../src/mindustry/server/ServerLauncher.java  |  2 +-
- 3 files changed, 14 insertions(+), 13 deletions(-)
+ 3 files changed, 14 insertions(+), 14 deletions(-)
 
 diff --git a/core/src/mindustry/net/Administration.java b/core/src/mindustry/net/Administration.java
-index 0f64b9850a79188c5dbbbb8cf17dd40e84f050d0..e65ca5ec5b369653da2acbd10eb5df1a4d52ff46 100644
+index d9104cb55e9bf7471807dd9d49eaa50763cecd24..cf679a0c1d2d140ad01d57f766fcdd5a829a069a 100644
 --- a/core/src/mindustry/net/Administration.java
 +++ b/core/src/mindustry/net/Administration.java
 @@ -488,6 +488,7 @@ public class Administration{
@@ -23,10 +23,10 @@ index 0f64b9850a79188c5dbbbb8cf17dd40e84f050d0..e65ca5ec5b369653da2acbd10eb5df1a
          showConnectMessages = new Config("showConnectMessages", "Whether to display connect/disconnect messages.", true),
          enableVotekick = new Config("enableVotekick", "Whether votekick is enabled.", true),
 diff --git a/server/build.gradle b/server/build.gradle
-index 079379178548b8c3fc9257668f85c3bf9935c9cc..d57060fff7ec12b93198dca4b447ca68f4c9c076 100644
+index 91a4a0f02776a87bee4323993c19ba5e7a7609b4..d57060fff7ec12b93198dca4b447ca68f4c9c076 100644
 --- a/server/build.gradle
 +++ b/server/build.gradle
-@@ -31,18 +31,18 @@ task dist(type: Jar, dependsOn: configurations.runtimeClasspath){
+@@ -31,19 +31,18 @@ task dist(type: Jar, dependsOn: configurations.runtimeClasspath){
      from files(sourceSets.main.output.classesDirs)
      from files(sourceSets.main.output.resourcesDir)
      from {configurations.runtimeClasspath.collect{ it.isDirectory() ? it : zipTree(it) }}
@@ -37,6 +37,7 @@ index 079379178548b8c3fc9257668f85c3bf9935c9cc..d57060fff7ec12b93198dca4b447ca68
 -    exclude("fonts/**")
 -    exclude("bundles/**")
 -    exclude("cubemaps/**")
+-    exclude("config/**")
 -    exclude("cursors/**")
 -    exclude("shaders/**")
 -    exclude("icons/icon.icns")

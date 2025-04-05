@@ -14,10 +14,10 @@ Content-Transfer-Encoding: 8bit
  3 files changed, 18 insertions(+), 22 deletions(-)
 
 diff --git a/core/src/mindustry/ClientLauncher.java b/core/src/mindustry/ClientLauncher.java
-index 75fd5ebb44895bf0d78504703c581d872c5a2d53..16b7b53064c591dbd8f4336411861ab0fc49bfa8 100644
+index 6b69c2d175dd47163842f15d1e8148751d4f78e5..bedb08d781b3fd0bc0fcf407158e216317f69595 100644
 --- a/core/src/mindustry/ClientLauncher.java
 +++ b/core/src/mindustry/ClientLauncher.java
-@@ -155,10 +155,8 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
+@@ -156,10 +156,8 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
  
          assets.load(new Vars());
  
@@ -29,7 +29,7 @@ index 75fd5ebb44895bf0d78504703c581d872c5a2d53..16b7b53064c591dbd8f4336411861ab0
          assets.loadRun("maps", Map.class, () -> maps.loadPreviews());
  
          Musics.load();
-@@ -173,11 +171,11 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
+@@ -174,11 +172,11 @@ public abstract class ClientLauncher extends ApplicationCore implements Platform
          });
  
          assets.load(mods);
@@ -58,7 +58,7 @@ index 7266031779aef1048f5045b26b5281a686edf9d8..783c24fb6ba1c727db95525edfd1ea6d
          Colors.put("accent", Pal.accent);
          Colors.put("unlaunched", Color.valueOf("8982ed"));
 diff --git a/core/src/mindustry/ui/Fonts.java b/core/src/mindustry/ui/Fonts.java
-index c02e09ff53a80aaf540223828208ad86b96d4bec..916b2ba5102ef670704e64a1f058c477c992d6dc 100644
+index ef68462bf6212b7caf5010ccdcac3c8fda601246..b0187a93a5daee8575ad5fd825b724fd64490669 100644
 --- a/core/src/mindustry/ui/Fonts.java
 +++ b/core/src/mindustry/ui/Fonts.java
 @@ -61,11 +61,25 @@ public class Fonts{
@@ -96,7 +96,7 @@ index c02e09ff53a80aaf540223828208ad86b96d4bec..916b2ba5102ef670704e64a1f058c477
      }
  
      public static @Nullable String unicodeToName(int unicode){
-@@ -209,20 +225,6 @@ public class Fonts{
+@@ -233,20 +249,6 @@ public class Fonts{
              }
          });
  

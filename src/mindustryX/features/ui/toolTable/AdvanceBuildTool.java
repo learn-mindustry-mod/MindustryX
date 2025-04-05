@@ -164,7 +164,7 @@ public class AdvanceBuildTool extends ToolTableBase{
 
     void replaceBlock(Block ori, Block re){
         if(player.dead()) return;
-        player.team().data().buildings.each(building -> building.block() == ori && contain(building.tile),
+        player.team().data().buildings.each(building -> building.block == ori && contain(building.tile),
         building -> player.unit().addBuild(new BuildPlan(building.tile.x, building.tile.y, building.rotation, re, building.config())));
     }
 

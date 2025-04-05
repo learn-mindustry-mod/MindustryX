@@ -41,7 +41,7 @@ public class ArcUnits{
             unitWeaponRange = Core.settings.getInt("unitWeaponRange") * tilesize;
             unitWeaponRangeAlpha = Core.settings.getInt("unitWeaponRangeAlpha") / 100f;
 
-            selectedUnitsFlyer = control.input.selectedUnits.contains(Flyingc::isFlying);
+            selectedUnitsFlyer = control.input.selectedUnits.contains(Unitc::isFlying);
             selectedUnitsLand = control.input.selectedUnits.contains(unit -> !unit.isFlying());
 
             curStroke = (float)Core.settings.getInt("playerEffectCurStroke") / 10f;
@@ -160,7 +160,7 @@ public class ArcUnits{
     private static void drawHealthBar(Unit unit){
         Draw.z(Layer.shields + 6f);
         float y_corr = 0f;
-        if(!player.dead() && unit.hitSize < 30f && unit.hitSize > 20f && unit.controller().isBeingControlled(player.unit())) y_corr = 2f;
+        if(!player.dead() && unit.hitSize < 30f && unit.hitSize > 20f && unit.isPlayer()) y_corr = 2f;
         if(unit.health < unit.maxHealth){
             Lines.stroke(4f);
             Draw.color(unit.team.color, 0.5f);

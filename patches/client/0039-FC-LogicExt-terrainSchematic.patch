@@ -13,7 +13,7 @@ Content-Transfer-Encoding: 8bit
  2 files changed, 33 insertions(+), 6 deletions(-)
 
 diff --git a/core/src/mindustry/game/Schematics.java b/core/src/mindustry/game/Schematics.java
-index 8996a4292eefa05cba61a174e3469971dd881c13..15839a721b90ed5dcb9b4e723e9dbb66da4e57d4 100644
+index 65d9730a4b62680e00f087f8a98781faa1eae6f9..0460ecae6dd90b99b31e8387080a108f04d7e526 100644
 --- a/core/src/mindustry/game/Schematics.java
 +++ b/core/src/mindustry/game/Schematics.java
 @@ -34,6 +34,7 @@ import mindustry.world.blocks.sandbox.*;
@@ -97,7 +97,7 @@ index 8996a4292eefa05cba61a174e3469971dd881c13..15839a721b90ed5dcb9b4e723e9dbb66
          return new Schematic(tiles, new StringMap(), width, height);
      }
 diff --git a/core/src/mindustry/world/blocks/environment/Floor.java b/core/src/mindustry/world/blocks/environment/Floor.java
-index 2ea499d015317d7d76b987274733b4557bfaffd0..7380b7c5f92bd971ca5af501c9b0b65b22bd0b21 100644
+index 79d31cd6486de86ff156d41dbfe83c1f0121306d..5d7f080d9435b7e6e03be7691c76e0f7c40040cf 100644
 --- a/core/src/mindustry/world/blocks/environment/Floor.java
 +++ b/core/src/mindustry/world/blocks/environment/Floor.java
 @@ -94,6 +94,7 @@ public class Floor extends Block{

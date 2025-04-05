@@ -10,7 +10,7 @@ Subject: [PATCH] H.API: add LogicAssembledEvent
  3 files changed, 18 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/logic/LParser.java b/core/src/mindustry/logic/LParser.java
-index 6f65e9981f2291d1c892c23f3ec8603aec8e3a4c..32133826223d3e4fe1be991c8abd3bc23d720779 100644
+index 25b7bc9ea1fe595583ae65abc1dec2c48a545661..32769d6ee3e25f884f53ce1d67a22dc51533f77c 100644
 --- a/core/src/mindustry/logic/LParser.java
 +++ b/core/src/mindustry/logic/LParser.java
 @@ -5,6 +5,8 @@ import arc.util.*;
@@ -22,8 +22,8 @@ index 6f65e9981f2291d1c892c23f3ec8603aec8e3a4c..32133826223d3e4fe1be991c8abd3bc2
  public class LParser{
      private static final String[] tokens = new String[16];
      private static final int maxJumps = 500;
-@@ -155,7 +157,7 @@ public class LParser{
-                         statements.add(LAssembler.customParsers.get(tokens[0]).get(tokens));
+@@ -161,7 +163,7 @@ public class LParser{
+                         }
                      }else{
                          //unparseable statement
 -                        statements.add(new InvalidStatement());
@@ -61,7 +61,7 @@ index 4a61bb70c0ce2ee78cacb578138578c14700ce05..eda6c92c970e9f3f632094cd5018dcdf
          @Override
          public void build(Table table){
 diff --git a/core/src/mindustry/world/blocks/logic/LogicBlock.java b/core/src/mindustry/world/blocks/logic/LogicBlock.java
-index 3f83e47e8f34230fe6a6df99ff871b48dcaa932b..ee667f5f8b96bb248fa8b097a5b04c0428f34f7e 100644
+index b8e8358fab4bf9ca833c6b4de7f54b1972043fa2..24465dba760b6204352aaa767287175307264e48 100644
 --- a/core/src/mindustry/world/blocks/logic/LogicBlock.java
 +++ b/core/src/mindustry/world/blocks/logic/LogicBlock.java
 @@ -1,5 +1,6 @@

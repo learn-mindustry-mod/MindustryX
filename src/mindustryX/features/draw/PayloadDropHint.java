@@ -40,7 +40,7 @@ public class PayloadDropHint{
                 draw(center, block, build.rotation * 90, valid);
             }else if(payload instanceof UnitPayload p){
                 var u = p.unit;
-                boolean valid = u.canPass(on.x, on.y) && Units.count(u.x, u.y, u.physicSize(), Flyingc::isGrounded) <= 1;
+                boolean valid = u.canPass(on.x, on.y) && Units.count(u.x, u.y, u.physicSize(), Unitc::isGrounded) <= 1;
                 draw(payload, payload.content(), u.rotation - 90, valid);
             }
         }

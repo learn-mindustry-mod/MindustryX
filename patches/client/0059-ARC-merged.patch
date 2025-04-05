@@ -93,7 +93,7 @@ way-zer <himc.wicp@gmail.com> on 2024/7/28
 * 更改开雾功能实现
 way-zer <himc.wicp@gmail.com> on 2024/9/8
 ---
- core/src/mindustry/ai/BlockIndexer.java       | 116 +++++++++
+ core/src/mindustry/ai/BlockIndexer.java       |  13 +
  core/src/mindustry/editor/MapInfoDialog.java  |   9 +-
  .../mindustry/entities/comp/BuildingComp.java |  18 +-
  .../mindustry/entities/comp/ShieldComp.java   |  10 +
@@ -102,7 +102,7 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  .../src/mindustry/graphics/BlockRenderer.java |  17 +-
  .../mindustry/graphics/OverlayRenderer.java   |  39 ++-
  core/src/mindustry/input/DesktopInput.java    |  82 +++++-
- core/src/mindustry/input/InputHandler.java    |  47 +++-
+ core/src/mindustry/input/InputHandler.java    |  45 +++-
  core/src/mindustry/input/MobileInput.java     |  16 +-
  core/src/mindustry/logic/LExecutor.java       |  12 +-
  core/src/mindustry/type/UnitType.java         |  91 ++++++-
@@ -122,173 +122,60 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  .../ui/fragments/PlacementFragment.java       | 164 ++++++++++--
  .../ui/fragments/PlayerListFragment.java      |  72 ++----
  core/src/mindustry/world/Block.java           |   7 +-
- 29 files changed, 1379 insertions(+), 169 deletions(-)
+ 29 files changed, 1275 insertions(+), 168 deletions(-)
 
 diff --git a/core/src/mindustry/ai/BlockIndexer.java b/core/src/mindustry/ai/BlockIndexer.java
-index 7f944a3eb06180f9e2b760bbd5aa41709ddf6611..4972f424edd41b8a29d926a09bc55987066d33aa 100644
+index 1206dc71d1d87b2a5432898a3991a93260b475e7..a4667fba1a0bb1406fb73bd332dc90323f7d7a9d 100644
 --- a/core/src/mindustry/ai/BlockIndexer.java
 +++ b/core/src/mindustry/ai/BlockIndexer.java
-@@ -42,6 +42,14 @@ public class BlockIndexer{
-     /** Array used for returning and reusing. */
-     private Seq<Building> breturnArray = new Seq<>(Building.class);
+@@ -49,6 +49,9 @@ public class BlockIndexer{
+     /** Maps block flag to a list of floor tiles that have it. */
+     private Seq<Tile>[] floorMap;
  
-+    /** Stores all wallore quadrants on the map. Maps ID to qX to qY to a list of tiles with that ore. */
-+    private IntSeq[][][] oresWall;
-+    /** All wallores available on this map. */
-+    private final ObjectIntMap<Item> allOresWall = new ObjectIntMap<>();
-+
-+    public Integer[] floorOresCount = new Integer[content.blocks().size +1];
-+    public Integer[] wallOresCount = new Integer[content.blocks().size +1];
++    public int[] floorOresCount = new int[content.blocks().size +1];
++    public int[] wallOresCount = new int[content.blocks().size +1];
 +
      public BlockIndexer(){
          clearFlags();
  
-@@ -61,7 +69,15 @@ public class BlockIndexer{
-             clearFlags();
+@@ -75,6 +78,8 @@ public class BlockIndexer{
  
              allOres.clear();
-+            allOresWall.clear();
-+            floorOresCount = new Integer[content.blocks().size +1];
-+            wallOresCount = new Integer[content.blocks().size +1];
-+            for (int ls=0;ls<content.blocks().size;ls++){
-+                floorOresCount[ls] = 0;
-+                wallOresCount[ls] = 0;
-+            }
+             allWallOres.clear();
++            floorOresCount = new int[content.blocks().size +1];
++            wallOresCount = new int[content.blocks().size +1];
              ores = new IntSeq[content.items().size][][];
-+            oresWall = new IntSeq[content.items().size][][];
+             wallOres = new IntSeq[content.items().size][][];
              quadWidth = Mathf.ceil(world.width() / (float)quadrantSize);
-             quadHeight = Mathf.ceil(world.height() / (float)quadrantSize);
-             blocksPresent = new boolean[content.blocks().size];
-@@ -94,8 +110,36 @@ public class BlockIndexer{
-                         }
+@@ -104,6 +109,8 @@ public class BlockIndexer{
+                         if(ores[drop.id][qx][qy] == null) ores[drop.id][qx][qy] = new IntSeq(false, 16);
                          ores[drop.id][qx][qy].add(tile.pos());
                          allOres.increment(drop);
 +                        if(tile.overlay().itemDrop!=null) floorOresCount[tile.overlay().id] +=1;
 +                        else if(tile.floor().itemDrop!=null) floorOresCount[tile.floor().id] +=1;
-+                    }else{
-+                        if(oresWall[drop.id] == null){
-+                            oresWall[drop.id] = new IntSeq[quadWidth][quadHeight];
-+                        }
-+                        if(oresWall[drop.id][qx][qy] == null){
-+                            oresWall[drop.id][qx][qy] = new IntSeq(false, 16);
-+                        }
-+                        oresWall[drop.id][qx][qy].add(tile.pos());
-+                        allOresWall.increment(drop);
-+                        if(tile.overlay().itemDrop!=null) wallOresCount[tile.overlay().id] +=1;
                      }
+                 }else if((drop = tile.wallDrop()) != null){
+                     //add position of quadrant to list
+@@ -111,6 +118,7 @@ public class BlockIndexer{
+                     if(wallOres[drop.id][qx][qy] == null) wallOres[drop.id][qx][qy] = new IntSeq(false, 16);
+                     wallOres[drop.id][qx][qy].add(tile.pos());
+                     allWallOres.increment(drop);
++                    wallOresCount[tile.block().id] += 1;
                  }
-+                if(tile.block()!=null && tile.block().itemDrop!=null){
-+                    int qx = (tile.x / quadrantSize);
-+                    int qy = (tile.y / quadrantSize);
-+                    if(oresWall[tile.block().itemDrop.id] == null){
-+                        oresWall[tile.block().itemDrop.id] = new IntSeq[quadWidth][quadHeight];
-+                    }
-+                    if(oresWall[tile.block().itemDrop.id][qx][qy] == null){
-+                        oresWall[tile.block().itemDrop.id][qx][qy] = new IntSeq(false, 16);
-+                    }
-+                    oresWall[tile.block().itemDrop.id][qx][qy].add(tile.pos());
-+                    allOresWall.increment(tile.block().itemDrop);
-+                    wallOresCount[tile.block().id] +=1;
-+                }
-+                if(tile.block()!=null && tile.floor().liquidDrop!=null){
-+                    floorOresCount[tile.floor().id] +=1;
-+                }
              }
-         });
-     }
-@@ -168,6 +212,50 @@ public class BlockIndexer{
-                 seq.removeValue(pos);
-                 allOres.increment(drop, -1);
-             }
-+
-+
-+            ///wallore
-+            if(oresWall[drop.id] == null){
-+                oresWall[drop.id] = new IntSeq[quadWidth][quadHeight];
-+            }
-+            if(oresWall[drop.id][qx][qy] == null){
-+                oresWall[drop.id][qx][qy] = new IntSeq(false, 16);
-+            }
-+
-+            pos = tile.pos();
-+            seq = oresWall[drop.id][qx][qy];
-+            //when the drop can be mined, record the ore position
-+            if(tile.block() != Blocks.air && !seq.contains(pos)){
-+                seq.add(pos);
-+                allOresWall.increment(drop);
-+            }else{
-+                //otherwise, it likely became blocked, remove it (even if it wasn't there)
-+                seq.removeValue(pos);
-+                allOresWall.increment(drop, -1);
-+            }
-+        }
-+        else if(tile.block()!=null && tile.block().itemDrop!=null){
-+            int qx = tile.x / quadrantSize;
-+            int qy = tile.y / quadrantSize;
-+            ///wallore
-+            if(oresWall[tile.block().itemDrop.id] == null){
-+                oresWall[tile.block().itemDrop.id] = new IntSeq[quadWidth][quadHeight];
-+            }
-+            if(oresWall[tile.block().itemDrop.id][qx][qy] == null){
-+                oresWall[tile.block().itemDrop.id][qx][qy] = new IntSeq(false, 16);
-+            }
-+
-+            int pos = tile.pos();
-+            var seq = oresWall[tile.block().itemDrop.id][qx][qy];
-+            //when the drop can be mined, record the ore position
-+            if(!seq.contains(pos)){
-+                seq.add(pos);
-+                allOresWall.increment(tile.block().itemDrop);
-+            }else{
-+                //otherwise, it likely became blocked, remove it (even if it wasn't there)
-+                seq.removeValue(pos);
-+                allOresWall.increment(tile.block().itemDrop, -1);
-+            }
-         }
  
-     }
-@@ -194,6 +282,10 @@ public class BlockIndexer{
-         return allOres.get(item) > 0;
+@@ -260,6 +268,11 @@ public class BlockIndexer{
+         return allWallOres.get(item) > 0;
      }
  
++    @Deprecated//ARC
 +    public boolean hasOreWall(Item item){
-+        return allOresWall.get(item) > 0;
++        return hasWallOre(item);
 +    }
 +
      /** Returns all damaged tiles by team. */
      public Seq<Building> getDamaged(Team team){
          if(damagedTiles[team.id] == null){
-@@ -437,6 +529,30 @@ public class BlockIndexer{
-         return findClosestOre(unit.x, unit.y, item);
-     }
- 
-+    public Tile findClosestWallOre(float xp, float yp, Item item){
-+        if(oresWall[item.id] != null){
-+            float minDst = 0f;
-+            Tile closest = null;
-+            for(int qx = 0; qx < quadWidth; qx++){
-+                for(int qy = 0; qy < quadHeight; qy++){
-+                    var arr = oresWall[item.id][qx][qy];
-+                    if(arr != null && arr.size > 0){
-+                        Tile tile = world.tile(arr.first());
-+                        if(tile.block() != Blocks.air){
-+                            float dst = Mathf.dst2(xp, yp, tile.worldx(), tile.worldy());
-+                            if(closest == null || dst < minDst){
-+                                closest = tile;
-+                                minDst = dst;
-+                            }
-+                        }
-+                    }
-+                }
-+            }
-+            return closest;
-+        }
-+
-+        return null;
-+    }
-     private void process(Tile tile){
-         var team = tile.team();
-         //only process entity changes with centered tiles
 diff --git a/core/src/mindustry/editor/MapInfoDialog.java b/core/src/mindustry/editor/MapInfoDialog.java
 index ebc1f0b300d295e45333f1db38ea299c9658ec20..e7cba056743979206c84fc6d00472c2c44b565f6 100644
 --- a/core/src/mindustry/editor/MapInfoDialog.java
@@ -323,10 +210,10 @@ index ebc1f0b300d295e45333f1db38ea299c9658ec20..e7cba056743979206c84fc6d00472c2c
                      hide();
                  }).marginLeft(10f);
 diff --git a/core/src/mindustry/entities/comp/BuildingComp.java b/core/src/mindustry/entities/comp/BuildingComp.java
-index 6b7043d1c10378537aa66df480aacffe45ec922d..d8bacbcb2044aabda173d891c9b108df2d718af6 100644
+index e4e10b1d313af5aeb4b8ca9c47ea9fed596906da..bbbea8d3e4721f7a6432fd5ca4fae8a8fde1501c 100644
 --- a/core/src/mindustry/entities/comp/BuildingComp.java
 +++ b/core/src/mindustry/entities/comp/BuildingComp.java
-@@ -41,6 +41,7 @@ import mindustry.world.blocks.power.*;
+@@ -40,6 +40,7 @@ import mindustry.world.blocks.power.*;
  import mindustry.world.consumers.*;
  import mindustry.world.meta.*;
  import mindustry.world.modules.*;
@@ -334,7 +221,7 @@ index 6b7043d1c10378537aa66df480aacffe45ec922d..d8bacbcb2044aabda173d891c9b108df
  
  import java.util.*;
  
-@@ -77,6 +78,7 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
+@@ -76,6 +77,7 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
  
      transient boolean enabled = true;
      transient @Nullable Building lastDisabler;
@@ -342,7 +229,7 @@ index 6b7043d1c10378537aa66df480aacffe45ec922d..d8bacbcb2044aabda173d891c9b108df
  
      @Nullable PowerModule power;
      @Nullable ItemModule items;
-@@ -557,7 +559,7 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
+@@ -561,7 +563,7 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
      }
  
      public boolean interactable(Team team){
@@ -351,7 +238,7 @@ index 6b7043d1c10378537aa66df480aacffe45ec922d..d8bacbcb2044aabda173d891c9b108df
      }
  
      public float timeScale(){
-@@ -1438,7 +1440,8 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
+@@ -1448,7 +1450,8 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
          //derelict team icon currently doesn't display
          return team == Team.derelict ?
              block.localizedName + "\n" + Core.bundle.get("block.derelict") :
@@ -361,7 +248,7 @@ index 6b7043d1c10378537aa66df480aacffe45ec922d..d8bacbcb2044aabda173d891c9b108df
      }
  
      public TextureRegion getDisplayIcon(){
-@@ -1462,7 +1465,7 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
+@@ -1472,7 +1475,7 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
          table.row();
  
          //only display everything else if the team is the same
@@ -370,7 +257,7 @@ index 6b7043d1c10378537aa66df480aacffe45ec922d..d8bacbcb2044aabda173d891c9b108df
              table.table(bars -> {
                  bars.defaults().growX().height(18f).pad(4);
  
-@@ -1563,6 +1566,15 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
+@@ -1573,6 +1576,15 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
              table.add(result).growX();
              table.row();
          }
@@ -420,11 +307,11 @@ index f2f6e4c8083486ee5f764a6f13af232da4534300..1e06d2950428331e65745d4821d3c53f
      }
  }
 diff --git a/core/src/mindustry/entities/comp/StatusComp.java b/core/src/mindustry/entities/comp/StatusComp.java
-index 4d3dd11dd07972d4c6dcada51ece6382586fb986..edd79bbd195b7f108534e333375487534462559c 100644
+index a361ce68a89350290b4514f24713c7bf874ec58e..35ce3665581b35c64e0f3c16f8358ea2c2bda818 100644
 --- a/core/src/mindustry/entities/comp/StatusComp.java
 +++ b/core/src/mindustry/entities/comp/StatusComp.java
-@@ -240,4 +240,7 @@ abstract class StatusComp implements Posc, Flyingc{
-     boolean hasEffect(StatusEffect effect){
+@@ -246,4 +246,7 @@ abstract class StatusComp implements Posc{
+     public boolean hasEffect(StatusEffect effect){
          return applied.get(effect.id);
      }
 +    Seq<StatusEntry> statuses(){
@@ -569,10 +456,10 @@ index dde5886f6020aa1c372ac3346e81aab0c7fdedf7..793e1b23c43d7beb6677d8e29f6c9e22
          ItemSeq requirements = new ItemSeq();
  
 diff --git a/core/src/mindustry/graphics/BlockRenderer.java b/core/src/mindustry/graphics/BlockRenderer.java
-index f99e534383b00780f427b14b95daa11cc7b19300..5ae574d597587ce387bf9038860d0ae242f7f215 100644
+index 50051d1ffebc609cee8be5158ccbfbbacd2d8c74..5bad4061338d21001d083cd00fe67f0d855b2d49 100644
 --- a/core/src/mindustry/graphics/BlockRenderer.java
 +++ b/core/src/mindustry/graphics/BlockRenderer.java
-@@ -444,13 +444,18 @@ public class BlockRenderer{
+@@ -454,13 +454,18 @@ public class BlockRenderer{
                          Draw.z(Layer.block);
                      }
  
@@ -588,7 +475,7 @@ index f99e534383b00780f427b14b95daa11cc7b19300..5ae574d597587ce387bf9038860d0ae2
 +                        if(renderer.drawStatus && block.hasConsumers){
 +                            build.drawStatus();
 +                        }
-+                        if(RenderExt.drawBlockDisabled && !build.enabled()){
++                        if(RenderExt.drawBlockDisabled && !build.enabled){
 +                            Draw.z(Layer.power + 1);
 +                            build.drawDisabled();
                          }
@@ -598,7 +485,7 @@ index f99e534383b00780f427b14b95daa11cc7b19300..5ae574d597587ce387bf9038860d0ae2
                  }
                  Draw.reset();
 diff --git a/core/src/mindustry/graphics/OverlayRenderer.java b/core/src/mindustry/graphics/OverlayRenderer.java
-index 046ab73d7a5b2a3cc09f3ac10b5eb3032692eccd..730144555e5f1cd9fb26b1e08256b235e87610f8 100644
+index 68c834ef7f96262d4bc13b9b336f9eaed58adff2..3451b370c7073a7cb8299ee04487a840ade1222d 100644
 --- a/core/src/mindustry/graphics/OverlayRenderer.java
 +++ b/core/src/mindustry/graphics/OverlayRenderer.java
 @@ -17,6 +17,7 @@ import mindustry.gen.*;
@@ -693,7 +580,7 @@ index 046ab73d7a5b2a3cc09f3ac10b5eb3032692eccd..730144555e5f1cd9fb26b1e08256b235
  
      public void checkApplySelection(Unit u){
 diff --git a/core/src/mindustry/input/DesktopInput.java b/core/src/mindustry/input/DesktopInput.java
-index 0ec79e1ab6a75a4b42429c5b6210d20256265c18..0e8b3adcac4ae3f0992eb3c993208faf55ddae8d 100644
+index c0212b80814b19c35ba2a45bbce633e8aa4014b3..beaf3b5344af605731f48f5edbe70ff87ec7e87a 100644
 --- a/core/src/mindustry/input/DesktopInput.java
 +++ b/core/src/mindustry/input/DesktopInput.java
 @@ -14,17 +14,25 @@ import arc.scene.ui.layout.*;
@@ -848,7 +735,7 @@ index 0ec79e1ab6a75a4b42429c5b6210d20256265c18..0e8b3adcac4ae3f0992eb3c993208faf
          player.mouseY = unit.aimY();
  
 diff --git a/core/src/mindustry/input/InputHandler.java b/core/src/mindustry/input/InputHandler.java
-index 728abd67b9c024789fc8fb8554001bb20e0c8716..ed9bdc66157e48ad669dcde4f15a848d730d37e0 100644
+index f095acffde3fdb5845ec0a664ff24e0897969641..c4380297dd95c8d4427596acebd6f5892a3d26e1 100644
 --- a/core/src/mindustry/input/InputHandler.java
 +++ b/core/src/mindustry/input/InputHandler.java
 @@ -37,11 +37,13 @@ import mindustry.world.*;
@@ -873,16 +760,7 @@ index 728abd67b9c024789fc8fb8554001bb20e0c8716..ed9bdc66157e48ad669dcde4f15a848d
      private Seq<BuildPlan> plansOut = new Seq<>(BuildPlan.class);
      private QuadTree<BuildPlan> playerPlanTree = new QuadTree<>(new Rect());
  
-@@ -636,7 +639,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
-                 player.con.send(packet, true);
-             }
- 
--            throw new ValidateException(player, "Player cannot configure a tile.");
-+            if(headless) throw new ValidateException(player, "Player cannot configure a tile.");
-         }
-         build.configured(player == null || player.dead() ? null : player.unit(), value);
-         Events.fire(new ConfigEvent(build, player, value));
-@@ -660,7 +663,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -667,7 +670,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
              throw new ValidateException(player, "Player cannot control a building.");
          }
  
@@ -891,7 +769,7 @@ index 728abd67b9c024789fc8fb8554001bb20e0c8716..ed9bdc66157e48ad669dcde4f15a848d
              var before = player.unit();
  
              build.onControlSelect(player.unit());
-@@ -810,7 +813,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -817,7 +820,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
      }
  
      public void update(){
@@ -900,7 +778,7 @@ index 728abd67b9c024789fc8fb8554001bb20e0c8716..ed9bdc66157e48ad669dcde4f15a848d
              spectating = null;
          }
  
-@@ -1042,6 +1045,8 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -1049,6 +1052,8 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
                      attack = selectedEnemyUnit(target.x, target.y);
                  }
  
@@ -909,7 +787,7 @@ index 728abd67b9c024789fc8fb8554001bb20e0c8716..ed9bdc66157e48ad669dcde4f15a848d
                  int[] ids = new int[selectedUnits.size];
                  for(int i = 0; i < ids.length; i++){
                      ids[i] = selectedUnits.get(i).id;
-@@ -1298,6 +1303,11 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -1305,6 +1310,11 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
          });
      }
  
@@ -921,7 +799,7 @@ index 728abd67b9c024789fc8fb8554001bb20e0c8716..ed9bdc66157e48ad669dcde4f15a848d
      public void rotatePlans(Seq<BuildPlan> plans, int direction){
          int ox = schemOriginX(), oy = schemOriginY();
  
-@@ -1331,6 +1341,19 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -1338,6 +1348,19 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
              plan.x = World.toTile(wx - plan.block.offset) + ox;
              plan.y = World.toTile(wy - plan.block.offset) + oy;
              plan.rotation = plan.block.planRotation(Mathf.mod(plan.rotation + direction, 4));
@@ -941,7 +819,7 @@ index 728abd67b9c024789fc8fb8554001bb20e0c8716..ed9bdc66157e48ad669dcde4f15a848d
          });
      }
  
-@@ -1362,6 +1385,14 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -1369,6 +1392,14 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
  
              //flip rotation
              plan.block.flipRotation(plan, x);
@@ -956,7 +834,7 @@ index 728abd67b9c024789fc8fb8554001bb20e0c8716..ed9bdc66157e48ad669dcde4f15a848d
          });
      }
  
-@@ -1500,12 +1531,17 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -1507,12 +1538,17 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
      protected void drawSelection(int x1, int y1, int x2, int y2, int maxLength, Color col1, Color col2){
          NormalizeDrawResult result = Placement.normalizeDrawArea(Blocks.air, x1, y1, x2, y2, false, maxLength, 1f);
  
@@ -974,7 +852,7 @@ index 728abd67b9c024789fc8fb8554001bb20e0c8716..ed9bdc66157e48ad669dcde4f15a848d
      }
  
      protected void flushSelectPlans(Seq<BuildPlan> plans){
-@@ -1873,7 +1909,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -1880,7 +1916,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
  
      public @Nullable Building selectedControlBuild(){
          Building build = world.buildWorld(Core.input.mouseWorld().x, Core.input.mouseWorld().y);
@@ -983,7 +861,7 @@ index 728abd67b9c024789fc8fb8554001bb20e0c8716..ed9bdc66157e48ad669dcde4f15a848d
              return build;
          }
          return null;
-@@ -1960,6 +1996,9 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -1967,6 +2003,9 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
      }
  
      public boolean canShoot(){
@@ -994,7 +872,7 @@ index 728abd67b9c024789fc8fb8554001bb20e0c8716..ed9bdc66157e48ad669dcde4f15a848d
          !(player.unit() instanceof Mechc && player.unit().isFlying()) && !player.unit().mining() && !commandMode;
      }
 diff --git a/core/src/mindustry/input/MobileInput.java b/core/src/mindustry/input/MobileInput.java
-index f667e7444f2cabb69c6dac721e37fe848a218edd..b712df24bf3d25c0a879abe51b2bb53a477c71b1 100644
+index ae4be3bb800bc4492918e10bdf33e6ed125f9f6f..d7e089b4457562374d69155b618b0cda80bbd398 100644
 --- a/core/src/mindustry/input/MobileInput.java
 +++ b/core/src/mindustry/input/MobileInput.java
 @@ -340,7 +340,7 @@ public class MobileInput extends InputHandler implements GestureListener{
@@ -1035,7 +913,7 @@ index f667e7444f2cabb69c6dac721e37fe848a218edd..b712df24bf3d25c0a879abe51b2bb53a
          unit.movePref(movement);
  
 diff --git a/core/src/mindustry/logic/LExecutor.java b/core/src/mindustry/logic/LExecutor.java
-index 13b569ddd94fd43a75c836b091e3334a2601a4e7..baccaedd01f852c8e5d1f19ad5c4930ccb07786e 100644
+index 1a4f9ba1d3c32feb70f076f0bf85f54b4fce0ce9..eb4959f38e2e2a8b60954cfb23bf86f36c15604f 100644
 --- a/core/src/mindustry/logic/LExecutor.java
 +++ b/core/src/mindustry/logic/LExecutor.java
 @@ -10,6 +10,7 @@ import arc.util.*;
@@ -1054,7 +932,7 @@ index 13b569ddd94fd43a75c836b091e3334a2601a4e7..baccaedd01f852c8e5d1f19ad5c4930c
  
  import static mindustry.Vars.*;
  
-@@ -1684,8 +1686,14 @@ public class LExecutor{
+@@ -1695,8 +1697,14 @@ public class LExecutor{
              }
  
              switch(type){
@@ -1072,7 +950,7 @@ index 13b569ddd94fd43a75c836b091e3334a2601a4e7..baccaedd01f852c8e5d1f19ad5c4930c
                  //TODO desync?
                  case mission -> state.rules.mission = text;
 diff --git a/core/src/mindustry/type/UnitType.java b/core/src/mindustry/type/UnitType.java
-index 9ca16a3266b3d0345a1c73eabd8a6129e0cb2d6f..95dc224a200f363ca9c008eb016faa785209fff7 100644
+index dd6155a15d28cf0ef5a89c6554549129546455f9..68a2c327a646d41e7e00900cb7a7bf9048455495 100644
 --- a/core/src/mindustry/type/UnitType.java
 +++ b/core/src/mindustry/type/UnitType.java
 @@ -38,6 +38,7 @@ import mindustry.world.blocks.units.*;
@@ -1083,7 +961,7 @@ index 9ca16a3266b3d0345a1c73eabd8a6129e0cb2d6f..95dc224a200f363ca9c008eb016faa78
  
  import static arc.graphics.g2d.Draw.*;
  import static mindustry.Vars.*;
-@@ -537,19 +538,45 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -605,19 +606,45 @@ public class UnitType extends UnlockableContent implements Senseable{
          table.table(t -> {
              t.left();
              t.add(new Image(uiIcon)).size(iconMed).scaling(Scaling.fit);
@@ -1133,19 +1011,19 @@ index 9ca16a3266b3d0345a1c73eabd8a6129e0cb2d6f..95dc224a200f363ca9c008eb016faa78
                  bars.row();
              }
  
-@@ -558,7 +585,10 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -626,7 +653,10 @@ public class UnitType extends UnlockableContent implements Senseable{
              }
  
              if(payloadCapacity > 0 && unit instanceof Payloadc payload){
--                bars.add(new Bar("stat.payloadcapacity", Pal.items, () -> payload.payloadUsed() / unit.type().payloadCapacity));
+-                bars.add(new Bar("stat.payloadcapacity", Pal.items, () -> payload.payloadUsed() / payloadCapacity));
 +                bars.add(new Bar(() -> Strings.format("装载：@/@ @",
 +                Strings.autoFixed(payload.payloadUsed() / tilesize / tilesize, 4),
 +                Strings.autoFixed(payloadCapacity / tilesize / tilesize, 4),
-+                StatUnit.blocksSquared.localized()), () -> Pal.items, () -> payload.payloadUsed() / unit.type().payloadCapacity));
++                StatUnit.blocksSquared.localized()), () -> Pal.items, () -> payload.payloadUsed() / payloadCapacity));
                  bars.row();
  
                  var count = new float[]{-1};
-@@ -570,16 +600,45 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -638,16 +668,45 @@ public class UnitType extends UnlockableContent implements Senseable{
                  }).growX().left().height(0f).pad(0f);
              }
          }).growX();
@@ -1197,7 +1075,7 @@ index 9ca16a3266b3d0345a1c73eabd8a6129e0cb2d6f..95dc224a200f363ca9c008eb016faa78
              if(net.active() && ai.controller != null && ai.controller.lastAccessed != null){
                  table.row();
                  table.add(Core.bundle.format("lastaccessed", ai.controller.lastAccessed)).growX().wrap().left();
-@@ -590,6 +649,11 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -658,6 +717,11 @@ public class UnitType extends UnlockableContent implements Senseable{
          }
  
          table.row();
@@ -1209,7 +1087,7 @@ index 9ca16a3266b3d0345a1c73eabd8a6129e0cb2d6f..95dc224a200f363ca9c008eb016faa78
      }
  
      /** @return whether this block supports a specific environment. */
-@@ -1480,12 +1544,15 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -1598,12 +1662,15 @@ public class UnitType extends UnlockableContent implements Senseable{
              unit.y + Angles.trnsy(unit.rotation + 180f, itemOffsetY),
              size, size);
  
@@ -1227,7 +1105,7 @@ index 9ca16a3266b3d0345a1c73eabd8a6129e0cb2d6f..95dc224a200f363ca9c008eb016faa78
  
              Draw.reset();
 diff --git a/core/src/mindustry/type/Weapon.java b/core/src/mindustry/type/Weapon.java
-index 87d4b92337dd7e43fade327f20077ab947983157..1eaa445d16d5c891ce514d5646cc1e0859e1a1d6 100644
+index 5d19ab5fe98f282f1d97dcfd73190a6d433e475a..9ce9718e77c9a354736fc2fea69e8ded91dd683d 100644
 --- a/core/src/mindustry/type/Weapon.java
 +++ b/core/src/mindustry/type/Weapon.java
 @@ -22,6 +22,8 @@ import mindustry.entities.units.*;
@@ -1239,7 +1117,7 @@ index 87d4b92337dd7e43fade327f20077ab947983157..1eaa445d16d5c891ce514d5646cc1e08
  
  import static mindustry.Vars.*;
  
-@@ -283,6 +285,23 @@ public class Weapon implements Cloneable{
+@@ -287,6 +289,23 @@ public class Weapon implements Cloneable{
  
          Draw.xscl = 1f;
  
@@ -1264,7 +1142,7 @@ index 87d4b92337dd7e43fade327f20077ab947983157..1eaa445d16d5c891ce514d5646cc1e08
      }
  
 diff --git a/core/src/mindustry/ui/Fonts.java b/core/src/mindustry/ui/Fonts.java
-index 916b2ba5102ef670704e64a1f058c477c992d6dc..749c2180b6682361b568ca6d171675bc0552a22c 100644
+index b0187a93a5daee8575ad5fd825b724fd64490669..8716a4522121e4bc08daabe037651cf04990b681 100644
 --- a/core/src/mindustry/ui/Fonts.java
 +++ b/core/src/mindustry/ui/Fonts.java
 @@ -30,7 +30,7 @@ public class Fonts{
@@ -1331,7 +1209,7 @@ index 0464bde619e7afe1c1de9adf9a29dcc52132814b..aca20acb43fde3c76e408d7e13c64a69
          table.marginRight(30f);
          //TODO: some things (e.g. reconstructor requirements) are too long and screw up the layout
 diff --git a/core/src/mindustry/ui/dialogs/CustomRulesDialog.java b/core/src/mindustry/ui/dialogs/CustomRulesDialog.java
-index 8c9e1a16c5d59272fa50610fab4aaab4fb8f5587..a4e1c2e8dfe2b0728d610eb32db8f5c59400d97a 100644
+index 56e67f460edcd52698d109a24d84a35b74c9c1a8..74b65e96ee2fceca3fd68063b0e56d29fd6c00ec 100644
 --- a/core/src/mindustry/ui/dialogs/CustomRulesDialog.java
 +++ b/core/src/mindustry/ui/dialogs/CustomRulesDialog.java
 @@ -3,6 +3,7 @@ package mindustry.ui.dialogs;
@@ -1354,9 +1232,9 @@ index 8c9e1a16c5d59272fa50610fab4aaab4fb8f5587..a4e1c2e8dfe2b0728d610eb32db8f5c5
  import mindustry.world.*;
 +import mindustryX.features.*;
  
+ import static arc.Core.*;
  import static arc.util.Time.*;
- import static mindustry.Vars.*;
-@@ -30,6 +33,7 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -31,6 +34,7 @@ public class CustomRulesDialog extends BaseDialog{
      private Table main;
      private Prov<Rules> resetter;
      private LoadoutDialog loadoutDialog;
@@ -1364,7 +1242,7 @@ index 8c9e1a16c5d59272fa50610fab4aaab4fb8f5587..a4e1c2e8dfe2b0728d610eb32db8f5c5
      private BannedContentDialog<Block> bannedBlocks = new BannedContentDialog<>("@bannedblocks", ContentType.block, Block::canBeBuilt);
      private BannedContentDialog<UnitType> bannedUnits = new BannedContentDialog<>("@bannedunits", ContentType.unit, u -> !u.isHidden());
      public boolean showRuleEditRule;
-@@ -39,6 +43,7 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -40,6 +44,7 @@ public class CustomRulesDialog extends BaseDialog{
      public String currentName = "";
      public String ruleSearch = "";
      public Seq<Runnable> additionalSetup; // for modding to easily add new rules
@@ -1372,7 +1250,7 @@ index 8c9e1a16c5d59272fa50610fab4aaab4fb8f5587..a4e1c2e8dfe2b0728d610eb32db8f5c5
  
      public CustomRulesDialog(){
          this(false);
-@@ -58,6 +63,7 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -59,6 +64,7 @@ public class CustomRulesDialog extends BaseDialog{
          additionalSetup = new Seq<>();
          categories = new Seq<>();
          categoryNames = new Seq<>();
@@ -1380,7 +1258,7 @@ index 8c9e1a16c5d59272fa50610fab4aaab4fb8f5587..a4e1c2e8dfe2b0728d610eb32db8f5c5
  
          buttons.button("@edit", Icon.pencil, () -> {
              BaseDialog dialog = new BaseDialog("@waves.edit");
-@@ -143,6 +149,7 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -150,6 +156,7 @@ public class CustomRulesDialog extends BaseDialog{
          check("@rules.wavesending", b -> rules.waveSending = b, () -> rules.waveSending, () -> rules.waves);
          check("@rules.wavetimer", b -> rules.waveTimer = b, () -> rules.waveTimer, () -> rules.waves);
          check("@rules.waitForWaveToEnd", b -> rules.waitEnemies = b, () -> rules.waitEnemies, () -> rules.waves && rules.waveTimer);
@@ -1388,7 +1266,7 @@ index 8c9e1a16c5d59272fa50610fab4aaab4fb8f5587..a4e1c2e8dfe2b0728d610eb32db8f5c5
          check("@rules.randomwaveai", b -> rules.randomWaveAI = b, () -> rules.randomWaveAI, () -> rules.waves);
          check("@rules.airUseSpawns", b -> rules.airUseSpawns = b, () -> rules.airUseSpawns, () -> rules.waves);
          numberi("@rules.wavelimit", f -> rules.winWave = f, () -> rules.winWave, () -> rules.waves, 0, Integer.MAX_VALUE);
-@@ -158,7 +165,7 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -165,7 +172,7 @@ public class CustomRulesDialog extends BaseDialog{
          check("@rules.reactorexplosions", b -> rules.reactorExplosions = b, () -> rules.reactorExplosions);
          check("@rules.schematic", b -> rules.schematicsAllowed = b, () -> rules.schematicsAllowed);
          check("@rules.coreincinerates", b -> rules.coreIncinerates = b, () -> rules.coreIncinerates);
@@ -1397,7 +1275,7 @@ index 8c9e1a16c5d59272fa50610fab4aaab4fb8f5587..a4e1c2e8dfe2b0728d610eb32db8f5c5
          check("@rules.disableworldprocessors", b -> rules.disableWorldProcessors = b, () -> rules.disableWorldProcessors);
          number("@rules.buildcostmultiplier", false, f -> rules.buildCostMultiplier = f, () -> rules.buildCostMultiplier, () -> !rules.infiniteResources);
          number("@rules.buildspeedmultiplier", f -> rules.buildSpeedMultiplier = f, () -> rules.buildSpeedMultiplier, 0.001f, 50f);
-@@ -178,6 +185,9 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -185,6 +192,9 @@ public class CustomRulesDialog extends BaseDialog{
          if(Core.bundle.get("bannedblocks").toLowerCase().contains(ruleSearch)){
              current.button("@bannedblocks", () -> bannedBlocks.show(rules.bannedBlocks)).left().width(300f).row();
          }
@@ -1407,7 +1285,7 @@ index 8c9e1a16c5d59272fa50610fab4aaab4fb8f5587..a4e1c2e8dfe2b0728d610eb32db8f5c5
          check("@rules.hidebannedblocks", b -> rules.hideBannedBlocks = b, () -> rules.hideBannedBlocks);
          check("@bannedblocks.whitelist", b -> rules.blockWhitelist = b, () -> rules.blockWhitelist);
  
-@@ -211,6 +221,7 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -218,6 +228,7 @@ public class CustomRulesDialog extends BaseDialog{
          check("@rules.explosions", b -> rules.damageExplosions = b, () -> rules.damageExplosions);
          check("@rules.fire", b -> rules.fire = b, () -> rules.fire);
          check("@rules.fog", b -> rules.fog = b, () -> rules.fog);
@@ -1415,7 +1293,7 @@ index 8c9e1a16c5d59272fa50610fab4aaab4fb8f5587..a4e1c2e8dfe2b0728d610eb32db8f5c5
          check("@rules.lighting", b -> rules.lighting = b, () -> rules.lighting);
  
          check("@rules.limitarea", b -> rules.limitMapArea = b, () -> rules.limitMapArea);
-@@ -232,11 +243,47 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -239,11 +250,47 @@ public class CustomRulesDialog extends BaseDialog{
                  b.add("@rules.ambientlight");
              }, () -> ui.picker.show(rules.ambientLight, rules.ambientLight::set)).left().width(250f).row();
          }
@@ -1463,7 +1341,7 @@ index 8c9e1a16c5d59272fa50610fab4aaab4fb8f5587..a4e1c2e8dfe2b0728d610eb32db8f5c5
  
          category("planet");
          if(Core.bundle.get("rules.title.planet").toLowerCase().contains(ruleSearch)){
-@@ -247,10 +294,10 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -254,10 +301,10 @@ public class CustomRulesDialog extends BaseDialog{
  
                  t.defaults().size(140f, 50f);
  
@@ -1478,7 +1356,7 @@ index 8c9e1a16c5d59272fa50610fab4aaab4fb8f5587..a4e1c2e8dfe2b0728d610eb32db8f5c5
  
                      if(t.getChildren().size % 3 == 0){
                          t.row();
-@@ -270,10 +317,29 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -277,10 +324,29 @@ public class CustomRulesDialog extends BaseDialog{
          if(showRuleEditRule){
              check("@rules.allowedit", b -> rules.allowEditRules = b, () -> rules.allowEditRules);
          }
@@ -1509,7 +1387,7 @@ index 8c9e1a16c5d59272fa50610fab4aaab4fb8f5587..a4e1c2e8dfe2b0728d610eb32db8f5c5
              boolean[] shown = {false};
              Table wasCurrent = current;
  
-@@ -290,6 +356,10 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -297,6 +363,10 @@ public class CustomRulesDialog extends BaseDialog{
                  current = c;
                  TeamRule teams = rules.teams.get(team);
  
@@ -1520,7 +1398,7 @@ index 8c9e1a16c5d59272fa50610fab4aaab4fb8f5587..a4e1c2e8dfe2b0728d610eb32db8f5c5
                  number("@rules.blockhealthmultiplier", f -> teams.blockHealthMultiplier = f, () -> teams.blockHealthMultiplier);
                  number("@rules.blockdamagemultiplier", f -> teams.blockDamageMultiplier = f, () -> teams.blockDamageMultiplier);
  
-@@ -324,6 +394,32 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -331,6 +401,32 @@ public class CustomRulesDialog extends BaseDialog{
              }, () -> shown[0]).left().growX().row();
          }
  
@@ -1553,7 +1431,7 @@ index 8c9e1a16c5d59272fa50610fab4aaab4fb8f5587..a4e1c2e8dfe2b0728d610eb32db8f5c5
          additionalSetup.each(Runnable::run);
  
          for(var i = 0; i < categories.size; i++){
-@@ -358,6 +454,7 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -365,6 +461,7 @@ public class CustomRulesDialog extends BaseDialog{
                      cons.get(team);
                  }).pad(1f).checked(b -> prov.get() == team).size(60f).tooltip(team.coloredName()).with(i -> i.getStyle().imageUpColor = team.color);
              }
@@ -1561,7 +1439,7 @@ index 8c9e1a16c5d59272fa50610fab4aaab4fb8f5587..a4e1c2e8dfe2b0728d610eb32db8f5c5
          }).padTop(0).row();
      }
  
-@@ -390,7 +487,7 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -397,7 +494,7 @@ public class CustomRulesDialog extends BaseDialog{
              t.field((prov.get()) + "", s -> cons.get(Strings.parseInt(s)))
                  .update(a -> a.setDisabled(!condition.get()))
                  .padRight(100f)
@@ -1570,9 +1448,9 @@ index 8c9e1a16c5d59272fa50610fab4aaab4fb8f5587..a4e1c2e8dfe2b0728d610eb32db8f5c5
          }).padTop(0);
          ruleInfo(cell, text);
          current.row();
-@@ -405,7 +502,8 @@ public class CustomRulesDialog extends BaseDialog{
+@@ -412,7 +509,8 @@ public class CustomRulesDialog extends BaseDialog{
              t.field((integer ? (int)prov.get() : prov.get()) + "", s -> cons.get(Strings.parseFloat(s)))
-             .padRight(100f)
+             .padRight(50f)
              .update(a -> a.setDisabled(!condition.get()))
 -            .valid(f -> Strings.canParsePositiveFloat(f) && Strings.parseFloat(f) >= min && Strings.parseFloat(f) <= max).width(120f).left();
 +            //.valid(f -> Strings.canParsePositiveFloat(f) && Strings.parseFloat(f) >= min && Strings.parseFloat(f) <= max).width(120f).left();
@@ -1581,7 +1459,7 @@ index 8c9e1a16c5d59272fa50610fab4aaab4fb8f5587..a4e1c2e8dfe2b0728d610eb32db8f5c5
          ruleInfo(cell, text);
          current.row();
 diff --git a/core/src/mindustry/ui/dialogs/DatabaseDialog.java b/core/src/mindustry/ui/dialogs/DatabaseDialog.java
-index dda529216bba00526564c87b983511cb2724ed73..cbb229b67d7f28ff19ec6ad9ee518717f5b704f3 100644
+index dcb8b5ce51496a70cdcc593e6f53d87be6a50b44..5f0c3ae7f22d70d4353496211dc6dcf80fdc2868 100644
 --- a/core/src/mindustry/ui/dialogs/DatabaseDialog.java
 +++ b/core/src/mindustry/ui/dialogs/DatabaseDialog.java
 @@ -21,7 +21,6 @@ import mindustry.world.*;
@@ -2251,7 +2129,7 @@ index 61f2d769fa4bb807f58b67eea14072783acf2b6c..d578e94d654b3bffc80f042c6a12d416
      }
  
 diff --git a/core/src/mindustry/ui/fragments/ConsoleFragment.java b/core/src/mindustry/ui/fragments/ConsoleFragment.java
-index 823c2d70a68b63c1237a2d06744b876a577b2223..b0e2c07ae2016ab6329e23d8bb0baff63ad65b6c 100644
+index 0374fdae62346126bbeafcc0820058cfc268fbd7..23c35234f44f48478cdc71b7513c74c429680e0a 100644
 --- a/core/src/mindustry/ui/fragments/ConsoleFragment.java
 +++ b/core/src/mindustry/ui/fragments/ConsoleFragment.java
 @@ -12,9 +12,11 @@ import arc.scene.ui.TextField.*;
@@ -2275,24 +2153,22 @@ index 823c2d70a68b63c1237a2d06744b876a577b2223..b0e2c07ae2016ab6329e23d8bb0baff6
          //special case for 'clear' command
          if(message.equals("clear")){
 diff --git a/core/src/mindustry/ui/fragments/HudFragment.java b/core/src/mindustry/ui/fragments/HudFragment.java
-index 4edb47c449a7d3b91508f6f400c5f1ef0c378d45..7b5fd24aa713820aeaa38eee170c78c47cd67d86 100644
+index 315f2448279e5c3d4f0feb3d91f02440f039fbb6..5c55991fdc09a5d2cece8371ee5905113849f74b 100644
 --- a/core/src/mindustry/ui/fragments/HudFragment.java
 +++ b/core/src/mindustry/ui/fragments/HudFragment.java
-@@ -29,11 +29,13 @@ import mindustry.net.Packets.*;
+@@ -29,9 +29,11 @@ import mindustry.net.Packets.*;
  import mindustry.type.*;
  import mindustry.ui.*;
  import mindustry.world.*;
 +import mindustry.world.blocks.defense.turrets.*;
  import mindustry.world.blocks.environment.*;
- import mindustry.world.blocks.storage.*;
- import mindustry.world.blocks.storage.CoreBlock.*;
  import mindustry.world.meta.*;
  import mindustryX.features.*;
 +import mindustryX.features.ui.*;
  
  import static mindustry.Vars.*;
  import static mindustry.gen.Tex.*;
-@@ -314,6 +316,10 @@ public class HudFragment{
+@@ -320,6 +322,10 @@ public class HudFragment{
              wavesMain.top().left().name = "waves";
  
              wavesMain.table(s -> {
@@ -2303,7 +2179,7 @@ index 4edb47c449a7d3b91508f6f400c5f1ef0c378d45..7b5fd24aa713820aeaa38eee170c78c4
                  //wave info button with text
                  s.add(makeStatusTable()).grow().name("status");
  
-@@ -354,7 +360,7 @@ public class HudFragment{
+@@ -360,7 +366,7 @@ public class HudFragment{
                          button.getStyle().imageUpColor = team.color;
                          button.update(() -> button.setChecked(player.team() == team));
                      }
@@ -2312,7 +2188,7 @@ index 4edb47c449a7d3b91508f6f400c5f1ef0c378d45..7b5fd24aa713820aeaa38eee170c78c4
                      teams.button(Icon.downOpen, Styles.emptyi, () -> Core.settings.put("editor-blocks-shown", !Core.settings.getBool("editor-blocks-shown")))
                      .size(45f).update(m -> m.getStyle().imageUp = (Core.settings.getBool("editor-blocks-shown") ? Icon.upOpen : Icon.downOpen));
                  }).top().left().row();
-@@ -1015,6 +1021,163 @@ public class HudFragment{
+@@ -983,6 +989,163 @@ public class HudFragment{
          return table;
      }
  
@@ -2476,7 +2352,7 @@ index 4edb47c449a7d3b91508f6f400c5f1ef0c378d45..7b5fd24aa713820aeaa38eee170c78c4
      private void addInfoTable(Table table){
          table.name = "infotable";
          table.left();
-@@ -1059,7 +1222,7 @@ public class HudFragment{
+@@ -1027,7 +1190,7 @@ public class HudFragment{
      }
  
      private boolean canSkipWave(){
@@ -2606,7 +2482,7 @@ index 7ad999d0abdbc3b4d6098c689f0a11734ee798ab..06ad7e2d3d0db7e6df5fcf9aea12c099
      }
  
 diff --git a/core/src/mindustry/ui/fragments/PlacementFragment.java b/core/src/mindustry/ui/fragments/PlacementFragment.java
-index a1a1ab8a54afee42855b423e6212dd8806d6c26b..0d020dca2efc79a292100cb7b0d353af4e78f0a8 100644
+index cd31c0fa231c0a0033ade71a9cc57f5cfa0209da..d02b50b1ea1625db8ecfc47d014ce5a4c65da457 100644
 --- a/core/src/mindustry/ui/fragments/PlacementFragment.java
 +++ b/core/src/mindustry/ui/fragments/PlacementFragment.java
 @@ -1,6 +1,7 @@
@@ -2777,12 +2653,12 @@ index a1a1ab8a54afee42855b423e6212dd8806d6c26b..0d020dca2efc79a292100cb7b0d353af
 +                                            });
 +                                        }
 +
-+                                        boolean hasFlyer = units.contains(Flyingc::isFlying),
++                                        boolean hasFlyer = units.contains(Unitc::isFlying),
 +                                        hasLand = units.contains(unit -> !unit.isFlying() && !unit.type.naval),
 +                                        hasNaval = units.contains(unit -> unit.type.naval);
 +                                        if((hasFlyer ? 1 : 0) + (hasLand ? 1 : 0) + (hasNaval ? 1 : 0) >= 2){
 +                                            sp.table(spp -> {
-+                                                if(hasFlyer) arcSelectUnits(spp, UnitTypes.flare.emoji(), "飞行单位", Flyingc::isFlying);
++                                                if(hasFlyer) arcSelectUnits(spp, UnitTypes.flare.emoji(), "飞行单位", Unitc::isFlying);
 +                                                if(hasLand) arcSelectUnits(spp, UnitTypes.crawler.emoji(), "陆军单位", unit -> !unit.isFlying() && !unit.type.naval);
 +                                                if(hasNaval) arcSelectUnits(spp, UnitTypes.retusa.emoji(), "海军单位", unit -> unit.type.naval);
 +                                            });
@@ -3066,10 +2942,10 @@ index 58d82ae32d4a37b4e2bea1559c854b775048350f..9b0966bfb36da990de4bd410317c3528
          }
  
 diff --git a/core/src/mindustry/world/Block.java b/core/src/mindustry/world/Block.java
-index 027f4ed3a1c3ed7994ef97dd48bc723716c95ee7..ea43244688b29f3baeba8dc5c616d243209c56d2 100644
+index 174b7fa2552b57989df85c7b20f4857b7ae632a2..fb73e0091b4cda5130653d068bb59b22acf20604 100644
 --- a/core/src/mindustry/world/Block.java
 +++ b/core/src/mindustry/world/Block.java
-@@ -732,7 +732,12 @@ public class Block extends UnlockableContent implements Senseable{
+@@ -751,7 +751,12 @@ public class Block extends UnlockableContent implements Senseable{
  
      public void drawPlan(BuildPlan plan, Eachable<BuildPlan> list, boolean valid, float alpha){
          Draw.reset();

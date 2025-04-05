@@ -14,10 +14,10 @@ Content-Transfer-Encoding: 8bit
  3 files changed, 165 insertions(+), 85 deletions(-)
 
 diff --git a/core/src/mindustry/entities/Units.java b/core/src/mindustry/entities/Units.java
-index d3346510927f3b567c93f9998ec2ab18b3d6b344..219b36a19a6930cd82d78f5193121b9d62b90a1e 100644
+index 5bc18116fd093a79945d26bc3b6488a48a175cd2..81858252653a9bf6c9e296caed203cb2e06501aa 100644
 --- a/core/src/mindustry/entities/Units.java
 +++ b/core/src/mindustry/entities/Units.java
-@@ -274,6 +274,10 @@ public class Units{
+@@ -264,6 +264,10 @@ public class Units{
          }
      }
  
@@ -28,7 +28,7 @@ index d3346510927f3b567c93f9998ec2ab18b3d6b344..219b36a19a6930cd82d78f5193121b9d
      /** Returns the closest enemy of this team. Filter by predicate. */
      public static Unit closestEnemy(Team team, float x, float y, float range, Boolf<Unit> predicate){
          if(team == Team.derelict) return null;
-@@ -282,11 +286,16 @@ public class Units{
+@@ -272,11 +276,16 @@ public class Units{
          cdist = 0f;
          cpriority = -99999f;
  
@@ -48,7 +48,7 @@ index d3346510927f3b567c93f9998ec2ab18b3d6b344..219b36a19a6930cd82d78f5193121b9d
                  result = e;
                  cdist = dst2;
                  cpriority = e.type.targetPriority;
-@@ -304,10 +313,16 @@ public class Units{
+@@ -294,10 +303,16 @@ public class Units{
          cdist = 0f;
          cpriority = -99999f;
  
@@ -68,10 +68,10 @@ index d3346510927f3b567c93f9998ec2ab18b3d6b344..219b36a19a6930cd82d78f5193121b9d
                  result = e;
                  cdist = cost;
 diff --git a/core/src/mindustry/entities/bullet/BulletType.java b/core/src/mindustry/entities/bullet/BulletType.java
-index 2c7a6184b0f94e3f45522b3073a37e5d51ee6d65..d28a8e829243ece02898f4291fc3207eb0d3a7e1 100644
+index 6c0da0435a3133fd6314ff0a6de0678c75eca6b2..76a0f1a42796f1ffb933733b55885dc422960cf2 100644
 --- a/core/src/mindustry/entities/bullet/BulletType.java
 +++ b/core/src/mindustry/entities/bullet/BulletType.java
-@@ -646,6 +646,7 @@ public class BulletType extends Content implements Cloneable{
+@@ -685,6 +685,7 @@ public class BulletType extends Content implements Cloneable{
          }
      }
  
@@ -79,7 +79,7 @@ index 2c7a6184b0f94e3f45522b3073a37e5d51ee6d65..d28a8e829243ece02898f4291fc3207e
      public void updateHoming(Bullet b){
          if(homingPower > 0.0001f && b.time >= homingDelay){
              float realAimX = b.aimX < 0 ? b.x : b.aimX;
-@@ -653,20 +654,22 @@ public class BulletType extends Content implements Cloneable{
+@@ -692,20 +693,22 @@ public class BulletType extends Content implements Cloneable{
  
              Teamc target;
              //home in on allies if possible
@@ -107,7 +107,7 @@ index 2c7a6184b0f94e3f45522b3073a37e5d51ee6d65..d28a8e829243ece02898f4291fc3207e
              if(target != null){
                  b.vel.setAngle(Angles.moveToward(b.rotation(), b.angleTo(target), homingPower * Time.delta * 50f));
 diff --git a/core/src/mindustry/graphics/LightRenderer.java b/core/src/mindustry/graphics/LightRenderer.java
-index 7c30b947965d0b29a2cabadf7d2ffa4ce03456f9..b3513f16a28ef923685974f78543973b95e33bac 100644
+index c20e841ab3869ca8d6240bf844cc87ef12eee47f..bdf39f9d5f55baffe6a5cb1a2ba249b51019985f 100644
 --- a/core/src/mindustry/graphics/LightRenderer.java
 +++ b/core/src/mindustry/graphics/LightRenderer.java
 @@ -8,6 +8,7 @@ import arc.math.*;
@@ -133,8 +133,8 @@ index 7c30b947965d0b29a2cabadf7d2ffa4ce03456f9..b3513f16a28ef923685974f78543973b
  
      public void add(Runnable run){
          if(!enabled()) return;
-@@ -33,16 +30,9 @@ public class LightRenderer{
-         if(!enabled() || radius <= 0f) return;
+@@ -35,16 +32,9 @@ public class LightRenderer{
+         //TODO: clipping.
  
          float res = Color.toFloatBits(color.r, color.g, color.b, opacity);
 -
@@ -152,7 +152,7 @@ index 7c30b947965d0b29a2cabadf7d2ffa4ce03456f9..b3513f16a28ef923685974f78543973b
      public void add(float x, float y, TextureRegion region, Color color, float opacity){
          add(x, y, region, 0f, color, opacity);
      }
-@@ -52,24 +42,150 @@ public class LightRenderer{
+@@ -54,24 +44,150 @@ public class LightRenderer{
  
          float res = color.toFloatBits();
          float xscl = Draw.xscl, yscl = Draw.yscl;
@@ -310,7 +310,7 @@ index 7c30b947965d0b29a2cabadf7d2ffa4ce03456f9..b3513f16a28ef923685974f78543973b
              float color = Draw.getColorPacked();
              float u = lmid.u;
              float v = lmid.v2;
-@@ -178,60 +294,6 @@ public class LightRenderer{
+@@ -180,60 +296,6 @@ public class LightRenderer{
              vertices[23] = 0;
  
              Draw.vert(ledge.texture, vertices, 0, vertices.length);
