@@ -118,17 +118,6 @@ object AutoUpdate {
                 }
             }.width(50f)
 
-            if (version == newVersion) {
-                table().fillX().get().apply {
-                    button("跳过当前版本") {
-                        ignoreOnce.value = version.version
-                    }
-                    button("7天不再提示") {
-                        ignoreOnce.value = (Instant.now() + Duration.ofDays(7)).toString()
-                    }
-                }
-            }
-
             row().button("自动下载更新") {
                 if (asset == null) return@button
                 if (!VarsX.isLoader && OS.isAndroid) {
@@ -137,6 +126,17 @@ object AutoUpdate {
                 }
                 startDownload(asset.copy(url = url))
             }.fillX()
+
+            if (version == newVersion) {
+                row().table().fillX().get().apply {
+                    button("跳过当前版本") {
+                        ignoreOnce.value = version.version
+                    }
+                    button("7天不再提示") {
+                        ignoreOnce.value = (Instant.now() + Duration.ofDays(7)).toString()
+                    }
+                }
+            }
         }
         dialog.addCloseButton()
         dialog.show()
