@@ -6,41 +6,19 @@ import mindustry.entities.units.*;
 import mindustry.gen.*;
 import mindustry.type.*;
 import mindustry.world.*;
-import mindustry.world.blocks.environment.*;
 import mindustry.world.blocks.storage.*;
 
 import static mindustry.Vars.*;
 
 public class ArcMinerAI extends AIController{
-    public static final Seq<Block> oreAllList = content.blocks().select(b -> b instanceof Floor f && !f.wallOre && f.itemDrop != null);
-    public static final Seq<Block> oreAllWallList = content.blocks().select(b -> ((b instanceof Floor f && f.wallOre) || b instanceof StaticWall) && b.itemDrop != null);
-    public static final Seq<Block> oreList = content.blocks().select(b -> b instanceof Floor f && !f.wallOre && f.itemDrop != null);
-    public static final Seq<Block> oreWallList = content.blocks().select(b -> ((b instanceof Floor f && f.wallOre) || b instanceof StaticWall) && b.itemDrop != null);
+    public static final Seq<Item> toMine = content.items().copy();
 
-    public Seq<Item> canMineList;
     public boolean mining = true;
     public Item targetItem;
     public Tile ore;
 
-    @Override
-    public void init(){
-        if(!unit.canMine()) return;
-
-        if(unit.type.mineFloor){
-            canMineList = oreList.map(b -> b.itemDrop).select(i -> unit.canMine(i));
-        }else if(unit.type.mineWalls){
-            canMineList = oreWallList.map(b -> b.itemDrop).select(i -> unit.canMine(i));
-        }
-    }
-
     private Item updateTargetItem(boolean canMineNonBuildable){
-        //reverse是因为min取最后一个最小的
-        if(unit.type.mineFloor){
-            canMineList = oreList.map(b -> b.itemDrop).select(i -> unit.canMine(i));
-        }else if(unit.type.mineWalls){
-            canMineList = oreWallList.map(b -> b.itemDrop).select(i -> unit.canMine(i));
-        }
-        return canMineList.select(i -> (unit.type.mineFloor ? indexer.hasOre(i) : indexer.hasWallOre(i))
+        return toMine.select(i -> unit.canMine(i) && (unit.type.mineFloor ? indexer.hasOre(i) : indexer.hasWallOre(i))
         && (canMineNonBuildable || i.buildable)
         && unit.core().acceptItem(null, i)
         ).reverse().min(i -> unit.core().items.get(i));
@@ -55,7 +33,7 @@ public class ArcMinerAI extends AIController{
 
     @Override
     public void updateMovement(){
-        if(!unit.canMine() || canMineList.isEmpty() || unit.core() == null) return;
+        if(!unit.canMine() || unit.core() == null) return;
 
         CoreBlock.CoreBuild core = unit.closestCore();
         //变量命名不知道叫啥了

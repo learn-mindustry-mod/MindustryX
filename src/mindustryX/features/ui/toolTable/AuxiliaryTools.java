@@ -12,6 +12,7 @@ import mindustry.entities.units.*;
 import mindustry.game.*;
 import mindustry.gen.*;
 import mindustry.graphics.*;
+import mindustry.type.*;
 import mindustry.ui.*;
 import mindustry.ui.dialogs.*;
 import mindustry.world.*;
@@ -103,32 +104,16 @@ public class AuxiliaryTools extends ToolTableBase{
         dialog.cont.table(t -> {
             t.add("minerAI-矿物筛选器").color(Pal.accent).pad(cols / 2f).center().row();
             t.image().color(Pal.accent).fillX().row();
-            t.table(c -> {
-                c.add("地表矿").row();
-                c.table(list -> {
-                    int i = 0;
-                    for(Block block : ArcMinerAI.oreAllList){
-                        if(indexer.floorOresCount[block.id] == 0) continue;
-                        if(i++ % 3 == 0) list.row();
-                        list.button(block.emoji() + "\n" + indexer.floorOresCount[block.id], Styles.flatToggleMenut, () -> {
-                            if(ArcMinerAI.oreList.contains(block)) ArcMinerAI.oreList.remove(block);
-                            else if(!ArcMinerAI.oreList.contains(block)) ArcMinerAI.oreList.add(block);
-                        }).tooltip(block.localizedName).checked(k -> ArcMinerAI.oreList.contains(block)).width(100f).height(50f);
-                    }
-                }).row();
-
-                c.add("墙矿").row();
-                c.table(list -> {
-                    int i = 0;
-                    for(Block block : ArcMinerAI.oreAllWallList){
-                        if(indexer.wallOresCount[block.id] == 0) continue;
-                        if(i++ % 3 == 0) list.row();
-                        list.button(block.emoji() + "\n" + indexer.wallOresCount[block.id], Styles.flatToggleMenut, () -> {
-                            if(ArcMinerAI.oreWallList.contains(block)) ArcMinerAI.oreWallList.remove(block);
-                            else if(!ArcMinerAI.oreWallList.contains(block)) ArcMinerAI.oreWallList.add(block);
-                        }).tooltip(block.localizedName).checked(k -> ArcMinerAI.oreWallList.contains(block)).width(100f).height(50f);
-                    }
-                }).row();
+            t.table(list -> {
+                int i = 0;
+                for(Item item : content.items()){
+                    if(!indexer.hasOre(item) && !indexer.hasWallOre(item)) continue;
+                    if(i++ % 3 == 0) list.row();
+                    list.button(item.emoji() + "\n" + indexer.allOres.get(item) + "/" + indexer.allWallOres.get(item), Styles.flatToggleMenut, () -> {
+                        if(ArcMinerAI.toMine.contains(item)) ArcMinerAI.toMine.remove(item);
+                        else if(!ArcMinerAI.toMine.contains(item)) ArcMinerAI.toMine.add(item);
+                    }).tooltip(item.localizedName).checked(k -> ArcMinerAI.toMine.contains(item)).width(100f).height(50f);
+                }
             }).growX();
         }).growX().row();
 

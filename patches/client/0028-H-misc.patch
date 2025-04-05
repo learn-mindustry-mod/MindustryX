@@ -10,6 +10,7 @@ Content-Transfer-Encoding: 8bit
 ---
  core/src/mindustry/ClientLauncher.java        |  8 ++++++++
  core/src/mindustry/Vars.java                  |  5 +++++
+ core/src/mindustry/ai/BlockIndexer.java       |  2 +-
  core/src/mindustry/core/Control.java          |  3 ++-
  core/src/mindustry/core/NetClient.java        |  4 ++++
  core/src/mindustry/core/Renderer.java         |  2 +-
@@ -24,7 +25,7 @@ Content-Transfer-Encoding: 8bit
  .../world/blocks/distribution/Router.java     |  3 ++-
  .../world/blocks/production/BeamDrill.java    | 12 ++++-------
  .../mindustry/desktop/DesktopLauncher.java    | 12 ++++++++++-
- 16 files changed, 80 insertions(+), 49 deletions(-)
+ 17 files changed, 81 insertions(+), 50 deletions(-)
 
 diff --git a/core/src/mindustry/ClientLauncher.java b/core/src/mindustry/ClientLauncher.java
 index a64b7b36fdd74a29a3caae54a1f1a514039b891f..beea309f225be8de3799089a87d1fdcb8e30ee5c 100644
@@ -72,6 +73,19 @@ index ac225f81d9c245937c23985a62db7857d5292d51..21f5e25a14d237e821c1cc0e22ff28df
                      if(!OS.isWindows){
                          for(String code : ColorCodes.values){
                              result = result.replace(code, "");
+diff --git a/core/src/mindustry/ai/BlockIndexer.java b/core/src/mindustry/ai/BlockIndexer.java
+index 1206dc71d1d87b2a5432898a3991a93260b475e7..51cee565b4213048744d9a1741138add3e073201 100644
+--- a/core/src/mindustry/ai/BlockIndexer.java
++++ b/core/src/mindustry/ai/BlockIndexer.java
+@@ -37,7 +37,7 @@ public class BlockIndexer{
+     /** All ores present on the map - can be wall or floor. */
+     private Seq<Item> allPresentOres = new Seq<>();
+     /** All ores available on this map. */
+-    private ObjectIntMap<Item> allOres = new ObjectIntMap<>(), allWallOres = new ObjectIntMap<>();
++    public ObjectIntMap<Item> allOres = new ObjectIntMap<>(), allWallOres = new ObjectIntMap<>();
+     /** Stores teams that are present here as tiles. */
+     private Seq<Team> activeTeams = new Seq<>(Team.class);
+     /** Maps teams to a map of flagged tiles by flag. */
 diff --git a/core/src/mindustry/core/Control.java b/core/src/mindustry/core/Control.java
 index ac274c820cb1362a4863ca6cf98384dadbaafc07..63e6c3ef13f839f531387b10789d135585b19863 100644
 --- a/core/src/mindustry/core/Control.java

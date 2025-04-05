@@ -5,11 +5,13 @@ import arc.graphics.*;
 import arc.scene.event.*;
 import arc.scene.ui.*;
 import arc.scene.ui.layout.*;
+import arc.struct.*;
 import arc.util.*;
 import mindustry.content.*;
 import mindustry.game.*;
 import mindustry.gen.*;
 import mindustry.graphics.*;
+import mindustry.type.*;
 import mindustry.ui.*;
 import mindustry.ui.dialogs.*;
 import mindustry.world.*;
@@ -172,25 +174,14 @@ public class HudSettingsTable extends ToolTableBase{
         table.clear();
 
         table.table(c -> {
-            c.add("地表矿").color(Pal.accent).center().fillX().row();
+            c.add("矿物矿(地表/墙矿)").color(Pal.accent).center().fillX().row();
             c.image().color(Pal.accent).fillX().row();
             c.table(list -> {
                 int i = 0;
-                for(Block block : content.blocks().select(b -> b instanceof Floor f && !f.wallOre && f.itemDrop != null)){
-                    if(indexer.floorOresCount[block.id] == 0) continue;
+                for(Item item : content.items()){
+                    if(!indexer.hasOre(item) && !indexer.hasWallOre(item)) continue;
                     if(i++ % 4 == 0) list.row();
-                    list.add(block.emoji() + " " + block.localizedName + "\n" + indexer.floorOresCount[block.id]).width(100f).height(50f);
-                }
-            }).row();
-
-            c.add("墙矿").color(Pal.accent).center().fillX().row();
-            c.image().color(Pal.accent).fillX().row();
-            c.table(list -> {
-                int i = 0;
-                for(Block block : content.blocks().select(b -> ((b instanceof Floor f && f.wallOre) || b instanceof StaticWall) && b.itemDrop != null)){
-                    if(indexer.wallOresCount[block.id] == 0) continue;
-                    if(i++ % 4 == 0) list.row();
-                    list.add(block.emoji() + " " + block.localizedName + "\n" + indexer.wallOresCount[block.id]).width(100f).height(50f);
+                    list.add(item.emoji() + " " + item.localizedName + "\n" + indexer.allOres.get(item) + "/" + indexer.allWallOres.get(item)).width(100f).height(50f);
                 }
             }).row();
 
@@ -198,10 +189,14 @@ public class HudSettingsTable extends ToolTableBase{
             c.image().color(Pal.accent).fillX().row();
             c.table(list -> {
                 int i = 0;
+                ObjectIntMap<Floor> counts = new ObjectIntMap<>();
+                for(Tile tile : world.tiles){
+                    counts.increment(tile.floor());
+                }
                 for(Block block : content.blocks().select(b -> ((b instanceof Floor f && f.liquidDrop != null)))){
-                    if(indexer.floorOresCount[block.id] == 0) continue;
+                    if(!(block instanceof Floor f) || f.liquidDrop == null || counts.get(block.asFloor()) == 0) continue;
                     if(i++ % 4 == 0) list.row();
-                    list.add(block.emoji() + " " + block.localizedName + "\n" + indexer.floorOresCount[block.id]).width(100f).height(50f);
+                    list.add(block.emoji() + " " + block.localizedName + "\n" + counts.get(block.asFloor())).width(100f).height(50f);
                 }
             }).row();
         });

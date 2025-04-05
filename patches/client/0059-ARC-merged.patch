@@ -93,7 +93,6 @@ way-zer <himc.wicp@gmail.com> on 2024/7/28
 * 更改开雾功能实现
 way-zer <himc.wicp@gmail.com> on 2024/9/8
 ---
- core/src/mindustry/ai/BlockIndexer.java       |   8 +
  core/src/mindustry/editor/MapInfoDialog.java  |   9 +-
  .../mindustry/entities/comp/BuildingComp.java |  18 +-
  .../mindustry/entities/comp/ShieldComp.java   |  10 +
@@ -121,48 +120,8 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  .../mindustry/ui/fragments/MenuFragment.java  |  51 +++-
  .../ui/fragments/PlacementFragment.java       | 164 ++++++++++--
  .../ui/fragments/PlayerListFragment.java      |  72 ++----
- 28 files changed, 1263 insertions(+), 167 deletions(-)
+ 27 files changed, 1255 insertions(+), 167 deletions(-)
 
-diff --git a/core/src/mindustry/ai/BlockIndexer.java b/core/src/mindustry/ai/BlockIndexer.java
-index 1206dc71d1d87b2a5432898a3991a93260b475e7..a0718183a603e9cd1dd1eaa0e5e52d9b7e534d13 100644
---- a/core/src/mindustry/ai/BlockIndexer.java
-+++ b/core/src/mindustry/ai/BlockIndexer.java
-@@ -49,6 +49,9 @@ public class BlockIndexer{
-     /** Maps block flag to a list of floor tiles that have it. */
-     private Seq<Tile>[] floorMap;
- 
-+    public int[] floorOresCount = new int[content.blocks().size +1];
-+    public int[] wallOresCount = new int[content.blocks().size +1];
-+
-     public BlockIndexer(){
-         clearFlags();
- 
-@@ -75,6 +78,8 @@ public class BlockIndexer{
- 
-             allOres.clear();
-             allWallOres.clear();
-+            floorOresCount = new int[content.blocks().size +1];
-+            wallOresCount = new int[content.blocks().size +1];
-             ores = new IntSeq[content.items().size][][];
-             wallOres = new IntSeq[content.items().size][][];
-             quadWidth = Mathf.ceil(world.width() / (float)quadrantSize);
-@@ -104,6 +109,8 @@ public class BlockIndexer{
-                         if(ores[drop.id][qx][qy] == null) ores[drop.id][qx][qy] = new IntSeq(false, 16);
-                         ores[drop.id][qx][qy].add(tile.pos());
-                         allOres.increment(drop);
-+                        if(tile.overlay().itemDrop!=null) floorOresCount[tile.overlay().id] +=1;
-+                        else if(tile.floor().itemDrop!=null) floorOresCount[tile.floor().id] +=1;
-                     }
-                 }else if((drop = tile.wallDrop()) != null){
-                     //add position of quadrant to list
-@@ -111,6 +118,7 @@ public class BlockIndexer{
-                     if(wallOres[drop.id][qx][qy] == null) wallOres[drop.id][qx][qy] = new IntSeq(false, 16);
-                     wallOres[drop.id][qx][qy].add(tile.pos());
-                     allWallOres.increment(drop);
-+                    wallOresCount[tile.block().id] += 1;
-                 }
-             }
- 
 diff --git a/core/src/mindustry/editor/MapInfoDialog.java b/core/src/mindustry/editor/MapInfoDialog.java
 index ebc1f0b300d295e45333f1db38ea299c9658ec20..e7cba056743979206c84fc6d00472c2c44b565f6 100644
 --- a/core/src/mindustry/editor/MapInfoDialog.java
