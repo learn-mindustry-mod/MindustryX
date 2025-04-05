@@ -38,7 +38,7 @@ public class UnitFactoryDialog extends BaseDialog{
     UnitStack selected = UnitStack.vanillaStack;
 
     private int unitCount = 1;
-    private float unitRandDst = 0;
+    private float unitRandDst = 4;
     /** 仅作为部分数据的载体 */
     private Unit spawnUnit = UnitTypes.emanate.create(Team.sharded);
     /** 载荷独立存储 */
@@ -110,10 +110,6 @@ public class UnitFactoryDialog extends BaseDialog{
     }
 
     private void spawn(){
-        if(spawnUnit instanceof Payloadc payloadUnit){
-            payloadUnit.payloads().set(unitPayloads);
-        }
-
         for(int n = 0; n < unitCount; n++){
             Unit unit = cloneUnit(spawnUnit);
 
@@ -123,8 +119,6 @@ public class UnitFactoryDialog extends BaseDialog{
 
             unit.add();
         }
-
-//        control.input.panCamera(pos);
     }
 
     private void rebuild(){
@@ -448,16 +442,17 @@ public class UnitFactoryDialog extends BaseDialog{
         Runnable rebuildInfo = () -> {
             float[] status = {1f, 1f, 1f, 1f, 1f, 1f, -1f};
 
-            unitStatus.each(entry -> {
+            for(StatusEntry entry : unitStatus){
                 status[0] *= entry.damageMultiplier;
                 status[1] *= entry.healthMultiplier;
                 status[2] *= entry.speedMultiplier;
                 status[3] *= entry.reloadMultiplier;
                 status[4] *= entry.buildSpeedMultiplier;
                 status[5] *= entry.dragMultiplier;
-                if(entry.effect.dynamic)
+                if(entry.effect.dynamic){
                     status[6] = entry.armorOverride;
-            });
+                }
+            }
 
             effectInfo.clearChildren();
             effectInfo.defaults().pad(4f);
@@ -660,11 +655,11 @@ public class UnitFactoryDialog extends BaseDialog{
                 buttons.defaults().height(48f).pad(4f).growX();
 
                 buttons.button("装载建筑", new TextureRegionDrawable(Blocks.siliconSmelter.uiIcon), Styles.flatt, 32,
-                () -> UIExt.contentSelector.select(content.blocks(), block -> true, block -> {
+                () -> UIExt.contentSelector.select(content.blocks(), block -> !block.isFloor(), block -> {
                     BuildPayload payload = new BuildPayload(block, payloadUnit.team);
                     payloads.add(payload);
                     rebuildPayloadSettingTable(payloads, settingTable);
-                    return false;
+                    return true;
                 })).row();
 
                 buttons.button("装载单位", new TextureRegionDrawable(UnitTypes.alpha.uiIcon), Styles.flatt, 32f,
@@ -672,7 +667,7 @@ public class UnitFactoryDialog extends BaseDialog{
                     UnitPayload payload = new UnitPayload(unitType.create(payloadUnit.team));
                     payloads.add(payload);
                     rebuildPayloadSettingTable(payloads, settingTable);
-                    return false;
+                    return true;
                 })).row();
 
                 buttons.button("装载自己", Icon.add, Styles.flatt, () -> {
@@ -779,10 +774,10 @@ public class UnitFactoryDialog extends BaseDialog{
         cloned.set(unit);
 
         if(unit instanceof Payloadc payloadUnit && cloned instanceof Payloadc clonedPayloadUnit){
-            payloadUnit.payloads().each(p -> {
-                Payload copied = clonePayload(p);
+            for(Payload payload : payloadUnit.payloads()){
+                Payload copied = clonePayload(payload);
                 clonedPayloadUnit.addPayload(copied);
-            });
+            }
         }
 
         Seq<StatusEntry> statusEntries = cloned.statuses();
