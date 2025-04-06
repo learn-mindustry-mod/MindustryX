@@ -116,11 +116,11 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  .../ui/dialogs/SettingsMenuDialog.java        |  28 +-
  .../mindustry/ui/fragments/ChatFragment.java  |   9 +-
  .../ui/fragments/ConsoleFragment.java         |   3 +
- .../mindustry/ui/fragments/HudFragment.java   | 170 +++++++++++-
+ .../mindustry/ui/fragments/HudFragment.java   | 168 +++++++++++-
  .../mindustry/ui/fragments/MenuFragment.java  |  51 +++-
  .../ui/fragments/PlacementFragment.java       | 164 ++++++++++--
  .../ui/fragments/PlayerListFragment.java      |  72 ++----
- 27 files changed, 1256 insertions(+), 167 deletions(-)
+ 27 files changed, 1255 insertions(+), 166 deletions(-)
 
 diff --git a/core/src/mindustry/editor/MapInfoDialog.java b/core/src/mindustry/editor/MapInfoDialog.java
 index ebc1f0b300d295e45333f1db38ea299c9658ec20..e7cba056743979206c84fc6d00472c2c44b565f6 100644
@@ -2089,7 +2089,7 @@ index 0374fdae62346126bbeafcc0820058cfc268fbd7..23c35234f44f48478cdc71b7513c74c4
          //special case for 'clear' command
          if(message.equals("clear")){
 diff --git a/core/src/mindustry/ui/fragments/HudFragment.java b/core/src/mindustry/ui/fragments/HudFragment.java
-index 315f2448279e5c3d4f0feb3d91f02440f039fbb6..1336feae4eee3419e0fd48eaa542b23ddb94d8bf 100644
+index 226444cbbaeb3aebfd688816feb99657c287550f..822896b2b553aba7a0e27921eb307b8a3ff2428d 100644
 --- a/core/src/mindustry/ui/fragments/HudFragment.java
 +++ b/core/src/mindustry/ui/fragments/HudFragment.java
 @@ -29,9 +29,11 @@ import mindustry.net.Packets.*;
@@ -2104,15 +2104,6 @@ index 315f2448279e5c3d4f0feb3d91f02440f039fbb6..1336feae4eee3419e0fd48eaa542b23d
  
  import static mindustry.Vars.*;
  import static mindustry.gen.Tex.*;
-@@ -196,7 +198,7 @@ public class HudFragment{
-             //position
-             t.table(tt -> {
-                 tt.label(() ->
--                (Core.settings.getBool("position") ? player.unit().type.emoji() + player.tileX() + "," + player.tileY() + "\n" : "") +
-+                (Core.settings.getBool("position") ? Iconc.players + player.tileX() + "," + player.tileY() + "\n" : "") +
-                 (Core.settings.getBool("mouseposition") ? "[lightgray]" + "♐" + World.toTile(Core.input.mouseWorldX()) + "," + World.toTile(Core.input.mouseWorldY()) : ""))
-                 .visible(() -> Core.settings.getBool("position") || Core.settings.getBool("mouseposition"))
-                 .touchable(Touchable.disabled).style(Styles.outlineLabel).minWidth(120f);
 @@ -320,6 +322,10 @@ public class HudFragment{
              wavesMain.top().left().name = "waves";
  
