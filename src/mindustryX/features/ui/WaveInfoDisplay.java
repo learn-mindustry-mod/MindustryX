@@ -19,7 +19,7 @@ import mindustryX.features.SettingsV2.*;
 import static mindustry.Vars.*;
 
 public class WaveInfoDisplay extends Table{
-    public static SettingsV2.Data<Boolean> enable = CheckPref.INSTANCE.create("newWaveInfoDisplay", true);
+    public static SettingsV2.Data<Boolean> enable = new CheckPref("newWaveInfoDisplay", true);
     public static final float fontScl = 0.8f;
     private int waveOffset = 0;
     private final WaveInfoDialog waveInfoDialog = new WaveInfoDialog();
@@ -59,7 +59,7 @@ public class WaveInfoDisplay extends Table{
                     new SettingsV2.SettingDialog(UIExt.coreItems.settings).showFloatPanel(event.stageX, event.stageY);
                 }
             });
-            buttons.button(Icon.eyeOffSmall, Styles.clearNonei, iconMed, () -> enable.setValue(false)).tooltip("隐藏波次显示");
+            buttons.button(Icon.eyeOffSmall, Styles.clearNonei, iconMed, () -> enable.set(false)).tooltip("隐藏波次显示");
         }).center().row();
 
         waveInfo = new Table().left().top();
@@ -87,7 +87,7 @@ public class WaveInfoDisplay extends Table{
         ret.collapser(UIExt.coreItems, () -> Core.settings.getBool("coreitems")).touchable(Touchable.disabled).growX().row();
         ret.add().height(4).row();
         ret.collapser(this, () -> enable.getValue()).growX().row();
-        ret.collapser(tt -> tt.button(Icon.downOpen, Styles.emptyi, () -> enable.setValue(true)), () -> !enable.getValue()).center().row();
+        ret.collapser(tt -> tt.button(Icon.downOpen, Styles.emptyi, () -> enable.set(true)), () -> !enable.getValue()).center().row();
         return ret;
     }
 

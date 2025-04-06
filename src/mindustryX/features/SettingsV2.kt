@@ -1,6 +1,7 @@
 package mindustryX.features
 
 import arc.Core
+import arc.graphics.Color
 import arc.input.KeyCode
 import arc.scene.event.ClickListener
 import arc.scene.event.InputEvent
@@ -24,16 +25,20 @@ import mindustry.ui.dialogs.BaseDialog
  */
 
 object SettingsV2 {
-    data class Data<T>(val name: String, val def: T, val ext: SettingExt<T>, var persistentProvider: PersistentProvider = PersistentProvider.Arc) {
-        private val changedSet = mutableSetOf<String>()
+    //headless Data
+    open class DataCore<T>(val name: String, val def: T) {
         var value: T = def
-            set(value) {
-                val v = ext.transformValue(value)
-                if (v == field) return
-                field = value
-                persistentProvider.set(name, value)
-                changedSet.clear()
-            }
+            private set
+        var persistentProvider: PersistentProvider = PersistentProvider.Arc
+        private val changedSet = mutableSetOf<String>()
+
+        fun get(): T = value //for java usage
+        open fun set(value: T) {
+            if (value == this.value) return
+            this.value = value
+            persistentProvider.set(name, value)
+            changedSet.clear()
+        }
 
         init {
             if (name in ALL)
@@ -49,29 +54,36 @@ object SettingsV2 {
             return changedSet.add(name)
         }
 
-        //util
-        val category: String get() = name.substringBefore('.', "")
-        val title: String get() = Core.bundle.get("settingV2.${name}.name", name)
         fun resetDefault() {
             persistentProvider.reset(name)
             value = def
-        }
-
-        fun buildUI(table: Table) {
-            Table().left().apply {
-                button(Icon.undo, Styles.clearNonei) { resetDefault() }.tooltip("@settingsV2.reset")
-                    .fillY().disabled { value == def }
-                ext.build(this@Data, this)
-
-                Core.bundle.getOrNull("settingV2.${name}.description")?.let {
-                    Vars.ui.addDescTooltip(this, it)
-                }
-                table.add(this).fillX().row()
-            }
+            changedSet.clear()
         }
 
         fun addFallbackName(name: String) {
             persistentProvider = PersistentProvider.WithFallback(name, persistentProvider)
+        }
+    }
+
+    open class Data<T>(name: String, def: T) : DataCore<T>(name, def) {
+        val category: String get() = name.substringBefore('.', "")
+        val title: String get() = Core.bundle.get("settingV2.${name}.name", name)
+
+        open fun buildUI(table: Table) {
+            table.table().fillX().padTop(3f).get().apply {
+                add(title).padRight(8f)
+                label { value.toString() }.ellipsis(true).color(Color.gray).labelAlign(Align.left).growX()
+                addTools()
+            }
+            table.row()
+        }
+
+        protected fun Table.addTools() {
+            val help = Core.bundle.getOrNull("settingV2.${name}.description")
+            button(Icon.info, Styles.clearNonei) { Vars.ui.showInfo(help) }.tooltip(help ?: "@none")
+                .fillY().padLeft(8f).disabled { help == null }
+            button(Icon.undo, Styles.clearNonei) { resetDefault() }.tooltip("@settingV2.reset")
+                .fillY().disabled { value == def }
         }
     }
 
@@ -107,6 +119,7 @@ object SettingsV2 {
             }
 
             override fun <T> set(name: String, value: T) {
+                impl.reset(fallback)
                 impl.set(name, value)
             }
 
@@ -117,75 +130,81 @@ object SettingsV2 {
         }
     }
 
-    sealed interface SettingExt<T> {
-        fun transformValue(value: T): T = value
-        fun build(s: Data<T>, table: Table)
+    class CheckPref @JvmOverloads constructor(name: String, def: Boolean = false) : Data<Boolean>(name, def) {
+        override fun buildUI(table: Table) {
+            val box = CheckBox(title)
+            box.changed { set(box.isChecked) }
+            box.update { box.isChecked = value }
 
-        //util
-        fun create(name: String, def: T) = Data(name, def, this)
-        fun create(name: String, def: T, persistentProvider: PersistentProvider) = Data(name, def, this, persistentProvider)
+            table.table().fillX().get().apply {
+                add(box).left().expandX().padTop(3f)
+                addTools()
+            }
+            table.row()
+        }
     }
 
-    data object CheckPref : SettingExt<Boolean> {
-        override fun build(s: Data<Boolean>, table: Table) {
-            val box = CheckBox(s.title)
-            box.changed { s.value = box.isChecked }
-            box.update { box.isChecked = s.value }
-            table.add(box).left().padTop(3f)
+    open class SliderPref @JvmOverloads constructor(name: String, def: Int, val min: Int, val max: Int, val step: Int = 1, val labelMap: (Int) -> String = { it.toString() }) : Data<Int>(name, def) {
+        override fun set(value: Int) {
+            super.set(value.coerceIn(min, max))
         }
 
-        fun create(name: String) = create(name, false)
-    }
-
-    data class SliderPref @JvmOverloads constructor(val min: Int, val max: Int, val step: Int = 1, val labelMap: (Int) -> String = { it.toString() }) : SettingExt<Int> {
-        override fun transformValue(value: Int): Int = value.coerceIn(min, max)
-        override fun build(s: Data<Int>, table: Table) {
+        override fun buildUI(table: Table) {
             val elem = Slider(min.toFloat(), max.toFloat(), step.toFloat(), false)
-            elem.changed { s.value = elem.value.toInt() }
-            elem.update { elem.value = s.value.toFloat() }
+            elem.changed { set(elem.value.toInt()) }
+            elem.update { elem.value = value.toFloat() }
 
             val content = Table().apply {
                 touchable = Touchable.disabled
-                add(s.title, Styles.outlineLabel).left().growX().wrap()
-                label { labelMap(s.value) }.style(Styles.outlineLabel).padLeft(10f).right().get()
+                add(title, Styles.outlineLabel).left().growX().wrap()
+                label { labelMap(value) }.style(Styles.outlineLabel).padLeft(10f).right().get()
             }
-
-            table.stack(elem, content).minWidth(220f).growX().padTop(4f)
+            table.table().fillX().padTop(4f).get().apply {
+                stack(elem, content).minWidth(220f).growX()
+                addTools()
+            }
+            table.row()
         }
     }
 
-    data class ChoosePref(
-        val values: List<String>,
-        private val impl: SliderPref = SliderPref(0, values.size, labelMap = { values[it] })
-    ) : SettingExt<Int> by impl
+    class ChoosePref @JvmOverloads constructor(name: String, val values: List<String>, def: Int = 0) : SliderPref(name, def, 0, values.size - 1, labelMap = { values[it] })
 
-    data object TextPref : SettingExt<String> {
-        override fun transformValue(value: String): String = value.trim()
-        override fun build(s: Data<String>, table: Table) {
-            val elem = TextField()
-            elem.changed { s.value = elem.text }
-            elem.update { elem.text = s.value }
+    open class TextPref @JvmOverloads constructor(name: String, def: String = "") : Data<String>(name, def) {
+        override fun set(value: String) {
+            super.set(value.trim())
+        }
 
-            table.table().left().padTop(3f).fillX().get().apply {
-                add(s.title).padRight(8f)
+        override fun buildUI(table: Table) {
+            val elem = TextField(value)
+            elem.changed { set(elem.text) }
+            elem.update { elem.text = value }
+
+            table.table().fillX().padTop(3f).get().apply {
+                add(title).padRight(8f)
                 add(elem).growX()
+                addTools()
             }
+            table.row()
         }
     }
 
-    data object TextAreaPref : SettingExt<String> {
-        override fun transformValue(value: String): String = value.trim()
-        override fun build(s: Data<String>, table: Table) {
+    class TextAreaPref @JvmOverloads constructor(name: String, def: String = "") : TextPref(name, def) {
+        override fun buildUI(table: Table) {
             val elem = TextArea("")
             elem.setPrefRows(5f)
-            elem.changed { s.value = elem.text }
-            elem.update { elem.text = s.value }
-            table.add(s.title).left().padTop(3f)
-            table.row().add(elem).colspan(2).fillX()
+            elem.changed { set(elem.text) }
+            elem.update { elem.text = value }
+
+            table.table().fillX().padTop(3f).get().apply {
+                add(title).left().expandX()
+                addTools()
+                row().add(elem).colspan(columns).growX()
+            }
+            table.row()
         }
     }
 
-    val ALL = LinkedHashMap<String, Data<*>>()
+    val ALL = LinkedHashMap<String, DataCore<*>>()
 
     class SettingDialog(val settings: Iterable<Data<*>>) : BaseDialog("@settings") {
         init {
@@ -217,14 +236,14 @@ object SettingsV2 {
     @JvmStatic
     fun buildSettingsTable(table: Table) {
         table.clearChildren()
-        val searchTable = table.table().fillX().get()
+        val searchTable = table.table().growX().get()
         table.row()
-        val contentTable = table.table().fillX().get()
+        val contentTable = table.table().growX().get()
         table.row()
 
         fun rebuildContent() {
             contentTable.clearChildren()
-            ALL.values.groupBy { it.category }.toSortedMap().forEach { (c, settings0) ->
+            ALL.values.filterIsInstance<Data<*>>().groupBy { it.category }.toSortedMap().forEach { (c, settings0) ->
                 val category = Core.bundle.get("settingV2.$c.category")
                 val categoryMatch = c.contains(settingSearch, ignoreCase = true) || category.contains(settingSearch, ignoreCase = true)
                 val settings = if (categoryMatch) settings0 else settings0.filter {
@@ -233,17 +252,17 @@ object SettingsV2 {
                 }
                 if (c.isNotEmpty() && settings.isNotEmpty()) {
                     contentTable.add(category).color(Pal.accent).padTop(10f).padBottom(5f).center().row()
-                    contentTable.image().color(Pal.accent).fillX().height(3f).padBottom(10f).row()
+                    contentTable.image().color(Pal.accent).growX().height(3f).padBottom(10f).row()
                 }
                 settings.forEach { it.buildUI(contentTable) }
             }
         }
         searchTable.apply {
             image(Icon.zoom)
-            field(settingSearch, {
+            field(settingSearch) {
                 settingSearch = it
                 rebuildContent()
-            }).growX()
+            }.growX()
         }
         rebuildContent()
     }
@@ -277,26 +296,26 @@ object SettingsV2 {
     //零散的设置，放在下方
 
     @JvmField
-    val blockInventoryWidth = SliderPref(3, 16).create("blockInventoryWidth", 3)
+    val blockInventoryWidth = SliderPref("blockInventoryWidth", 3, 3, 16)
 
     @JvmField
-    val minimapSize = SliderPref(40, 400, 10).create("minimapSize", 140)
+    val minimapSize = SliderPref("minimapSize", 140, 40, 400, 10)
 
     @JvmField
-    val arcTurretShowPlaceRange = CheckPref.create("arcTurretPlaceCheck")
+    val arcTurretShowPlaceRange = CheckPref("arcTurretPlaceCheck")
 
     @JvmField
-    val arcTurretShowAmmoRange = CheckPref.create("arcTurretPlacementItem")
+    val arcTurretShowAmmoRange = CheckPref("arcTurretPlacementItem")
 
     @JvmField
-    val staticShieldsBorder = CheckPref.create("staticShieldsBorder")
+    val staticShieldsBorder = CheckPref("staticShieldsBorder")
 
     @JvmField
-    val allUnlocked = CheckPref.create("allUnlocked")
+    val allUnlocked = CheckPref("allUnlocked")
 
     @JvmField
-    val editorBrush = SliderPref(3, 13).create("editorBrush", 6)
+    val editorBrush = SliderPref("editorBrush", 6, 3, 13)
 
     @JvmField
-    val noPlayerHitBox = CheckPref.create("noPlayerHitBox")
+    val noPlayerHitBox = CheckPref("noPlayerHitBox")
 }

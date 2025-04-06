@@ -1395,7 +1395,7 @@ index 74aabc356883e7da5304e6af3b9f61ba7c717546..cc7d2ddf3a307052ed8528ff3505bba2
          ruleInfo(cell, text);
          current.row();
 diff --git a/core/src/mindustry/ui/dialogs/DatabaseDialog.java b/core/src/mindustry/ui/dialogs/DatabaseDialog.java
-index dcb8b5ce51496a70cdcc593e6f53d87be6a50b44..5f0c3ae7f22d70d4353496211dc6dcf80fdc2868 100644
+index e48dc1c0d75a97ea64718bd5300bab072c513204..fea1ee710ae637781f21b43caf8f9cc90cce11ff 100644
 --- a/core/src/mindustry/ui/dialogs/DatabaseDialog.java
 +++ b/core/src/mindustry/ui/dialogs/DatabaseDialog.java
 @@ -21,7 +21,6 @@ import mindustry.world.*;

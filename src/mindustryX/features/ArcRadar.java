@@ -17,6 +17,7 @@ import mindustry.world.blocks.storage.*;
 import mindustryX.features.SettingsV2.*;
 import mindustryX.features.func.*;
 
+import java.util.*;
 import java.util.List;
 
 import static mindustry.Vars.*;
@@ -48,15 +49,15 @@ public class ArcRadar{
     private static Table t;
 
     private static final SettingsV2.Data<Integer>
-    mode = new SliderPref(1, 30, 1, s -> switch(s){
+    mode = new SliderPref("radar.mode", 1, 1, 30, 1, s -> switch(s){
         case 0 -> "关闭";
         case 30 -> "瞬间完成";
         default -> "[lightgray]x[white]" + Strings.autoFixed(s * 0.2f, 1) + "倍搜索速度";
-    }).create("radar.mode", 1),
-    size = new SliderPref(0, 50, 1, s -> {
+    }),
+    size = new SliderPref("radar.size", 0, 0, 50, 1, s -> {
         if(s == 0) return "固定大小";
         return "[lightgray]x[white]" + Strings.autoFixed(s * 0.1f, 1) + "倍";
-    }).create("radar.size", 0);
+    });
     public static List<SettingsV2.Data<?>> settings = CollectionsKt.listOf(mode, size);
 
     {

@@ -52,8 +52,8 @@ object AutoUpdate {
     var latest: Release? = null
     val newVersion: Release? get() = latest?.takeIf { it.version > VarsX.version }
 
-    val ignoreOnce = SettingsV2.TextPref.create("AutoUpdate.ignoreOnce", "")
-    val ignoreUntil = SettingsV2.TextPref.create("AutoUpdate.ignoreUntil", "")
+    val ignoreOnce = SettingsV2.DataCore("AutoUpdate.ignoreOnce", "")
+    val ignoreUntil = SettingsV2.DataCore("AutoUpdate.ignoreUntil", "")
 
     fun checkUpdate() {
         if (versions.isNotEmpty()) return

@@ -21,7 +21,7 @@ import mindustryX.features.ui.toolTable.*;
 import static mindustry.Vars.*;
 
 public class UIExt{
-    public static SettingsV2.Data<Integer> quickToolOffset = new SettingsV2.SliderPref(-250, 250, 10).create("quickToolOffset", 0);
+    public static SettingsV2.Data<Integer> quickToolOffset = new SettingsV2.SliderPref("quickToolOffset", 0, -250, 250, 10);
 
     public static TeamSelectDialog teamSelect;
     public static ContentSelector contentSelector;
@@ -150,7 +150,8 @@ public class UIExt{
 
                 if(cons.get(x, y)){
                     hitter.remove();
-                };
+                }
+                ;
             }
         });
 

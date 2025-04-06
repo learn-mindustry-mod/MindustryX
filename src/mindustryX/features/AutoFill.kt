@@ -19,10 +19,10 @@ object AutoFill {
     @JvmField
     var enable = false
     private val transferredThisTick = mutableSetOf<Building>()
-    private val cooldown = SettingsV2.SliderPref(0, 3000, 100).create("autoFill.cooldown", 300)
-    private val minFill = SettingsV2.SliderPref(1, 20, 1).create("autoFill.minFill", 5)
-    private val fillStorageBlock = SettingsV2.CheckPref.create("autoFill.fillStorageBlock")
-    private val fillDistribution = SettingsV2.CheckPref.create("autoFill.fillDistribution")
+    private val cooldown = SettingsV2.SliderPref("autoFill.cooldown", 300, 0, 3000, 100)
+    private val minFill = SettingsV2.SliderPref("autoFill.minFill", 5, 1, 20, 1)
+    private val fillStorageBlock = SettingsV2.CheckPref("autoFill.fillStorageBlock")
+    private val fillDistribution = SettingsV2.CheckPref("autoFill.fillDistribution")
     val settings = listOf(cooldown, minFill, fillStorageBlock, fillDistribution)
 
     private var timer = Interval()
