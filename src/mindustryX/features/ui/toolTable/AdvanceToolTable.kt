@@ -25,7 +25,7 @@ class AdvanceToolTable : ToolTableBase(Iconc.wrench.toString()) {
     private val mapInfoDialog: MapInfoDialog = MapInfoDialog()
 
     init {
-        row().add("警告：该页功能主要供单机使用").color(Color.yellow).colspan(2)
+        row().add("警告：该页功能主要供单机作图使用").color(Color.yellow).colspan(2)
 
         row().add("单位：")
         with(table().get()) {
@@ -46,7 +46,6 @@ class AdvanceToolTable : ToolTableBase(Iconc.wrench.toString()) {
             button(UnitTypes.gamma.emoji() + "[red]×", Styles.cleart) { if (!Vars.player.dead()) Vars.player.unit().kill() }.width(40f).tooltip("[red]自杀")
             button(Icon.waves, Styles.clearNonei) { factoryDialog.show() }.width(40f).tooltip("[accent]单位工厂-X")
         }
-
 
         row().add("队伍：")
         with(table().get()) {
@@ -69,6 +68,11 @@ class AdvanceToolTable : ToolTableBase(Iconc.wrench.toString()) {
                 .tooltip("[acid]显示并允许建造所有物品").size(50f, 30f)
             button("地形蓝图", Styles.flatToggleMenut) { Settings.toggle("terrainSchematic") }
                 .checked { LogicExt.terrainSchematic }.size(72f, 30f)
+            button("瞬间完成", Styles.flatt) {
+                Vars.player.unit()?.apply {
+                    while (!plans.isEmpty) updateBuildLogic()
+                }
+            }.size(72f, 30f)
         }
 
         row().add("规则：")

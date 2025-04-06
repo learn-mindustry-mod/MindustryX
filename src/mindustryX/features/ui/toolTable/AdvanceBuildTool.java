@@ -17,7 +17,6 @@ import mindustry.graphics.*;
 import mindustry.ui.*;
 import mindustry.world.*;
 import mindustry.world.blocks.*;
-import mindustry.world.blocks.environment.*;
 import mindustry.world.blocks.logic.*;
 import mindustry.world.blocks.power.*;
 import mindustry.world.blocks.production.*;
@@ -138,14 +137,7 @@ public class AdvanceBuildTool extends ToolTableBase{
                 while(plans.size > 1000) plans.removeLast();
                 UIExt.announce("[yellow]建筑过多，避免卡顿，仅保留前1000个规划");
             }
-        }).tooltip("一键放置").size(30f);
-        if(!net.client()){
-            button("\uE800", Styles.flatBordert, () -> {
-                instantBuild();
-                if(mobile)
-                    ui.announce("瞬间建造\n[cyan]强制瞬间建造[acid]选择范围内[cyan]内规划中的所有建筑\n[orange]可能出现bug");
-            }).size(30, 30).tooltip("瞬间建造\n[cyan]强制瞬间建造[acid]选择范围内[cyan]规划中的所有建筑\n[orange]可能出现bug");
-        }
+        }).tooltip("放置/替换").size(30f);
     }
 
     public static void showWorldProcessorInfo(){
@@ -189,43 +181,6 @@ public class AdvanceBuildTool extends ToolTableBase{
             }else return !state.teams.anyEnemyCoresWithin(player.team(), tile.x * tilesize, tile.y * tilesize, state.rules.enemyCoreBuildRadius + tilesize);
         }
         return true;
-    }
-
-    void instantBuild(){
-        if(player.dead()) return;
-        player.unit().plans.each(buildPlan -> {
-            if(!contain(buildPlan.tile())) return;
-            forceBuildBlock(buildPlan.block, buildPlan.tile(), player.team(), buildPlan.rotation, buildPlan.config);
-        });
-    }
-
-    void forceBuildBlock(Block block, Tile tile, Team team, int rotation, Object config){
-        if(block == Blocks.cliff) buildCliff(tile);
-        else if(block instanceof OverlayFloor){
-            tile.setOverlay(block);
-        }else if(block instanceof Floor floor){
-            tile.setFloor(floor);
-        }else{
-            tile.setBlock(block, team, rotation);
-            tile.build.configure(config);
-        }
-        pathfinder.updateTile(tile);
-    }
-
-    void buildCliff(Tile tile){
-        int rotation = 0;
-        for(int i = 0; i < 8; i++){
-            Tile other = world.tiles.get(tile.x + Geometry.d8[i].x, tile.y + Geometry.d8[i].y);
-            if(other != null && !other.floor().hasSurface()){
-                rotation |= (1 << i);
-            }
-        }
-
-        if(rotation != 0){
-            tile.setBlock(Blocks.cliff);
-        }
-
-        tile.data = (byte)rotation;
     }
 
     enum BuildRange{
