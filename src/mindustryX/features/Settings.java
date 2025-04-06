@@ -31,7 +31,6 @@ public class Settings{
 
     public static void addSettings(){
         categories.add(new LazySettingsCategory("@settings.category.mindustryX", () -> Icon.box, (c) -> {
-            c.checkPref("showUpdateDialog", true);
             c.checkPref("githubMirror", true);
             c.checkPref("replayRecord", false);
 

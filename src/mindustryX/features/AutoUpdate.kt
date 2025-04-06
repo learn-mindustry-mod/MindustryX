@@ -52,8 +52,9 @@ object AutoUpdate {
     var latest: Release? = null
     val newVersion: Release? get() = latest?.takeIf { it.version > VarsX.version }
 
-    val ignoreOnce = SettingsV2.DataCore("AutoUpdate.ignoreOnce", "")
-    val ignoreUntil = SettingsV2.DataCore("AutoUpdate.ignoreUntil", "")
+    val showUpdateDialog = SettingsV2.CheckPref("AutoUpdate.showUpdateDialog", true).apply { addFallbackName("showUpdateDialog") }
+    val ignoreOnce = SettingsV2.Data("AutoUpdate.ignoreOnce", "")
+    val ignoreUntil = SettingsV2.Data("AutoUpdate.ignoreUntil", "")
 
     fun checkUpdate() {
         if (versions.isNotEmpty()) return
@@ -74,7 +75,7 @@ object AutoUpdate {
         latest = available.maxByOrNull { it.version } ?: return
 
         val newVersion = newVersion ?: return
-        if (!Core.settings.getBool("showUpdateDialog", true) || ignoreOnce.value == newVersion.version
+        if (!showUpdateDialog.value || ignoreOnce.value == newVersion.version
             || kotlin.runCatching { Instant.parse(ignoreUntil.value) > Instant.now() }.getOrNull() == true
         ) return
 
@@ -91,7 +92,7 @@ object AutoUpdate {
         dialog.cont.apply {
             add("当前版本号: ${VarsX.version}").labelAlign(Align.center).width(500f).row()
             newVersion?.let {
-                add("新版本: ${it.version}").labelAlign(Align.center).width(500f).row()
+                add("新版本: ${it.version}").labelAlign(Align.center).fillX().row()
             }
             if (versions.isEmpty()) {
                 add("检查更新失败，请稍后再试").row()
@@ -110,34 +111,36 @@ object AutoUpdate {
 
             val asset = version.findAsset()
             var url = asset?.url.orEmpty()
-            field(url) { url = it }.fillX()
-            button("♐") {
-                if (!Core.app.openURI(url)) {
-                    Vars.ui.showErrorMessage("打开失败，网址已复制到粘贴板\n请自行在浏览器打开")
-                    Core.app.clipboardText = url
-                }
-            }.width(50f)
+            table().fillX().get().apply {
+                field(url) { url = it }.growX()
+                button("♐") {
+                    if (!Core.app.openURI(url)) {
+                        Vars.ui.showErrorMessage("打开失败，网址已复制到粘贴板\n请自行在浏览器打开")
+                        Core.app.clipboardText = url
+                    }
+                }.width(50f)
+            }.row()
 
-            row().button("自动下载更新") {
+            button("自动下载更新") {
                 if (asset == null) return@button
                 if (!VarsX.isLoader && OS.isAndroid) {
                     Vars.ui.showErrorMessage("目前不支持Apk自动安卓，请在浏览器打开后手动安装")
                     return@button
                 }
                 startDownload(asset.copy(url = url))
-            }.fillX()
+            }.fillX().row()
 
             if (version == newVersion) {
-                row().table().fillX().get().apply {
-                    button("跳过当前版本") {
-                        ignoreOnce.value = version.version
+                table().fillX().get().apply {
+                    button(ignoreOnce.title) {
+                        ignoreOnce.set(version.version)
                         dialog.hide()
-                    }
-                    button("7天不再提示") {
-                        ignoreOnce.value = (Instant.now() + Duration.ofDays(7)).toString()
+                    }.growX()
+                    button(ignoreUntil.title) {
+                        ignoreOnce.set((Instant.now() + Duration.ofDays(7)).toString())
                         dialog.hide()
-                    }
-                }
+                    }.growX()
+                }.row()
             }
         }
         dialog.addCloseButton()
