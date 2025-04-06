@@ -23,10 +23,10 @@ index 63e6c3ef13f839f531387b10789d135585b19863..8b1de1fbe09758f1d78f5ec01b442c11
  
          input.updateState();
 diff --git a/core/src/mindustry/core/World.java b/core/src/mindustry/core/World.java
-index 37794f84133a498c36cc9aae13ce959eefd20214..190960672db76a78dcb2fc612fbe8f99e60132af 100644
+index e52480861c2309f8116f0aff68fead38c540da7b..1ac290b6fd61f8743701d8b6e8822b646db2fd34 100644
 --- a/core/src/mindustry/core/World.java
 +++ b/core/src/mindustry/core/World.java
-@@ -233,6 +233,7 @@ public class World{
+@@ -238,6 +238,7 @@ public class World{
      }
  
      public Rect getQuadBounds(Rect in){

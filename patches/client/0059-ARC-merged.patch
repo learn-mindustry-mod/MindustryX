@@ -156,7 +156,7 @@ index ebc1f0b300d295e45333f1db38ea299c9658ec20..e7cba056743979206c84fc6d00472c2c
                      hide();
                  }).marginLeft(10f);
 diff --git a/core/src/mindustry/entities/comp/BuildingComp.java b/core/src/mindustry/entities/comp/BuildingComp.java
-index e4e10b1d313af5aeb4b8ca9c47ea9fed596906da..bbbea8d3e4721f7a6432fd5ca4fae8a8fde1501c 100644
+index d3dce5a7b5899f75da3c06cb8c6c97e8238ce957..3a74f7533ba18ad979096d7719d144e207acb53f 100644
 --- a/core/src/mindustry/entities/comp/BuildingComp.java
 +++ b/core/src/mindustry/entities/comp/BuildingComp.java
 @@ -40,6 +40,7 @@ import mindustry.world.blocks.power.*;
@@ -184,7 +184,7 @@ index e4e10b1d313af5aeb4b8ca9c47ea9fed596906da..bbbea8d3e4721f7a6432fd5ca4fae8a8
      }
  
      public float timeScale(){
-@@ -1448,7 +1450,8 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
+@@ -1451,7 +1453,8 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
          //derelict team icon currently doesn't display
          return team == Team.derelict ?
              block.localizedName + "\n" + Core.bundle.get("block.derelict") :
@@ -194,7 +194,7 @@ index e4e10b1d313af5aeb4b8ca9c47ea9fed596906da..bbbea8d3e4721f7a6432fd5ca4fae8a8
      }
  
      public TextureRegion getDisplayIcon(){
-@@ -1472,7 +1475,7 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
+@@ -1475,7 +1478,7 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
          table.row();
  
          //only display everything else if the team is the same
@@ -203,7 +203,7 @@ index e4e10b1d313af5aeb4b8ca9c47ea9fed596906da..bbbea8d3e4721f7a6432fd5ca4fae8a8
              table.table(bars -> {
                  bars.defaults().growX().height(18f).pad(4);
  
-@@ -1573,6 +1576,15 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
+@@ -1576,6 +1579,15 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
              table.add(result).growX();
              table.row();
          }
@@ -849,7 +849,7 @@ index ae4be3bb800bc4492918e10bdf33e6ed125f9f6f..d7e089b4457562374d69155b618b0cda
          unit.movePref(movement);
  
 diff --git a/core/src/mindustry/logic/LExecutor.java b/core/src/mindustry/logic/LExecutor.java
-index a35e10d0902516ddd701fe53c720914ed25e9415..24d831243cdf4b09e62603445659e302190a7173 100644
+index b6626017300be3dfe6dbe36c46af679277dbaccf..fe338703a75784084c7de67489539c2f4044ebb6 100644
 --- a/core/src/mindustry/logic/LExecutor.java
 +++ b/core/src/mindustry/logic/LExecutor.java
 @@ -10,6 +10,7 @@ import arc.util.*;
@@ -1145,7 +1145,7 @@ index 0464bde619e7afe1c1de9adf9a29dcc52132814b..aca20acb43fde3c76e408d7e13c64a69
          table.marginRight(30f);
          //TODO: some things (e.g. reconstructor requirements) are too long and screw up the layout
 diff --git a/core/src/mindustry/ui/dialogs/CustomRulesDialog.java b/core/src/mindustry/ui/dialogs/CustomRulesDialog.java
-index 56e67f460edcd52698d109a24d84a35b74c9c1a8..74b65e96ee2fceca3fd68063b0e56d29fd6c00ec 100644
+index 74aabc356883e7da5304e6af3b9f61ba7c717546..cc7d2ddf3a307052ed8528ff3505bba2b7432e97 100644
 --- a/core/src/mindustry/ui/dialogs/CustomRulesDialog.java
 +++ b/core/src/mindustry/ui/dialogs/CustomRulesDialog.java
 @@ -3,6 +3,7 @@ package mindustry.ui.dialogs;
@@ -1228,7 +1228,7 @@ index 56e67f460edcd52698d109a24d84a35b74c9c1a8..74b65e96ee2fceca3fd68063b0e56d29
 +        check("@rules.staticFog", b -> rules.staticFog = b, () -> rules.staticFog);
          check("@rules.lighting", b -> rules.lighting = b, () -> rules.lighting);
  
-         check("@rules.limitarea", b -> rules.limitMapArea = b, () -> rules.limitMapArea);
+         check("@rules.limitarea", b -> rules.limitMapArea = b, () -> rules.limitMapArea, () -> !state.isGame());
 @@ -239,11 +250,47 @@ public class CustomRulesDialog extends BaseDialog{
                  b.add("@rules.ambientlight");
              }, () -> ui.picker.show(rules.ambientLight, rules.ambientLight::set)).left().width(250f).row();
@@ -1971,7 +1971,7 @@ index 1819d3cabac2aeadbb57bf74cf6962f829c7dded..a24c659a8ee848c12921e5bc3afae839
          }
      }
 diff --git a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
-index 423a762f12f399f4b2917dbce2bf677fd9b5c3b8..d3137351ee311e45e16bc87964391493672c1840 100644
+index 9fa6ca36f077ba1d4262863c7ff84a618667d944..03143ca0e265cbb1013dfff18e25cf704469775b 100644
 --- a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
 +++ b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
 @@ -303,8 +303,8 @@ public class SettingsMenuDialog extends BaseDialog{
@@ -2012,9 +2012,9 @@ index 423a762f12f399f4b2917dbce2bf677fd9b5c3b8..d3137351ee311e45e16bc87964391493
  
          int[] lastUiScale = {settings.getInt("uiscale", 100)};
  
-@@ -469,18 +467,18 @@ public class SettingsMenuDialog extends BaseDialog{
+@@ -468,18 +466,18 @@ public class SettingsMenuDialog extends BaseDialog{
+         graphics.checkPref("destroyedblocks", true);
          graphics.checkPref("blockstatus", false);
-         graphics.checkPref("displayselection", true);
          graphics.checkPref("playerchat", true);
 -        if(!mobile){
 -            graphics.checkPref("coreitems", true);

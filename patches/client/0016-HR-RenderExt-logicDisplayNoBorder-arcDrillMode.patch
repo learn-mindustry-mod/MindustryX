@@ -46,7 +46,7 @@ index 1816245ad2a2e21501da4817c00ba8ba0de04f9f..1db6409a264c5977e4ccfbf7709d1db4
                  }
              });
 diff --git a/core/src/mindustry/world/blocks/production/Drill.java b/core/src/mindustry/world/blocks/production/Drill.java
-index cd54b6f0c5d5a85b122bfa5c9cdbf57f0558b7c1..df5497e8bdfceec807542a8677d933cf330384e8 100644
+index 12ef7bace5fa5a40722ebd8ff9999d6befd6557c..4e155b4d08cfbcc0244f103f5ce1a55b706ae3f8 100644
 --- a/core/src/mindustry/world/blocks/production/Drill.java
 +++ b/core/src/mindustry/world/blocks/production/Drill.java
 @@ -21,6 +21,7 @@ import mindustry.world.*;
@@ -62,6 +62,6 @@ index cd54b6f0c5d5a85b122bfa5c9cdbf57f0558b7c1..df5497e8bdfceec807542a8677d933cf
          @Override
          public void drawSelect(){
 +            if(RenderExt.arcDrillMode) return;
-             if(dominantItem != null){
-                 float dx = x - size * tilesize/2f, dy = y + size * tilesize/2f, s = iconSmall / 4f;
-                 Draw.mixcol(Color.darkGray, 1f);
+             drawItemSelection(dominantItem);
+         }
+ 

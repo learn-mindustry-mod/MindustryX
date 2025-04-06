@@ -255,7 +255,7 @@ index 860284e9b0722c2b3c1bca3399bc0de3f6b97835..1acb685ab182f18d2e05d162c4f48c18
  
          @Override
 diff --git a/core/src/mindustry/world/blocks/production/Drill.java b/core/src/mindustry/world/blocks/production/Drill.java
-index f311c8fee60ee864ad1596858ac9d00d3ea7915a..e22bd94e9a809de88c7a2341ac3b49eb6371480c 100644
+index f6454de7e47676d8372db35f75c5b835321ab289..f1587b033da7a916e42e06b8ab931a5eed8d26f4 100644
 --- a/core/src/mindustry/world/blocks/production/Drill.java
 +++ b/core/src/mindustry/world/blocks/production/Drill.java
 @@ -148,12 +148,12 @@ public class Drill extends Block{

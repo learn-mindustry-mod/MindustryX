@@ -104,7 +104,7 @@ index 65983a0029484cf4885fac787ee79feb8e6f0e92..b6110e4630f095494b158dd5062dfe41
                      other.heal(healPercent / 100f * other.maxHealth() + healAmount);
                  });
 diff --git a/core/src/mindustry/entities/comp/BuildingComp.java b/core/src/mindustry/entities/comp/BuildingComp.java
-index bbbea8d3e4721f7a6432fd5ca4fae8a8fde1501c..67011df71f5ddf025a9ad3de6342e312350f07b8 100644
+index 3a74f7533ba18ad979096d7719d144e207acb53f..c608e13c51d3721402ed1e7632ca5937f61d7f67 100644
 --- a/core/src/mindustry/entities/comp/BuildingComp.java
 +++ b/core/src/mindustry/entities/comp/BuildingComp.java
 @@ -40,6 +40,7 @@ import mindustry.world.blocks.power.*;
@@ -115,7 +115,7 @@ index bbbea8d3e4721f7a6432fd5ca4fae8a8fde1501c..67011df71f5ddf025a9ad3de6342e312
  import mindustryX.features.*;
  
  import java.util.*;
-@@ -1696,6 +1697,8 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
+@@ -1699,6 +1700,8 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
  
      /** Handles splash damage with a bullet source. */
      public void damage(Bullet bullet, Team source, float damage){
@@ -124,7 +124,7 @@ index bbbea8d3e4721f7a6432fd5ca4fae8a8fde1501c..67011df71f5ddf025a9ad3de6342e312
          damage(source, damage);
          Events.fire(bulletDamageEvent.set(self(), bullet));
      }
-@@ -1974,7 +1977,9 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
+@@ -1977,7 +1980,9 @@ abstract class BuildingComp implements Posc, Teamc, Healthc, Buildingc, Timerc,
  
          //TODO handle this better on the client.
          if(!net.client()){

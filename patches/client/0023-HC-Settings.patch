@@ -19,7 +19,7 @@ way-zer <himc.wicp@gmail.com> on 2024/7/1
  1 file changed, 62 insertions(+), 24 deletions(-)
 
 diff --git a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
-index ce99608f4c10148853daa3c403e1efadc598a7a4..423a762f12f399f4b2917dbce2bf677fd9b5c3b8 100644
+index 4fb56d595aa155dc0f34cec88d0f5cea700d177f..9fa6ca36f077ba1d4262863c7ff84a618667d944 100644
 --- a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
 +++ b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
 @@ -24,6 +24,7 @@ import mindustry.gen.*;
@@ -78,7 +78,7 @@ index ce99608f4c10148853daa3c403e1efadc598a7a4..423a762f12f399f4b2917dbce2bf677f
          graphics.sliderPref("bloomblur", 2, 1, 16, i -> i + "x");
  
          graphics.sliderPref("fpscap", 240, 10, 245, 5, s -> (s > 240 ? Core.bundle.get("setting.fpscap.none") : Core.bundle.format("setting.fpscap.text", s)));
-@@ -596,13 +595,13 @@ public class SettingsMenuDialog extends BaseDialog{
+@@ -595,13 +594,13 @@ public class SettingsMenuDialog extends BaseDialog{
      private void visible(int index){
          prefs.clearChildren();
  
@@ -94,7 +94,7 @@ index ce99608f4c10148853daa3c403e1efadc598a7a4..423a762f12f399f4b2917dbce2bf677f
      }
  
      @Override
-@@ -644,22 +643,37 @@ public class SettingsMenuDialog extends BaseDialog{
+@@ -643,22 +642,37 @@ public class SettingsMenuDialog extends BaseDialog{
              table = new SettingsTable();
              builder.get(table);
          }
@@ -133,7 +133,7 @@ index ce99608f4c10148853daa3c403e1efadc598a7a4..423a762f12f399f4b2917dbce2bf677f
          }
  
          public SliderSetting sliderPref(String name, int def, int min, int max, StringProcessor s){
-@@ -670,47 +684,56 @@ public class SettingsMenuDialog extends BaseDialog{
+@@ -669,47 +683,56 @@ public class SettingsMenuDialog extends BaseDialog{
              SliderSetting res;
              list.add(res = new SliderSetting(name, def, min, max, step, s));
              settings.defaults(name, def);
@@ -197,7 +197,7 @@ index ce99608f4c10148853daa3c403e1efadc598a7a4..423a762f12f399f4b2917dbce2bf677f
              clearChildren();
  
              for(Setting setting : list){
-@@ -724,6 +747,7 @@ public class SettingsMenuDialog extends BaseDialog{
+@@ -723,6 +746,7 @@ public class SettingsMenuDialog extends BaseDialog{
                  }
                  rebuild();
              }).margin(14).width(240f).pad(6);
@@ -205,7 +205,7 @@ index ce99608f4c10148853daa3c403e1efadc598a7a4..423a762f12f399f4b2917dbce2bf677f
          }
  
          public abstract static class Setting{
-@@ -812,6 +836,20 @@ public class SettingsMenuDialog extends BaseDialog{
+@@ -811,6 +835,20 @@ public class SettingsMenuDialog extends BaseDialog{
              }
          }
  
@@ -226,7 +226,7 @@ index ce99608f4c10148853daa3c403e1efadc598a7a4..423a762f12f399f4b2917dbce2bf677f
          public static class TextSetting extends Setting{
              String def;
              Cons<String> changed;
-@@ -835,9 +873,9 @@ public class SettingsMenuDialog extends BaseDialog{
+@@ -834,9 +872,9 @@ public class SettingsMenuDialog extends BaseDialog{
                      }
                  });
  

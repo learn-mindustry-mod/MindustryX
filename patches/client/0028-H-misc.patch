@@ -388,7 +388,7 @@ index cbe6d64d52f66d38be69a897a9a1a2f5b928e631..c5fe7f0080fea29764ebd94f576f1f98
  
          @Override
 diff --git a/core/src/mindustry/world/blocks/production/BeamDrill.java b/core/src/mindustry/world/blocks/production/BeamDrill.java
-index 008953ff51f5aab6e8e18ad0d318d1ed4118af2e..469a04f54eb79b41a2ad382e9a989df6991b487e 100644
+index 9921e4d7cf3f704a666262479af575a7dec9d668..b5d675df53bf84bc68222c8556480cd3f7a8bd3b 100644
 --- a/core/src/mindustry/world/blocks/production/BeamDrill.java
 +++ b/core/src/mindustry/world/blocks/production/BeamDrill.java
 @@ -181,14 +181,10 @@ public class BeamDrill extends Block{

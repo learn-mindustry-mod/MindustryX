@@ -48,10 +48,10 @@ index b88bd5bbd47e5659390c711fa86adc2ec8b9b059..50051d1ffebc609cee8be5158ccbfbba
          }
  
 diff --git a/core/src/mindustry/world/blocks/production/Drill.java b/core/src/mindustry/world/blocks/production/Drill.java
-index df5497e8bdfceec807542a8677d933cf330384e8..f311c8fee60ee864ad1596858ac9d00d3ea7915a 100644
+index 4e155b4d08cfbcc0244f103f5ce1a55b706ae3f8..f6454de7e47676d8372db35f75c5b835321ab289 100644
 --- a/core/src/mindustry/world/blocks/production/Drill.java
 +++ b/core/src/mindustry/world/blocks/production/Drill.java
-@@ -313,7 +313,7 @@ public class Drill extends Block{
+@@ -307,7 +307,7 @@ public class Drill extends Block{
                  warmup = Mathf.approachDelta(warmup, speed, warmupSpeed);
                  progress += delta() * dominantItems * speed * warmup;
  
@@ -60,7 +60,7 @@ index df5497e8bdfceec807542a8677d933cf330384e8..f311c8fee60ee864ad1596858ac9d00d
                      updateEffect.at(x + Mathf.range(size * 2f), y + Mathf.range(size * 2f));
              }else{
                  lastDrillSpeed = 0f;
-@@ -329,7 +329,7 @@ public class Drill extends Block{
+@@ -323,7 +323,7 @@ public class Drill extends Block{
  
                  progress %= delay;
  

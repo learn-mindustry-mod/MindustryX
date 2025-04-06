@@ -34,7 +34,7 @@ way-zer <himc.wicp@gmail.com> on 2024/5/4 at 22:17
  22 files changed, 264 insertions(+), 71 deletions(-)
 
 diff --git a/core/src/mindustry/type/Item.java b/core/src/mindustry/type/Item.java
-index 5d81790919f016776eff80c6d241b1d034f76d11..a301154d18daa5902d940ad2fa1eed0b603ea476 100644
+index 3ba4dc9de5a10c39e4e0257e854dabd7434e7b6d..ffac65db1338a457df5189565f554d80cc076500 100644
 --- a/core/src/mindustry/type/Item.java
 +++ b/core/src/mindustry/type/Item.java
 @@ -12,6 +12,7 @@ import mindustry.graphics.MultiPacker.*;
@@ -45,7 +45,7 @@ index 5d81790919f016776eff80c6d241b1d034f76d11..a301154d18daa5902d940ad2fa1eed0b
  
  import static mindustry.Vars.*;
  
-@@ -112,6 +113,10 @@ public class Item extends UnlockableContent implements Senseable{
+@@ -108,6 +109,10 @@ public class Item extends UnlockableContent implements Senseable{
          stats.addPercent(Stat.flammability, flammability);
          stats.addPercent(Stat.radioactivity, radioactivity);
          stats.addPercent(Stat.charge, charge);
@@ -282,7 +282,7 @@ index f950bb4cc72b8947445bc717940d1a8b8d2b7399..e51fc0357e910ced88732068f8489ff1
                  cons.items)
              );
 diff --git a/core/src/mindustry/world/blocks/defense/RegenProjector.java b/core/src/mindustry/world/blocks/defense/RegenProjector.java
-index f136560f38b7af096ae8d861795ef453c839b200..2e1ec6d06a4fefc37daa1fbba6f2a905981d56bf 100644
+index 15a163ff5cb1ba06b1a6243a9ca37ab6823aec59..b82583382602159aae3d5f6d1e9f53cdc98ac0c0 100644
 --- a/core/src/mindustry/world/blocks/defense/RegenProjector.java
 +++ b/core/src/mindustry/world/blocks/defense/RegenProjector.java
 @@ -14,6 +14,7 @@ import mindustry.world.*;

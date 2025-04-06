@@ -413,7 +413,7 @@ index 9b0ef63732d2cd574bf37f9f0a5fd0f3af378fd9..4c1065a12000cc5f9f4bb5a9fedda458
              () -> entity.productionEfficiency));
          }
 diff --git a/core/src/mindustry/world/blocks/production/BeamDrill.java b/core/src/mindustry/world/blocks/production/BeamDrill.java
-index 469a04f54eb79b41a2ad382e9a989df6991b487e..ee2b3582267e994c22e6042e7ea0b4e0f0f8fc72 100644
+index b5d675df53bf84bc68222c8556480cd3f7a8bd3b..ba08165a151f28e4d6240513f338fad58ae82735 100644
 --- a/core/src/mindustry/world/blocks/production/BeamDrill.java
 +++ b/core/src/mindustry/world/blocks/production/BeamDrill.java
 @@ -90,7 +90,7 @@ public class BeamDrill extends Block{
@@ -491,7 +491,7 @@ index 5af67c37c74871553a35e9b5ff9757869072b6da..8c7ef00a68c89b1b82d8a1dbfbf63ad6
              () -> entity.heat / heatRequirement));
      }
 diff --git a/core/src/mindustry/world/blocks/production/WallCrafter.java b/core/src/mindustry/world/blocks/production/WallCrafter.java
-index c9e3b3abf2222612337629f2e94bebfada9df250..92090f8fea1dc8e5a1371c43d9e1eebca9f04361 100644
+index df2395faa4fd9e634143655982c05940a720219c..4abd374b0f1c720c73ccdfceb9ef1d40c8ada357 100644
 --- a/core/src/mindustry/world/blocks/production/WallCrafter.java
 +++ b/core/src/mindustry/world/blocks/production/WallCrafter.java
 @@ -68,7 +68,7 @@ public class WallCrafter extends Block{
