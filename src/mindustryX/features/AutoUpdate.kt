@@ -23,10 +23,11 @@ import java.time.Duration
 import java.time.Instant
 
 object AutoUpdate {
-    data class Release(val tag: String, val version: String, val json: Jval) {
+    data class Release(val repo: String, val tag: String, val version: String, val json: Jval) {
         data class Asset(val name: String, val url: String)
 
         fun matchCurrent(): Boolean {
+            if (repo == AutoUpdate.repo) return currentBranch == null
             return tag == "$currentBranch-build" || json.getString("body", "").contains("REPLACE $currentBranch")
         }
 
@@ -36,7 +37,7 @@ object AutoUpdate {
                 .sortedByDescending { it.name }
             return assets.firstOrNull {
                 when {
-                    VarsX.isLoader -> it.name.endsWith("loader.dex.jar")
+                    VarsX.isLoader -> it.name.contains("loader") && it.name.endsWith(".jar")
                     OS.isAndroid -> it.name.endsWith(".apk")
                     else -> it.name.endsWith("Desktop.jar")
                 }
@@ -47,6 +48,7 @@ object AutoUpdate {
     val active get() = !VarsX.devVersion
 
     val repo = "TinyLake/MindustryX-work"
+    val devRepo = "TinyLake/MindustryX-work"
     var versions = emptyList<Release>()
     val currentBranch get() = VarsX.version.split('-', limit = 2).getOrNull(1)
     var latest: Release? = null
@@ -56,18 +58,27 @@ object AutoUpdate {
     val ignoreOnce = SettingsV2.Data("AutoUpdate.ignoreOnce", "")
     val ignoreUntil = SettingsV2.Data("AutoUpdate.ignoreUntil", "")
 
-    fun checkUpdate() {
-        if (versions.isNotEmpty()) return
+    fun getReleases(repo: String, result: (List<Release>) -> Unit) {
         Http.get("https://api.github.com/repos/$repo/releases")
             .timeout(10000)
-            .error { Log.warn("Fetch releases fail: $it") }
+            .error { Log.warn("Fetch releases fail from $repo: $it");result(emptyList()) }
             .submit { res ->
                 val json = Jval.read(res.resultAsString)
-                versions = json.asArray().map {
-                    Release(it.getString("tag_name"), it.getString("name"), it)
+                val releases = json.asArray().map {
+                    Release(repo, it.getString("tag_name"), it.getString("name"), it)
                 }.sortedByDescending { it.version }
-                Core.app.post(::fetchSuccess)
+                result(releases)
             }
+    }
+
+    fun checkUpdate() {
+        if (versions.isNotEmpty()) return
+        getReleases(repo) { versions ->
+            getReleases(devRepo) { devVersions ->
+                this.versions = versions + devVersions
+                fetchSuccess()
+            }
+        }
     }
 
     private fun fetchSuccess() {
