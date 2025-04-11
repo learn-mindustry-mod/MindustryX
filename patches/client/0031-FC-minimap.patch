@@ -1,0 +1,193 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: way-zer <himc.wicp@gmail.com>
+Date: Wed, 3 Apr 2024 21:25:13 +0800
+Subject: [PATCH] =?UTF-8?q?FC:=20minimap=20/=20=E5=B0=8F=E5=9C=B0=E5=9B=BE?=
+ =?UTF-8?q?=E7=94=A8=E6=88=B7?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+* minimapSize
+* 小地图缩略中显示 玩家名/视野/出生点
+* invertMapClick
+---
+ .../mindustry/graphics/MinimapRenderer.java   | 21 +++++++++-----
+ core/src/mindustry/ui/Minimap.java            | 29 +++++++++++++++----
+ .../ui/fragments/MinimapFragment.java         |  5 ++--
+ 3 files changed, 41 insertions(+), 14 deletions(-)
+
+diff --git a/core/src/mindustry/graphics/MinimapRenderer.java b/core/src/mindustry/graphics/MinimapRenderer.java
+index 2897710efebae4825f399a67c230856e0457c883..919dd48219e4640eb034b68602db39d0626e6f36 100644
+--- a/core/src/mindustry/graphics/MinimapRenderer.java
++++ b/core/src/mindustry/graphics/MinimapRenderer.java
+@@ -17,6 +17,7 @@ import mindustry.gen.*;
+ import mindustry.io.*;
+ import mindustry.ui.*;
+ import mindustry.world.*;
++import mindustryX.*;
+ 
+ import static mindustry.Vars.*;
+ 
+@@ -166,10 +167,10 @@ public class MinimapRenderer{
+             Draw.reset();
+         }
+ 
+-        if(fullView && net.active()){
++        if(net.active()){
+             for(Player player : Groups.player){
+                 if(!player.dead()){
+-                    drawLabel(player.x, player.y, player.name, player.color);
++                    drawLabel(player.x, player.y, player.name, player.color, scaleFactor);
+                 }
+             }
+         }
+@@ -213,10 +214,10 @@ public class MinimapRenderer{
+         }
+ 
+         //TODO might be useful in the standard minimap too
+-        if(fullView){
++        {
+             drawSpawns();
+ 
+-            if(!mobile){
++            {
+                 //draw bounds for camera - not drawn on mobile because you can't shift it by tapping anyway
+                 Rect r = Core.camera.bounds(Tmp.r1);
+                 Lines.stroke(Scl.scl(3f) * scaleFactor);
+@@ -375,14 +376,20 @@ public class MinimapRenderer{
+         return color.rgba();
+     }
+ 
++    @MindustryXApi.Keep
+     public void drawLabel(float x, float y, String text, Color color){
++        drawLabel(x, y, text, color, 1);
++    }
++
++    @MindustryXApi
++    public void drawLabel(float x, float y, String text, Color color, float scale){
+         Font font = Fonts.outline;
+         GlyphLayout l = Pools.obtain(GlyphLayout.class, GlyphLayout::new);
+         boolean ints = font.usesIntegerPositions();
+-        font.getData().setScale(1 / 1.5f / Scl.scl(1f));
++        font.getData().setScale(1 / 1.5f / Scl.scl(1f) * scale);
+         font.setUseIntegerPositions(false);
+ 
+-        l.setText(font, text, color, 90f, Align.left, true);
++        l.setText(font, text, color, 90f, Align.left, false);
+         float yOffset = 20f;
+         float margin = 3f;
+ 
+@@ -390,7 +397,7 @@ public class MinimapRenderer{
+         Fill.rect(x, y + yOffset - l.height/2f, l.width + margin, l.height + margin);
+         Draw.color();
+         font.setColor(color);
+-        font.draw(text, x - l.width/2f, y + yOffset, 90f, Align.left, true);
++        font.draw(text, x - l.width / 2f, y + yOffset, 90f, Align.left, false);
+         font.setUseIntegerPositions(ints);
+ 
+         font.getData().setScale(1f);
+diff --git a/core/src/mindustry/ui/Minimap.java b/core/src/mindustry/ui/Minimap.java
+index e807ad3b752c42d84f958437bbdafead698859c0..7de54d1cb916c51ea1649c50c38b216c2151a888 100644
+--- a/core/src/mindustry/ui/Minimap.java
++++ b/core/src/mindustry/ui/Minimap.java
+@@ -9,21 +9,22 @@ import arc.scene.event.*;
+ import arc.scene.ui.layout.*;
+ import arc.util.*;
+ import mindustry.gen.*;
++import mindustryX.features.*;
+ 
+ import static mindustry.Vars.*;
+ 
+ public class Minimap extends Table{
++    private final Cell<?> mapCell;
++    private ClickListener listener, listener2;
+ 
+     public Minimap(){
+         background(Tex.pane);
+         float margin = 5f;
+         this.touchable = Touchable.enabled;
+ 
+-        add(new Element(){
++        mapCell = add(new Element(){
+             {
+-                setSize(Scl.scl(140f));
+-
+-                addListener(new ClickListener(KeyCode.mouseRight){
++                addListener(listener = new ClickListener(KeyCode.mouseRight){
+                     @Override
+                     public void clicked(InputEvent event, float cx, float cy){
+                         var region = renderer.minimap.getRegion();
+@@ -37,16 +38,34 @@ public class Minimap extends Table{
+ 
+                         control.input.panCamera(Tmp.v1.set(scaledX, scaledY));
+                     }
++
++                    //MDTX: continuously drag the minimap to move the camera
++                    @Override
++                    public void touchDragged(InputEvent event, float x, float y, int pointer){
++                        super.touchDragged(event, x, y, pointer);
++                        if(pointer == pressedPointer && pressed) clicked(event, x, y);
++                    }
+                 });
+             }
+ 
+             @Override
+             public void act(float delta){
++                var size = SettingsV2.minimapSize.getValue();
++                mapCell.size(size);
++                setSize(Scl.scl(size));
+                 setPosition(Scl.scl(margin), Scl.scl(margin));
++                listener.setButton(LogicExt.invertMapClick ? KeyCode.mouseLeft : KeyCode.mouseRight);
++                listener2.setButton(LogicExt.invertMapClick ? KeyCode.mouseRight : KeyCode.mouseLeft);
+ 
+                 super.act(delta);
+             }
+ 
++            @Override
++            protected void sizeChanged(){
++                super.sizeChanged();
++                mapCell.getTable().invalidate();
++            }
++
+             @Override
+             public void draw(){
+                 if(renderer.minimap.getRegion() == null) return;
+@@ -73,7 +92,7 @@ public class Minimap extends Table{
+             }
+         });
+ 
+-        addListener(new ClickListener(){
++        addListener(listener2 = new ClickListener(){
+             {
+                 tapSquareSize = Scl.scl(11f);
+             }
+diff --git a/core/src/mindustry/ui/fragments/MinimapFragment.java b/core/src/mindustry/ui/fragments/MinimapFragment.java
+index d595b9beaeb1073646f721c0385352bcd634e601..d82ea0ea4633d3987090871a8fe018cf773b4099 100644
+--- a/core/src/mindustry/ui/fragments/MinimapFragment.java
++++ b/core/src/mindustry/ui/fragments/MinimapFragment.java
+@@ -13,6 +13,7 @@ import arc.util.*;
+ import mindustry.gen.*;
+ import mindustry.input.*;
+ import mindustry.ui.*;
++import mindustryX.features.*;
+ 
+ import static mindustry.Vars.*;
+ 
+@@ -82,7 +83,7 @@ public class MinimapFragment{
+ 
+             @Override
+             public void pan(InputEvent event, float x, float y, float deltaX, float deltaY){
+-                if(event.keyCode != KeyCode.mouseRight){
++                if(event.keyCode !=(LogicExt.invertMapClick ? KeyCode.mouseLeft : KeyCode.mouseRight)){
+                     panx += deltaX / zoom;
+                     pany += deltaY / zoom;
+                 }else{
+@@ -93,7 +94,7 @@ public class MinimapFragment{
+             @Override
+             public void touchDown(InputEvent event, float x, float y, int pointer, KeyCode button){
+                 super.touchDown(event, x, y, pointer, button);
+-                if(button == KeyCode.mouseRight){
++                if(button == (LogicExt.invertMapClick ? KeyCode.mouseLeft : KeyCode.mouseRight)){
+                     panTo(x, y);
+                 }
+             }
