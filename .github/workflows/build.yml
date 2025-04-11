@@ -43,15 +43,14 @@ jobs:
           git submodule update --init --depth=10
           cd work
           ../scripts/applyPatches.sh
-          sed -i 's/tinylake.mindustryX/tinylake.mindustryX.be/g' android/build.gradle
-          sed -i 's/MindustryX/MindustryX BE/g' android/res/values/strings.xml
           gradle -Pbuildversion=${RELEASE_VERSION} --parallel \
-            desktop:dist server:dist android:assembleRelease 
+            desktop:dist server:dist core:genLoaderModAll android:assembleRelease 
           
           cd ..
           mkdir artifacts
           mv work/desktop/build/libs/Mindustry.jar artifacts/MindustryX-${{env.RELEASE_VERSION}}-Desktop.jar
           mv work/server/build/libs/server-release.jar artifacts/server-${{env.RELEASE_VERSION}}.jar
+          mv work/core/build/distributions/MindustryX.loader.dex.jar artifacts/dexed-MindustryX-${{env.RELEASE_VERSION}}.loader.jar
           mv work/android/build/outputs/apk/release/android-release.apk artifacts/MindustryX-${{env.RELEASE_VERSION}}-Android.apk
 #      - name: Update Tag
 #        uses: rickstaa/action-create-tag@v1
