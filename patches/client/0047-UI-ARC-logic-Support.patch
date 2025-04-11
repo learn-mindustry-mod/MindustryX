@@ -122,7 +122,7 @@ index 2bfd96ac4b9685bde38edee0d80be66380fdf6f2..ba5401c7c2ee4f8d9e7ffcc7da8ca3ad
          public void draw(){
              float pad = 5f;
 diff --git a/core/src/mindustry/logic/LExecutor.java b/core/src/mindustry/logic/LExecutor.java
-index 8f7985b55bac7d907312a047a20154da50bc274b..b6626017300be3dfe6dbe36c46af679277dbaccf 100644
+index d445308e88fcc3f78f77a8f58f332f9db32fe1fa..3510b38337bfd81909aa568aa4ceee45eb4faf11 100644
 --- a/core/src/mindustry/logic/LExecutor.java
 +++ b/core/src/mindustry/logic/LExecutor.java
 @@ -515,6 +515,7 @@ public class LExecutor{
@@ -133,7 +133,7 @@ index 8f7985b55bac7d907312a047a20154da50bc274b..b6626017300be3dfe6dbe36c46af6792
  
                  if(type == LAccess.enabled && !p1.bool()){
                      b.lastDisabler = exec.build;
-@@ -1244,7 +1245,7 @@ public class LExecutor{
+@@ -1248,7 +1249,7 @@ public class LExecutor{
          @Override
          public void run(LExecutor exec){
              if(headless) return;
@@ -173,7 +173,7 @@ index eda6c92c970e9f3f632094cd5018dcdf9a711d64..b65fb50382f246452b7c75a788e3bd5f
  
              String name = name();
 diff --git a/core/src/mindustry/logic/LogicDialog.java b/core/src/mindustry/logic/LogicDialog.java
-index c30e82f4a29149bbb6b07efa1baf4a0d4a0ae5d8..991aedbb21f32590567c709a3a54f5c3792d5678 100644
+index 10e0d74ed3b6f5a1fb742c0ddd96b0e9fb885941..1b9cf7cf4c8e40d453a85565ceecdf08a04982ce 100644
 --- a/core/src/mindustry/logic/LogicDialog.java
 +++ b/core/src/mindustry/logic/LogicDialog.java
 @@ -5,6 +5,7 @@ import arc.func.*;
@@ -364,7 +364,7 @@ index c30e82f4a29149bbb6b07efa1baf4a0d4a0ae5d8..991aedbb21f32590567c709a3a54f5c3
                  });
              });
  
-@@ -230,6 +364,11 @@ public class LogicDialog extends BaseDialog{
+@@ -247,6 +381,11 @@ public class LogicDialog extends BaseDialog{
      }
  
      public void showAddDialog(){
@@ -376,7 +376,7 @@ index c30e82f4a29149bbb6b07efa1baf4a0d4a0ae5d8..991aedbb21f32590567c709a3a54f5c3
          BaseDialog dialog = new BaseDialog("@add");
          dialog.cont.table(table -> {
              String[] searchText = {""};
-@@ -254,7 +393,7 @@ public class LogicDialog extends BaseDialog{
+@@ -271,7 +410,7 @@ public class LogicDialog extends BaseDialog{
  
                      search.keyDown(KeyCode.enter, () -> {
                          if(!searchText[0].isEmpty() && matched[0] != null){
@@ -385,7 +385,7 @@ index c30e82f4a29149bbb6b07efa1baf4a0d4a0ae5d8..991aedbb21f32590567c709a3a54f5c3
                              dialog.hide();
                          }
                      });
-@@ -301,7 +440,7 @@ public class LogicDialog extends BaseDialog{
+@@ -318,7 +457,7 @@ public class LogicDialog extends BaseDialog{
                          style.font = Fonts.outline;
  
                          cat.button(example.name(), style, () -> {
@@ -394,7 +394,7 @@ index c30e82f4a29149bbb6b07efa1baf4a0d4a0ae5d8..991aedbb21f32590567c709a3a54f5c3
                              dialog.hide();
                          }).size(130f, 50f).self(c -> tooltip(c, "lst." + example.name())).top().left();
  
-@@ -319,6 +458,7 @@ public class LogicDialog extends BaseDialog{
+@@ -336,6 +475,7 @@ public class LogicDialog extends BaseDialog{
      public void show(String code, LExecutor executor, boolean privileged, Cons<String> modified){
          this.executor = executor;
          this.privileged = privileged;

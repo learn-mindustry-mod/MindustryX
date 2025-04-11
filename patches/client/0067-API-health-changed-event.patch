@@ -104,7 +104,7 @@ index 65983a0029484cf4885fac787ee79feb8e6f0e92..b6110e4630f095494b158dd5062dfe41
                      other.heal(healPercent / 100f * other.maxHealth() + healAmount);
                  });
 diff --git a/core/src/mindustry/entities/comp/BuildingComp.java b/core/src/mindustry/entities/comp/BuildingComp.java
-index 3a74f7533ba18ad979096d7719d144e207acb53f..c608e13c51d3721402ed1e7632ca5937f61d7f67 100644
+index 0ecb92b6cafe0739d44e05f5aedd04ba342b57f3..3730928ea15a66b310a0b46bd19b883097145c67 100644
 --- a/core/src/mindustry/entities/comp/BuildingComp.java
 +++ b/core/src/mindustry/entities/comp/BuildingComp.java
 @@ -40,6 +40,7 @@ import mindustry.world.blocks.power.*;

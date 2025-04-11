@@ -30,7 +30,7 @@ way-zer <himc.wicp@gmail.com> on 2024/6/9
  create mode 100644 core/build.gradle.kts
 
 diff --git a/.gitignore b/.gitignore
-index 4ebcbb7233a1be2c705599122f1532323be8e516..8ac18c9b219a2fb5a51ab1885b864da3b7d798c4 100644
+index 5e3b7987ef4f776a0bc35dde58fb2c74f4acdb07..b5b2a237c2f5343aab2fb668337c2bc47a45c1b8 100644
 --- a/.gitignore
 +++ b/.gitignore
 @@ -29,6 +29,7 @@ saves/

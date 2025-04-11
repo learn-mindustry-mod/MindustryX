@@ -156,7 +156,7 @@ index ebc1f0b300d295e45333f1db38ea299c9658ec20..e7cba056743979206c84fc6d00472c2c
                      hide();
                  }).marginLeft(10f);
 diff --git a/core/src/mindustry/entities/comp/BuildingComp.java b/core/src/mindustry/entities/comp/BuildingComp.java
-index d3dce5a7b5899f75da3c06cb8c6c97e8238ce957..3a74f7533ba18ad979096d7719d144e207acb53f 100644
+index 6d4c738750d4dfe63ee66879e294d7b5bac2abd2..0ecb92b6cafe0739d44e05f5aedd04ba342b57f3 100644
 --- a/core/src/mindustry/entities/comp/BuildingComp.java
 +++ b/core/src/mindustry/entities/comp/BuildingComp.java
 @@ -40,6 +40,7 @@ import mindustry.world.blocks.power.*;
@@ -671,7 +671,7 @@ index c0212b80814b19c35ba2a45bbce633e8aa4014b3..d8d9df8b01bf4e8bc05b243bb446c279
          player.mouseY = unit.aimY();
  
 diff --git a/core/src/mindustry/input/InputHandler.java b/core/src/mindustry/input/InputHandler.java
-index ae6d76d4a07b6417d67d4081aad28bc9d87a5f7d..17bf4a0bbae16c3f927a0790e5a99c8e5391aa79 100644
+index 3d16de13b60da3e319dd1dc83d7762201046c07c..6892829df71bb37836405928ed65de35df214406 100644
 --- a/core/src/mindustry/input/InputHandler.java
 +++ b/core/src/mindustry/input/InputHandler.java
 @@ -37,11 +37,13 @@ import mindustry.world.*;
@@ -770,7 +770,7 @@ index ae6d76d4a07b6417d67d4081aad28bc9d87a5f7d..17bf4a0bbae16c3f927a0790e5a99c8e
          });
      }
  
-@@ -1507,12 +1538,17 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -1511,12 +1542,17 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
      protected void drawSelection(int x1, int y1, int x2, int y2, int maxLength, Color col1, Color col2){
          NormalizeDrawResult result = Placement.normalizeDrawArea(Blocks.air, x1, y1, x2, y2, false, maxLength, 1f);
  
@@ -788,7 +788,7 @@ index ae6d76d4a07b6417d67d4081aad28bc9d87a5f7d..17bf4a0bbae16c3f927a0790e5a99c8e
      }
  
      protected void flushSelectPlans(Seq<BuildPlan> plans){
-@@ -1880,7 +1916,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -1886,7 +1922,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
  
      public @Nullable Building selectedControlBuild(){
          Building build = world.buildWorld(Core.input.mouseWorld().x, Core.input.mouseWorld().y);
@@ -797,7 +797,7 @@ index ae6d76d4a07b6417d67d4081aad28bc9d87a5f7d..17bf4a0bbae16c3f927a0790e5a99c8e
              return build;
          }
          return null;
-@@ -1967,6 +2003,9 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -1973,6 +2009,9 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
      }
  
      public boolean canShoot(){
@@ -808,10 +808,10 @@ index ae6d76d4a07b6417d67d4081aad28bc9d87a5f7d..17bf4a0bbae16c3f927a0790e5a99c8e
          !(player.unit() instanceof Mechc && player.unit().isFlying()) && !player.unit().mining() && !commandMode;
      }
 diff --git a/core/src/mindustry/input/MobileInput.java b/core/src/mindustry/input/MobileInput.java
-index ae4be3bb800bc4492918e10bdf33e6ed125f9f6f..d7e089b4457562374d69155b618b0cda80bbd398 100644
+index b82d3899bb4f69011e2ec494329c60981f4d4ede..5ff700298b06b0423f3f8e764f58d047dc35d20e 100644
 --- a/core/src/mindustry/input/MobileInput.java
 +++ b/core/src/mindustry/input/MobileInput.java
-@@ -340,7 +340,7 @@ public class MobileInput extends InputHandler implements GestureListener{
+@@ -341,7 +341,7 @@ public class MobileInput extends InputHandler implements GestureListener{
                      //why the heck doesn't setOrigin work for scaling
                      img.setTranslation(img.getWidth(), 0f);
                  });
@@ -820,7 +820,7 @@ index ae4be3bb800bc4492918e10bdf33e6ed125f9f6f..d7e089b4457562374d69155b618b0cda
              }).margin(4f);
          });
      }
-@@ -1036,18 +1036,22 @@ public class MobileInput extends InputHandler implements GestureListener{
+@@ -1037,18 +1037,22 @@ public class MobileInput extends InputHandler implements GestureListener{
              payloadTarget = null;
          }
  
@@ -849,7 +849,7 @@ index ae4be3bb800bc4492918e10bdf33e6ed125f9f6f..d7e089b4457562374d69155b618b0cda
          unit.movePref(movement);
  
 diff --git a/core/src/mindustry/logic/LExecutor.java b/core/src/mindustry/logic/LExecutor.java
-index b6626017300be3dfe6dbe36c46af679277dbaccf..fe338703a75784084c7de67489539c2f4044ebb6 100644
+index 3510b38337bfd81909aa568aa4ceee45eb4faf11..d6607967c50327c573806256903caa3c273bc3ca 100644
 --- a/core/src/mindustry/logic/LExecutor.java
 +++ b/core/src/mindustry/logic/LExecutor.java
 @@ -10,6 +10,7 @@ import arc.util.*;
@@ -868,7 +868,7 @@ index b6626017300be3dfe6dbe36c46af679277dbaccf..fe338703a75784084c7de67489539c2f
  
  import static mindustry.Vars.*;
  
-@@ -1695,8 +1697,14 @@ public class LExecutor{
+@@ -1699,8 +1701,14 @@ public class LExecutor{
              }
  
              switch(type){
@@ -886,7 +886,7 @@ index b6626017300be3dfe6dbe36c46af679277dbaccf..fe338703a75784084c7de67489539c2f
                  //TODO desync?
                  case mission -> state.rules.mission = text;
 diff --git a/core/src/mindustry/type/UnitType.java b/core/src/mindustry/type/UnitType.java
-index 42e1a44e52bc2b3b0d4d93af0e4072c79cba9ab2..f7e734d3a1109fb3288db998ae3ff8b8633f6fdb 100644
+index 24e708bdac494a4fcad38b3090b3d515aab7ee7d..ab5f9329ed8f311d08f3c00e2ff65f4118f14c7f 100644
 --- a/core/src/mindustry/type/UnitType.java
 +++ b/core/src/mindustry/type/UnitType.java
 @@ -38,6 +38,7 @@ import mindustry.world.blocks.units.*;

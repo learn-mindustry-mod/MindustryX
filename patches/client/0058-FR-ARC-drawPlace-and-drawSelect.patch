@@ -191,7 +191,7 @@ index 4a35c8aeeebc86eff2d0fed53782b99c57702dd0..40fc3f66f6d35e2dfada669551a3aa8b
          indexer.eachBlock(player.team(), x * tilesize + offset, y * tilesize + offset, range, other -> other.block.canOverdrive, other -> Drawf.selected(other, Tmp.c1.set(baseColor).a(Mathf.absin(4f, 1f))));
      }
 diff --git a/core/src/mindustry/world/blocks/defense/turrets/BaseTurret.java b/core/src/mindustry/world/blocks/defense/turrets/BaseTurret.java
-index dbe779461193af3f8b882a2db305eedfd457bd82..a13e73e2df99d12437489e3faf414b84e85c2328 100644
+index a41daf317e28922adf3bf2503e248754628e23c3..4d4ac1f4fd553b431d587fb4150050b3f65caea9 100644
 --- a/core/src/mindustry/world/blocks/defense/turrets/BaseTurret.java
 +++ b/core/src/mindustry/world/blocks/defense/turrets/BaseTurret.java
 @@ -1,5 +1,7 @@
@@ -210,7 +210,7 @@ index dbe779461193af3f8b882a2db305eedfd457bd82..a13e73e2df99d12437489e3faf414b84
  
  import static mindustry.Vars.*;
  
-@@ -68,9 +71,15 @@ public class BaseTurret extends Block{
+@@ -71,9 +74,15 @@ public class BaseTurret extends Block{
  
          Drawf.dashCircle(x * tilesize + offset, y * tilesize + offset, range, Pal.placing);
  
@@ -226,7 +226,7 @@ index dbe779461193af3f8b882a2db305eedfd457bd82..a13e73e2df99d12437489e3faf414b84
      }
  
      @Override
-@@ -95,7 +104,7 @@ public class BaseTurret extends Block{
+@@ -98,7 +107,7 @@ public class BaseTurret extends Block{
  
          @Override
          public void drawSelect(){
@@ -236,10 +236,10 @@ index dbe779461193af3f8b882a2db305eedfd457bd82..a13e73e2df99d12437489e3faf414b84
  
          public float estimateDps(){
 diff --git a/core/src/mindustry/world/blocks/defense/turrets/Turret.java b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
-index 860284e9b0722c2b3c1bca3399bc0de3f6b97835..1acb685ab182f18d2e05d162c4f48c18a855b540 100644
+index 497fd29e612ea915d894211b1020e83346be9e23..1084f6366d9f48813dbcb7d257e799c9d82c9e83 100644
 --- a/core/src/mindustry/world/blocks/defense/turrets/Turret.java
 +++ b/core/src/mindustry/world/blocks/defense/turrets/Turret.java
-@@ -428,6 +428,14 @@ public class Turret extends ReloadTurret{
+@@ -432,6 +432,14 @@ public class Turret extends ReloadTurret{
              if(drawMinRange){
                  Drawf.dashCircle(x, y, minRange(), team.color);
              }
@@ -302,7 +302,7 @@ index f6454de7e47676d8372db35f75c5b835321ab289..f1587b033da7a916e42e06b8ab931a5e
          returnItem = null;
          returnCount = 0;
 diff --git a/core/src/mindustry/world/blocks/storage/CoreBlock.java b/core/src/mindustry/world/blocks/storage/CoreBlock.java
-index c9411718a55d17c06ff2ad92ea084a915c3ee202..f6298e6a079db07c8e67f5c4b40e0eed98f69566 100644
+index 47d70253ac4c200876ee80254f55e9f5f0df2c63..baa3f317d9149cdd3ebeec0715b2b17c0fcae7d7 100644
 --- a/core/src/mindustry/world/blocks/storage/CoreBlock.java
 +++ b/core/src/mindustry/world/blocks/storage/CoreBlock.java
 @@ -89,6 +89,7 @@ public class CoreBlock extends StorageBlock{
