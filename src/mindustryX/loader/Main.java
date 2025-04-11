@@ -18,11 +18,9 @@ import java.util.*;
 public class Main extends Mod{
     static LoaderPlatform getLoaderPlatform(){
         try{
-            //FIXME 新版本ARC改动了Application接口，导致无法直接调用。
-            var intf = Core.class.getClassLoader().loadClass("arc.Application");
-            if(Reflect.invoke(intf, Core.app, "isDesktop", new Object[]{})){
+            if(Core.app.isDesktop()){
                 return new DesktopImpl();
-            }else if(Reflect.invoke(intf, Core.app, "isAndroid", new Object[]{})){
+            }else if(Core.app.isAndroid()){
                 return (LoaderPlatform)Class.forName("mindustryX.loader.AndroidImpl").getConstructor().newInstance();
             }
         }catch(Exception e){
