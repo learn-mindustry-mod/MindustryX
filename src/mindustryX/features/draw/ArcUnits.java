@@ -55,7 +55,7 @@ public class ArcUnits{
         if(unit.isPlayer()){
             if(superUnitEffect > 0 && (unit.isLocal() || superUnitEffect == 2)) drawAimRange(unit);
             if(unitTargetType > 0) drawAimTarget(unit);
-            if(arcBuildInfo && unit.isLocal()) drawBuildRange();
+            if(arcBuildInfo && unit.isLocal()) drawBuildRange(unit);
         }
         Draw.z(Draw.z() + 0.1f);
         if(unit.team() == player.team() || RenderExt.showOtherInfo){
@@ -281,12 +281,12 @@ public class ArcUnits{
         Draw.color();
     }
 
-    private static void drawBuildRange(){
+    private static void drawBuildRange(Unit unit){
         if(control.input.droppingItem){
             Color color = player.within(Core.input.mouseWorld(control.input.getMouseX(), control.input.getMouseY()), itemTransferRange) ? Color.gold : Color.red;
-            drawNSideRegion(player.unit().x, player.unit().y, 3, player.unit().type.buildRange, player.unit().rotation, color, 0.25f, player.unit().stack.item.fullIcon, false);
-        }else if(control.input.isBuilding || control.input.selectedBlock() || !player.unit().plans().isEmpty()){
-            drawNSideRegion(player.unit().x, player.unit().y, 3, player.unit().type.buildRange, player.unit().rotation, Pal.heal, 0.25f, Icon.wrench.getRegion(), true);
+            drawNSideRegion(unit.x, unit.y, 3, unit.type.buildRange, unit.rotation, color, 0.25f, unit.stack.item.fullIcon, false);
+        }else if(control.input.isBuilding || control.input.selectedBlock() || !unit.plans().isEmpty()){
+            drawNSideRegion(unit.x, unit.y, 3, unit.type.buildRange, unit.rotation, Pal.heal, 0.25f, Icon.wrench.getRegion(), true);
         }
     }
 
