@@ -2,6 +2,7 @@ package mindustryX.features;
 
 import arc.files.*;
 import arc.struct.*;
+import arc.util.*;
 import mindustry.core.*;
 import mindustry.mod.*;
 import mindustry.mod.Mods.*;
@@ -33,14 +34,13 @@ public class InternalMods{
         return meta;
     }
 
-    private static LoadedMod internalMod(ModMeta meta, Mod main){
+    private static LoadedMod internalMod(ModMeta meta, @Nullable Mod main){
         Fi file = modDirectory.child("internal-" + meta.name + ".jar");
         Fi root = files.internal("/mindustryX/mods/" + meta.name);
-        return new LoadedMod(file, root, main, InternalMods.class.getClassLoader(), meta);
+        return new LoadedMod(file, root, main, null, meta);
     }
 
     private static LoadedMod internalMod(ModMeta meta){
-        return internalMod(meta, new Mod(){
-        });
+        return internalMod(meta, null);
     }
 }
