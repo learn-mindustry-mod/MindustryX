@@ -49,6 +49,7 @@ public class UnitFactoryDialog extends BaseDialog{
 
     public UnitFactoryDialog(){
         super("单位工厂");
+        getCell(cont).setElement(new ScrollPane(cont));
         closeOnBack();
         addCloseButton();
         //Lazy build
