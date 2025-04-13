@@ -167,7 +167,7 @@ index c2e777ac5ee850a0a3af94ade3bd30bf4a35e0ae..7266031779aef1048f5045b26b5281a6
  
      public static int roundAmount(int number){
 diff --git a/core/src/mindustry/game/Schematics.java b/core/src/mindustry/game/Schematics.java
-index 2db321df7e134094f76a43b848b89c86127b158f..65d9730a4b62680e00f087f8a98781faa1eae6f9 100644
+index 2db321df7e134094f76a43b848b89c86127b158f..af3ac2a19fd2d59c42c58c72c8c893258cee3466 100644
 --- a/core/src/mindustry/game/Schematics.java
 +++ b/core/src/mindustry/game/Schematics.java
 @@ -97,7 +97,9 @@ public class Schematics implements Loadable{
@@ -195,7 +195,7 @@ index 2db321df7e134094f76a43b848b89c86127b158f..65d9730a4b62680e00f087f8a98781fa
              int total = stream.readInt();
  
 -            if(total > 128 * 128) throw new IOException("Invalid schematic: Too many blocks.");
-+            if(maxSchematicSize != Integer.MAX_VALUE && total > maxSchematicSize * maxSchematicSize) throw new IOException("Invalid schematic: Too many blocks.");
++            if(maxSchematicSize != Integer.MAX_VALUE && total > Math.max(maxSchematicSize * maxSchematicSize, 128 * 128)) throw new IOException("Invalid schematic: Too many blocks.");
  
              Seq<Stile> tiles = new Seq<>(total);
              for(int i = 0; i < total; i++){
