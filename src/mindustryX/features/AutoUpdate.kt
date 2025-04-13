@@ -16,6 +16,7 @@ import mindustry.gen.Icon
 import mindustry.graphics.Pal
 import mindustry.net.BeControl
 import mindustry.ui.Bar
+import mindustry.ui.Styles
 import mindustry.ui.dialogs.BaseDialog
 import mindustryX.VarsX
 import mindustryX.features.ui.Format
@@ -23,7 +24,7 @@ import java.time.Duration
 import java.time.Instant
 
 object AutoUpdate {
-    data class Release(val repo: String, val tag: String, val version: String, val json: Jval) {
+    data class Release(val repo: String, val url: String, val tag: String, val version: String, val json: Jval) {
         data class Asset(val name: String, val url: String)
 
         fun matchCurrent(): Boolean {
@@ -47,7 +48,7 @@ object AutoUpdate {
 
     val active get() = !VarsX.devVersion
 
-    val repo = "TinyLake/MindustryX-work"
+    val repo = "TinyLake/MindustryX"
     val devRepo = "TinyLake/MindustryX-work"
     var versions = emptyList<Release>()
     val currentBranch get() = VarsX.version.split('-', limit = 2).getOrNull(1)
@@ -65,7 +66,7 @@ object AutoUpdate {
             .submit { res ->
                 val json = Jval.read(res.resultAsString)
                 val releases = json.asArray().map {
-                    Release(repo, it.getString("tag_name"), it.getString("name"), it)
+                    Release(repo, it.getString("html_url"), it.getString("tag_name"), it.getString("name"), it)
                 }.sortedByDescending { it.version }
                 result(releases)
             }
@@ -73,7 +74,8 @@ object AutoUpdate {
 
     fun checkUpdate() {
         if (versions.isNotEmpty()) return
-        getReleases(repo) { versions ->
+        getReleases(repo) { versions0 ->
+            val versions = versions0.filter { it.tag == "v${it.version}" }//filter old release
             getReleases(devRepo) { devVersions ->
                 this.versions = versions + devVersions
                 fetchSuccess()
@@ -101,20 +103,40 @@ object AutoUpdate {
         checkUpdate()
         val dialog = BaseDialog("自动更新")
         dialog.cont.apply {
+            fun buildVersionList(versions: List<Release>) {
+                table().fillX().get().apply {
+                    versions.forEach {
+                        check(it.version, version == it) { _ ->
+                            dialog.hide()
+                            showDialog(it)
+                        }.left().expandX()
+                        button(Icon.infoCircle, Styles.clearNonei, Vars.iconSmall) {
+                            UIExt.openURI(it.url)
+                        }.tooltip("打开发布页面").padRight(16f).row()
+                    }
+                }
+                row()
+            }
+
+            //width为整个Table最小宽度
             add("当前版本号: ${VarsX.version}").labelAlign(Align.center).width(500f).row()
             newVersion?.let {
-                add("新版本: ${it.version}").labelAlign(Align.center).fillX().row()
+                add("新版本: ${it.version}").row()
             }
             if (versions.isEmpty()) {
                 add("检查更新失败，请稍后再试").row()
                 return@apply
             }
-            versions.forEach {
-                check(it.version, version == it) { _ ->
-                    dialog.hide()
-                    showDialog(it)
-                }.left().row()
-            }
+
+            image().fillX().height(2f).row()
+            add("正式版").row()
+            buildVersionList(versions.filter { it.repo == repo })
+
+            image().fillX().height(2f).row()
+            add("测试版本(更新更快,BUG修复更及时)").row()
+            buildVersionList(versions.filter { it.repo == devRepo })
+
+            image().fillX().height(2f).row()
             if (version == null) {
                 add("你已是最新版本，不需要更新！")
                 return@apply
@@ -125,12 +147,10 @@ object AutoUpdate {
             table().fillX().get().apply {
                 field(url) { url = it }.growX()
                 button("♐") {
-                    if (!Core.app.openURI(url)) {
-                        Vars.ui.showErrorMessage("打开失败，网址已复制到粘贴板\n请自行在浏览器打开")
-                        Core.app.clipboardText = url
-                    }
+                    UIExt.openURI(url)
                 }.width(50f)
-            }.row()
+            }
+            row()
 
             button("自动下载更新") {
                 if (asset == null) return@button
