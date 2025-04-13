@@ -108,7 +108,7 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  core/src/mindustry/type/Weapon.java           |  19 ++
  core/src/mindustry/ui/Fonts.java              |   2 +-
  .../ui/dialogs/ContentInfoDialog.java         |  22 +-
- .../ui/dialogs/CustomRulesDialog.java         | 114 +++++++-
+ .../ui/dialogs/CustomRulesDialog.java         | 116 ++++++++-
  .../mindustry/ui/dialogs/DatabaseDialog.java  |   3 +-
  .../mindustry/ui/dialogs/PausedDialog.java    |  12 +-
  .../mindustry/ui/dialogs/PlanetDialog.java    |  68 ++++-
@@ -120,7 +120,7 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  .../mindustry/ui/fragments/MenuFragment.java  |  51 +++-
  .../ui/fragments/PlacementFragment.java       | 164 ++++++++++--
  .../ui/fragments/PlayerListFragment.java      |  72 ++----
- 27 files changed, 1255 insertions(+), 166 deletions(-)
+ 27 files changed, 1256 insertions(+), 167 deletions(-)
 
 diff --git a/core/src/mindustry/editor/MapInfoDialog.java b/core/src/mindustry/editor/MapInfoDialog.java
 index ebc1f0b300d295e45333f1db38ea299c9658ec20..e7cba056743979206c84fc6d00472c2c44b565f6 100644
@@ -1145,7 +1145,7 @@ index 0464bde619e7afe1c1de9adf9a29dcc52132814b..aca20acb43fde3c76e408d7e13c64a69
          table.marginRight(30f);
          //TODO: some things (e.g. reconstructor requirements) are too long and screw up the layout
 diff --git a/core/src/mindustry/ui/dialogs/CustomRulesDialog.java b/core/src/mindustry/ui/dialogs/CustomRulesDialog.java
-index 74aabc356883e7da5304e6af3b9f61ba7c717546..cc7d2ddf3a307052ed8528ff3505bba2b7432e97 100644
+index 74aabc356883e7da5304e6af3b9f61ba7c717546..8dd14b4a7687e2708807dfa065b13870129dde45 100644
 --- a/core/src/mindustry/ui/dialogs/CustomRulesDialog.java
 +++ b/core/src/mindustry/ui/dialogs/CustomRulesDialog.java
 @@ -3,6 +3,7 @@ package mindustry.ui.dialogs;
@@ -1194,6 +1194,15 @@ index 74aabc356883e7da5304e6af3b9f61ba7c717546..cc7d2ddf3a307052ed8528ff3505bba2
  
          buttons.button("@edit", Icon.pencil, () -> {
              BaseDialog dialog = new BaseDialog("@waves.edit");
+@@ -67,7 +73,7 @@ public class CustomRulesDialog extends BaseDialog{
+ 
+             dialog.cont.table(Tex.button, t -> {
+                 var style = Styles.cleart;
+-                t.defaults().size(280f, 64f).pad(2f);
++                t.defaults().size(280f, 64f).maxWidth(Float.NEGATIVE_INFINITY).pad(2f);
+ 
+                 t.button("@waves.copy", Icon.copy, style, () -> {
+                     ui.showInfoFade("@copied");
 @@ -150,6 +156,7 @@ public class CustomRulesDialog extends BaseDialog{
          check("@rules.wavesending", b -> rules.waveSending = b, () -> rules.waveSending, () -> rules.waves);
          check("@rules.wavetimer", b -> rules.waveTimer = b, () -> rules.waveTimer, () -> rules.waves);
