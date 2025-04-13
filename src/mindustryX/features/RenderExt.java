@@ -99,12 +99,6 @@ public class RenderExt{
             unitHideMinHealth = Core.settings.getInt("unitDrawMinHealth");
             unitWeaponTargetLine = Core.settings.getBool("unitWeaponTargetLine");
             unitItemCarried = Core.settings.getBool("unitItemCarried");
-
-            if(renderer.enableEffects && Time.nanosToMillis(DebugUtil.rendererTime) > 200){
-                renderer.enableEffects = false;
-                Core.settings.put("effects", false);
-                UIExt.announce("[yellow]渲染耗时过长，自动关闭特效");
-            }
         });
         Events.run(Trigger.draw, RenderExt::draw);
         Events.on(TileChangeEvent.class, RenderExt::onSetBlock);
