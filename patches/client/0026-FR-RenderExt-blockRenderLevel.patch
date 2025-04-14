@@ -11,10 +11,10 @@ Subject: [PATCH] FR(RenderExt) blockRenderLevel
  4 files changed, 11 insertions(+), 6 deletions(-)
 
 diff --git a/core/src/mindustry/core/Renderer.java b/core/src/mindustry/core/Renderer.java
-index 280023c9d4c00ea2249b37757414884e42697e7f..52079eb9a0f301d3b40a79be894e1de2d61f95a0 100644
+index 0279b44e1da1d2425350843b4fe075fd9272d963..0efb58fc8488af063ac609a96ad1dcbd71de350d 100644
 --- a/core/src/mindustry/core/Renderer.java
 +++ b/core/src/mindustry/core/Renderer.java
-@@ -313,7 +313,8 @@ public class Renderer implements ApplicationListener{
+@@ -332,7 +332,8 @@ public class Renderer implements ApplicationListener{
  
          Draw.draw(Layer.background, this::drawBackground);
          Draw.draw(Layer.floor, blocks.floor::drawFloor);
@@ -24,7 +24,7 @@ index 280023c9d4c00ea2249b37757414884e42697e7f..52079eb9a0f301d3b40a79be894e1de2
          Draw.draw(Layer.block - 0.09f, () -> {
              blocks.floor.beginDraw();
              blocks.floor.drawLayer(CacheLayer.walls);
-@@ -398,7 +399,8 @@ public class Renderer implements ApplicationListener{
+@@ -417,7 +418,8 @@ public class Renderer implements ApplicationListener{
          }
  
          Events.fire(Trigger.drawOver);

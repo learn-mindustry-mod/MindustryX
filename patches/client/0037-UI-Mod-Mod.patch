@@ -12,7 +12,7 @@ Content-Transfer-Encoding: 8bit
  1 file changed, 162 insertions(+), 104 deletions(-)
 
 diff --git a/core/src/mindustry/ui/dialogs/ModsDialog.java b/core/src/mindustry/ui/dialogs/ModsDialog.java
-index e41a3e0176e979272d3a69a505164373bf0133e7..ad6bc24b2b53ad2e063eab79db1c682dea08ce68 100644
+index 492a9963096af2419d9876a79549c99e6704997d..ea63c3059054fdec68670cb4a89bec411b804417 100644
 --- a/core/src/mindustry/ui/dialogs/ModsDialog.java
 +++ b/core/src/mindustry/ui/dialogs/ModsDialog.java
 @@ -1,6 +1,7 @@
@@ -67,8 +67,8 @@ index e41a3e0176e979272d3a69a505164373bf0133e7..ad6bc24b2b53ad2e063eab79db1c682d
  
      void setup(){
 -        float h = 110f;
--        float w = Math.min(Core.graphics.getWidth() / Scl.scl(1.05f), 520f);
-+        modCardWidth = Math.min(Core.graphics.getWidth() / Scl.scl(1.05f), 520f);
+-        float w = Math.min(Core.graphics.getWidth() / Scl.scl(1.05f) - Scl.scl(28f), 520f);
++        modCardWidth = Math.min(Core.graphics.getWidth() / Scl.scl(1.05f) - Scl.scl(28f), 520f);
 +
 +        Seq<LoadedMod> modList = mods.list();
 +        internalMods.clear();

@@ -58,10 +58,10 @@ index a64b7b36fdd74a29a3caae54a1f1a514039b891f..beea309f225be8de3799089a87d1fdcb
          }
  
 diff --git a/core/src/mindustry/Vars.java b/core/src/mindustry/Vars.java
-index ac225f81d9c245937c23985a62db7857d5292d51..21f5e25a14d237e821c1cc0e22ff28dfe16e9633 100644
+index fe68f1c673d2957227bd63f61de9bee14a0bb9aa..97871fdb3b827498496636146836ae483387d7e8 100644
 --- a/core/src/mindustry/Vars.java
 +++ b/core/src/mindustry/Vars.java
-@@ -396,6 +396,11 @@ public class Vars implements Loadable{
+@@ -398,6 +398,11 @@ public class Vars implements Loadable{
                  if(!headless && (ui == null || ui.consolefrag == null)){
                      logBuffer.add(result);
                  }else if(!headless){
@@ -116,10 +116,10 @@ index b49fbe345d8987f023b037d1c1b94953098487e1..e80d5029613f62f112e4f2c8e1be25ee
  
              player.admin = false;
 diff --git a/core/src/mindustry/core/Renderer.java b/core/src/mindustry/core/Renderer.java
-index 52079eb9a0f301d3b40a79be894e1de2d61f95a0..9a851e0a309217a8939857a6e5a4940c2ff548fe 100644
+index 0efb58fc8488af063ac609a96ad1dcbd71de350d..63e98c8608c92f92e4d983588f009de2f00b6b77 100644
 --- a/core/src/mindustry/core/Renderer.java
 +++ b/core/src/mindustry/core/Renderer.java
-@@ -160,7 +160,7 @@ public class Renderer implements ApplicationListener{
+@@ -161,7 +161,7 @@ public class Renderer implements ApplicationListener{
              baseTarget = Mathf.lerp(minZoom, maxZoom, control.input.logicCutsceneZoom);
          }
  
@@ -200,7 +200,7 @@ index 2db321df7e134094f76a43b848b89c86127b158f..af3ac2a19fd2d59c42c58c72c8c89325
              Seq<Stile> tiles = new Seq<>(total);
              for(int i = 0; i < total; i++){
 diff --git a/core/src/mindustry/graphics/MinimapRenderer.java b/core/src/mindustry/graphics/MinimapRenderer.java
-index 6ad5544c423fc51c9789fdcc9f14720cdd983e2a..2897710efebae4825f399a67c230856e0457c883 100644
+index 449fc74406920897a045793e57d906dd9dc01a83..ef9c7d8a2c547e9e233464808766f6a30699bcb3 100644
 --- a/core/src/mindustry/graphics/MinimapRenderer.java
 +++ b/core/src/mindustry/graphics/MinimapRenderer.java
 @@ -102,7 +102,8 @@ public class MinimapRenderer{

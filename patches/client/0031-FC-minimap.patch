@@ -2,7 +2,7 @@ From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: way-zer <himc.wicp@gmail.com>
 Date: Wed, 3 Apr 2024 21:25:13 +0800
 Subject: [PATCH] =?UTF-8?q?FC:=20minimap=20/=20=E5=B0=8F=E5=9C=B0=E5=9B=BE?=
- =?UTF-8?q?=E7=94=A8=E6=88=B7?=
+ =?UTF-8?q?=E4=BC=98=E5=8C=96?=
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -11,24 +11,16 @@ Content-Transfer-Encoding: 8bit
 * 小地图缩略中显示 玩家名/视野/出生点
 * invertMapClick
 ---
- .../mindustry/graphics/MinimapRenderer.java   | 21 +++++++++-----
+ .../mindustry/graphics/MinimapRenderer.java   |  6 ++--
  core/src/mindustry/ui/Minimap.java            | 29 +++++++++++++++----
  .../ui/fragments/MinimapFragment.java         |  5 ++--
- 3 files changed, 41 insertions(+), 14 deletions(-)
+ 3 files changed, 30 insertions(+), 10 deletions(-)
 
 diff --git a/core/src/mindustry/graphics/MinimapRenderer.java b/core/src/mindustry/graphics/MinimapRenderer.java
-index 2897710efebae4825f399a67c230856e0457c883..919dd48219e4640eb034b68602db39d0626e6f36 100644
+index ef9c7d8a2c547e9e233464808766f6a30699bcb3..7611704393dc9a82ea9bc07fd493a8bb61091013 100644
 --- a/core/src/mindustry/graphics/MinimapRenderer.java
 +++ b/core/src/mindustry/graphics/MinimapRenderer.java
-@@ -17,6 +17,7 @@ import mindustry.gen.*;
- import mindustry.io.*;
- import mindustry.ui.*;
- import mindustry.world.*;
-+import mindustryX.*;
- 
- import static mindustry.Vars.*;
- 
-@@ -166,10 +167,10 @@ public class MinimapRenderer{
+@@ -166,7 +166,7 @@ public class MinimapRenderer{
              Draw.reset();
          }
  
@@ -36,12 +28,8 @@ index 2897710efebae4825f399a67c230856e0457c883..919dd48219e4640eb034b68602db39d0
 +        if(net.active()){
              for(Player player : Groups.player){
                  if(!player.dead()){
--                    drawLabel(player.x, player.y, player.name, player.color);
-+                    drawLabel(player.x, player.y, player.name, player.color, scaleFactor);
-                 }
-             }
-         }
-@@ -213,10 +214,10 @@ public class MinimapRenderer{
+                     drawLabel(player.x, player.y, player.name, player.color, scaleFactor);
+@@ -213,10 +213,10 @@ public class MinimapRenderer{
          }
  
          //TODO might be useful in the standard minimap too
@@ -54,38 +42,6 @@ index 2897710efebae4825f399a67c230856e0457c883..919dd48219e4640eb034b68602db39d0
                  //draw bounds for camera - not drawn on mobile because you can't shift it by tapping anyway
                  Rect r = Core.camera.bounds(Tmp.r1);
                  Lines.stroke(Scl.scl(3f) * scaleFactor);
-@@ -375,14 +376,20 @@ public class MinimapRenderer{
-         return color.rgba();
-     }
- 
-+    @MindustryXApi.Keep
-     public void drawLabel(float x, float y, String text, Color color){
-+        drawLabel(x, y, text, color, 1);
-+    }
-+
-+    @MindustryXApi
-+    public void drawLabel(float x, float y, String text, Color color, float scale){
-         Font font = Fonts.outline;
-         GlyphLayout l = Pools.obtain(GlyphLayout.class, GlyphLayout::new);
-         boolean ints = font.usesIntegerPositions();
--        font.getData().setScale(1 / 1.5f / Scl.scl(1f));
-+        font.getData().setScale(1 / 1.5f / Scl.scl(1f) * scale);
-         font.setUseIntegerPositions(false);
- 
--        l.setText(font, text, color, 90f, Align.left, true);
-+        l.setText(font, text, color, 90f, Align.left, false);
-         float yOffset = 20f;
-         float margin = 3f;
- 
-@@ -390,7 +397,7 @@ public class MinimapRenderer{
-         Fill.rect(x, y + yOffset - l.height/2f, l.width + margin, l.height + margin);
-         Draw.color();
-         font.setColor(color);
--        font.draw(text, x - l.width/2f, y + yOffset, 90f, Align.left, true);
-+        font.draw(text, x - l.width / 2f, y + yOffset, 90f, Align.left, false);
-         font.setUseIntegerPositions(ints);
- 
-         font.getData().setScale(1f);
 diff --git a/core/src/mindustry/ui/Minimap.java b/core/src/mindustry/ui/Minimap.java
 index e807ad3b752c42d84f958437bbdafead698859c0..7de54d1cb916c51ea1649c50c38b216c2151a888 100644
 --- a/core/src/mindustry/ui/Minimap.java

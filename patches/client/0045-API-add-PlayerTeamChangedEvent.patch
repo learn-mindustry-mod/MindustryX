@@ -8,7 +8,7 @@ Subject: [PATCH] API: add PlayerTeamChangedEvent
  1 file changed, 4 insertions(+)
 
 diff --git a/core/src/mindustry/entities/comp/PlayerComp.java b/core/src/mindustry/entities/comp/PlayerComp.java
-index 834d4c239aa261afd9828f0b4d17a97fb8809621..5df9e7cecd5d7f76874f8fa49b5d66f7d8427cfa 100644
+index 5c340b8afed882d9c6ce68e043aa471e4a9b8bbd..13f53fec4ff86c37aa7c6a5ef4b1cc702119dad1 100644
 --- a/core/src/mindustry/entities/comp/PlayerComp.java
 +++ b/core/src/mindustry/entities/comp/PlayerComp.java
 @@ -23,6 +23,7 @@ import mindustry.net.Packets.*;
@@ -19,7 +19,7 @@ index 834d4c239aa261afd9828f0b4d17a97fb8809621..5df9e7cecd5d7f76874f8fa49b5d66f7
  
  import static mindustry.Vars.*;
  
-@@ -191,10 +192,13 @@ abstract class PlayerComp implements UnitController, Entityc, Syncc, Timerc, Dra
+@@ -194,10 +195,13 @@ abstract class PlayerComp implements UnitController, Entityc, Syncc, Timerc, Dra
      }
  
      public void team(Team team){

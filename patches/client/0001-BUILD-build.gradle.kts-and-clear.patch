@@ -3111,7 +3111,7 @@ index 107acd32c4e687021ef32db511e8a206129b88ec..25da30dbdeee93f6eaceea674c3b635d
  :mainEnd
  if "%OS%"=="Windows_NT" endlocal
 diff --git a/ios/build.gradle b/ios/build.gradle
-index 931168d9470385e787bab73ea1a96df8024bc8ce..e621bb96c1b8c415d9d9622338d7247d939ce891 100644
+index 55dbe5e7c77d87b915da37f56079d8d97a7d7f8a..752819006ca087ebf832defc1f442e650dd3ea7b 100644
 --- a/ios/build.gradle
 +++ b/ios/build.gradle
 @@ -77,7 +77,7 @@ task deploy{
@@ -3407,7 +3407,7 @@ index b02926630256dec9f95c9e6eed2b35d0ea496db9..c7239ea7f5200afabe3b8756f28c39a3
                      for(int j = 0; j < 4 - hex.length(); j++){
                          outBuffer.append('0')
 diff --git a/tools/src/mindustry/tools/Generators.java b/tools/src/mindustry/tools/Generators.java
-index 5fc22be5fa06e8a8f11366bc406a76c53c3839c6..5d380a97aad14ac0d002cb42492b049c17d4689e 100644
+index 8503c80b26a6ed6389e71a151750eafd4c90f2df..8f9c903d397bb4540167e7b77b9dfa11c3a0bf9e 100644
 --- a/tools/src/mindustry/tools/Generators.java
 +++ b/tools/src/mindustry/tools/Generators.java
 @@ -417,7 +417,7 @@ public class Generators{

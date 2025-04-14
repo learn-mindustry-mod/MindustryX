@@ -206,7 +206,7 @@ index 48c4d6749bd6f0776547fd633d7ac18c76af2452..14e2f7fc8790a36b7293334f7311b75f
  
          if(object instanceof StreamBegin b){
 diff --git a/core/src/mindustry/net/NetworkIO.java b/core/src/mindustry/net/NetworkIO.java
-index fd0cdbaf51638cb37552b6e23ce4f11d25c56a56..4befd1b7fcb160ddc66eda4f2519ecf199b0885f 100644
+index 89a5e536fe62ed8d3dc04e291fb705167a06ed89..a6b59d23f0d394086205a34108f468bcf26e1b44 100644
 --- a/core/src/mindustry/net/NetworkIO.java
 +++ b/core/src/mindustry/net/NetworkIO.java
 @@ -4,6 +4,7 @@ import arc.*;

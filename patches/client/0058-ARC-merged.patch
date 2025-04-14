@@ -671,7 +671,7 @@ index c0212b80814b19c35ba2a45bbce633e8aa4014b3..d8d9df8b01bf4e8bc05b243bb446c279
          player.mouseY = unit.aimY();
  
 diff --git a/core/src/mindustry/input/InputHandler.java b/core/src/mindustry/input/InputHandler.java
-index 3d16de13b60da3e319dd1dc83d7762201046c07c..6892829df71bb37836405928ed65de35df214406 100644
+index cf6425519e6c382c1fe195cc654ca4c01cd368f3..5dd04ef763ed86d8c0dae20f16b079ae001738ed 100644
 --- a/core/src/mindustry/input/InputHandler.java
 +++ b/core/src/mindustry/input/InputHandler.java
 @@ -37,11 +37,13 @@ import mindustry.world.*;
@@ -788,7 +788,7 @@ index 3d16de13b60da3e319dd1dc83d7762201046c07c..6892829df71bb37836405928ed65de35
      }
  
      protected void flushSelectPlans(Seq<BuildPlan> plans){
-@@ -1886,7 +1922,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -1887,7 +1923,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
  
      public @Nullable Building selectedControlBuild(){
          Building build = world.buildWorld(Core.input.mouseWorld().x, Core.input.mouseWorld().y);
@@ -797,7 +797,7 @@ index 3d16de13b60da3e319dd1dc83d7762201046c07c..6892829df71bb37836405928ed65de35
              return build;
          }
          return null;
-@@ -1973,6 +2009,9 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -1974,6 +2010,9 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
      }
  
      public boolean canShoot(){
@@ -808,7 +808,7 @@ index 3d16de13b60da3e319dd1dc83d7762201046c07c..6892829df71bb37836405928ed65de35
          !(player.unit() instanceof Mechc && player.unit().isFlying()) && !player.unit().mining() && !commandMode;
      }
 diff --git a/core/src/mindustry/input/MobileInput.java b/core/src/mindustry/input/MobileInput.java
-index b82d3899bb4f69011e2ec494329c60981f4d4ede..5ff700298b06b0423f3f8e764f58d047dc35d20e 100644
+index aa36130513be3dead61b75084baf668954ecca4b..6ba770af3833f62de768ae9a723fe3131c962390 100644
 --- a/core/src/mindustry/input/MobileInput.java
 +++ b/core/src/mindustry/input/MobileInput.java
 @@ -341,7 +341,7 @@ public class MobileInput extends InputHandler implements GestureListener{
@@ -849,7 +849,7 @@ index b82d3899bb4f69011e2ec494329c60981f4d4ede..5ff700298b06b0423f3f8e764f58d047
          unit.movePref(movement);
  
 diff --git a/core/src/mindustry/logic/LExecutor.java b/core/src/mindustry/logic/LExecutor.java
-index 3510b38337bfd81909aa568aa4ceee45eb4faf11..d6607967c50327c573806256903caa3c273bc3ca 100644
+index 736cb6f46b3b13d107ce4c305efeb761df1313b1..47a12e81adb98ba57037d6cba2d0fadc1ac987b7 100644
 --- a/core/src/mindustry/logic/LExecutor.java
 +++ b/core/src/mindustry/logic/LExecutor.java
 @@ -10,6 +10,7 @@ import arc.util.*;
@@ -1145,7 +1145,7 @@ index 0464bde619e7afe1c1de9adf9a29dcc52132814b..aca20acb43fde3c76e408d7e13c64a69
          table.marginRight(30f);
          //TODO: some things (e.g. reconstructor requirements) are too long and screw up the layout
 diff --git a/core/src/mindustry/ui/dialogs/CustomRulesDialog.java b/core/src/mindustry/ui/dialogs/CustomRulesDialog.java
-index 74aabc356883e7da5304e6af3b9f61ba7c717546..8dd14b4a7687e2708807dfa065b13870129dde45 100644
+index a4a8879abc1bba679be3377e8871d8141fb7bc88..aff0affecf7dbc527a33ce3ebb5b8518b33d504d 100644
 --- a/core/src/mindustry/ui/dialogs/CustomRulesDialog.java
 +++ b/core/src/mindustry/ui/dialogs/CustomRulesDialog.java
 @@ -3,6 +3,7 @@ package mindustry.ui.dialogs;
