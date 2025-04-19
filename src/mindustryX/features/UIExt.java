@@ -24,7 +24,6 @@ public class UIExt{
     public static SettingsV2.Data<Integer> quickToolOffset = new SettingsV2.SliderPref("quickToolOffset", 0, -250, 250, 10);
 
     public static TeamSelectDialog teamSelect;
-    public static ContentSelector contentSelector;
     public static ModsRecommendDialog modsRecommend = new ModsRecommendDialog();
     public static TeamsStatDisplay teamsStatDisplay;
     public static ArcMessageDialog arcMessageDialog = new ArcMessageDialog();
@@ -37,7 +36,6 @@ public class UIExt{
 
     public static void init(){
         teamSelect = new TeamSelectDialog();
-        contentSelector = new ContentSelector();
 
         teamsStatDisplay = new TeamsStatDisplay();
         ui.hudGroup.fill(t -> {
