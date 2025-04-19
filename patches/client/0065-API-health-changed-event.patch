@@ -57,7 +57,7 @@ index 0bd26d7cebe9118efacc6382c1eb27009ed36f01..19c35cc94b913fed2996c86779b6f750
  
              if(lines.size > 1){
 diff --git a/core/src/mindustry/entities/bullet/BulletType.java b/core/src/mindustry/entities/bullet/BulletType.java
-index 06c43409e97f10ac2098371869be3db197a19dcc..0d80cdaa350e59f36eb7a82606381f780ad2330c 100644
+index e6f82bd66e4c3b302855a6b1d21c7fd3bd90455b..88b52eb43b94e4713bc2818e8492775af3b8dda3 100644
 --- a/core/src/mindustry/entities/bullet/BulletType.java
 +++ b/core/src/mindustry/entities/bullet/BulletType.java
 @@ -22,6 +22,7 @@ import mindustry.graphics.*;
