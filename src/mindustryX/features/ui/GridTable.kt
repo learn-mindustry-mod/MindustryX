@@ -4,7 +4,10 @@ import arc.math.Mathf
 import arc.scene.ui.layout.Table
 import kotlin.math.min
 
-/**自动换行的Table布局，所有元素使用相同的[cell]，最好设置[cell.minWidth()]*/
+/**自动换行的Table布局
+ * - 所有元素使用相同的[cell]，最好设置[cell.minWidth()]
+ * - 支持检测子元素[visible]，进行动态增减
+ * */
 class GridTable : Table() {
     val cell = defaults()!!
     override fun act(delta: Float) {
@@ -17,7 +20,7 @@ class GridTable : Table() {
         val visibleChanged = children.count { it.visible } != cells.size || cells.any { it.get()?.visible != true }
         if (!columnsChanged && !visibleChanged) return
 
-        val children = this.children.toList()
+        val children = this.children.begin()
         clearChildren()
         var i = 0
         children.forEach {
@@ -28,5 +31,6 @@ class GridTable : Table() {
                 if (i % newColumns == 0) row()
             }
         }
+        this.children.end()
     }
 }
