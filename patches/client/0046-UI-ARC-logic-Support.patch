@@ -22,9 +22,9 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  core/src/mindustry/logic/LExecutor.java       |   3 +-
  core/src/mindustry/logic/LStatements.java     |  12 ++
  core/src/mindustry/logic/LogicDialog.java     | 146 +++++++++++++++++-
- .../world/blocks/logic/LogicBlock.java        |  66 +++++++-
+ .../world/blocks/logic/LogicBlock.java        |  72 ++++++++-
  .../world/blocks/logic/MemoryBlock.java       |  73 ++++++++-
- 6 files changed, 341 insertions(+), 17 deletions(-)
+ 6 files changed, 347 insertions(+), 17 deletions(-)
 
 diff --git a/core/src/mindustry/logic/LCanvas.java b/core/src/mindustry/logic/LCanvas.java
 index 2bfd96ac4b9685bde38edee0d80be66380fdf6f2..ba5401c7c2ee4f8d9e7ffcc7da8ca3ad5bdb2a77 100644
@@ -403,10 +403,18 @@ index 10e0d74ed3b6f5a1fb742c0ddd96b0e9fb885941..1b9cf7cf4c8e40d453a85565ceecdf08
          canvas.rebuild();
          canvas.privileged = privileged;
 diff --git a/core/src/mindustry/world/blocks/logic/LogicBlock.java b/core/src/mindustry/world/blocks/logic/LogicBlock.java
-index 24465dba760b6204352aaa767287175307264e48..52c9aa636a6ee1d3aed436445186efc2b476bb88 100644
+index 24465dba760b6204352aaa767287175307264e48..cf8a94cf7f4bb1e0bf223aa406acc62b4b48fc78 100644
 --- a/core/src/mindustry/world/blocks/logic/LogicBlock.java
 +++ b/core/src/mindustry/world/blocks/logic/LogicBlock.java
-@@ -27,6 +27,7 @@ import mindustry.world.blocks.ConstructBlock.*;
+@@ -16,6 +16,7 @@ import arc.util.io.*;
+ import arc.util.pooling.*;
+ import mindustry.ai.types.*;
+ import mindustry.core.*;
++import mindustry.game.*;
+ import mindustry.gen.*;
+ import mindustry.graphics.*;
+ import mindustry.io.*;
+@@ -27,6 +28,7 @@ import mindustry.world.blocks.ConstructBlock.*;
  import mindustry.world.meta.*;
  import mindustryX.*;
  import mindustryX.events.*;
@@ -414,7 +422,7 @@ index 24465dba760b6204352aaa767287175307264e48..52c9aa636a6ee1d3aed436445186efc2
  
  import java.io.*;
  import java.util.zip.*;
-@@ -110,11 +111,15 @@ public class LogicBlock extends Block{
+@@ -110,11 +112,15 @@ public class LogicBlock extends Block{
  
      @Override
      public boolean checkForceDark(Tile tile){
@@ -432,7 +440,7 @@ index 24465dba760b6204352aaa767287175307264e48..52c9aa636a6ee1d3aed436445186efc2
      }
  
      @Override
-@@ -260,6 +265,8 @@ public class LogicBlock extends Block{
+@@ -260,6 +266,8 @@ public class LogicBlock extends Block{
          public @Nullable String tag;
          public char iconTag;
  
@@ -441,7 +449,7 @@ index 24465dba760b6204352aaa767287175307264e48..52c9aa636a6ee1d3aed436445186efc2
          /** Block of code to run after load. */
          public @Nullable Runnable loadBlock;
  
-@@ -432,7 +439,7 @@ public class LogicBlock extends Block{
+@@ -432,7 +440,7 @@ public class LogicBlock extends Block{
  
          @Override
          public boolean displayable(){
@@ -450,16 +458,21 @@ index 24465dba760b6204352aaa767287175307264e48..52c9aa636a6ee1d3aed436445186efc2
          }
  
          @Override
-@@ -455,7 +462,7 @@ public class LogicBlock extends Block{
+@@ -455,7 +463,12 @@ public class LogicBlock extends Block{
  
          @Override
          public Cursor getCursor(){
 -            return !accessible() ? SystemCursor.arrow : super.getCursor();
 +            return !accessibleRead() ? SystemCursor.arrow : super.getCursor();
++        }
++
++        @Override
++        public boolean interactable(Team team){
++            return super.interactable(team) || accessibleRead();
          }
  
          //logic blocks cause write problems when picked up
-@@ -591,17 +598,19 @@ public class LogicBlock extends Block{
+@@ -591,17 +604,19 @@ public class LogicBlock extends Block{
              }
  
              //draw top text on separate layer
@@ -481,7 +494,7 @@ index 24465dba760b6204352aaa767287175307264e48..52c9aa636a6ee1d3aed436445186efc2
  
              Groups.unit.each(u -> u.controller() instanceof LogicAI ai && ai.controller == this, unit -> {
                  Drawf.square(unit.x, unit.y, unit.hitSize, unit.rotation + 45);
-@@ -648,12 +657,53 @@ public class LogicBlock extends Block{
+@@ -648,12 +663,53 @@ public class LogicBlock extends Block{
  
          @Override
          public boolean shouldShowConfigure(Player player){
