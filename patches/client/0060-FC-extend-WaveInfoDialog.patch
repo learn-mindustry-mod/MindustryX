@@ -11,11 +11,11 @@ Content-Transfer-Encoding: 8bit
 * 列表状波次浏览
 * 其他细节优化
 ---
- core/src/mindustry/editor/WaveInfoDialog.java | 156 +++++++++++++++++-
- 1 file changed, 151 insertions(+), 5 deletions(-)
+ core/src/mindustry/editor/WaveInfoDialog.java | 217 ++++++++++++------
+ 1 file changed, 151 insertions(+), 66 deletions(-)
 
 diff --git a/core/src/mindustry/editor/WaveInfoDialog.java b/core/src/mindustry/editor/WaveInfoDialog.java
-index 55e675caa05e8b7fb43b92bc2460e19daae7840e..2955efa7ee997307b2b056d44685ca59ff57a32b 100644
+index 55e675caa05e8b7fb43b92bc2460e19daae7840e..3bc5093b9695528e8eb83683cf2aa5af341cd724 100644
 --- a/core/src/mindustry/editor/WaveInfoDialog.java
 +++ b/core/src/mindustry/editor/WaveInfoDialog.java
 @@ -6,6 +6,7 @@ import arc.graphics.*;
@@ -111,14 +111,12 @@ index 55e675caa05e8b7fb43b92bc2460e19daae7840e..2955efa7ee997307b2b056d44685ca59
      void buildGroups(){
          table.clear();
          table.top();
-@@ -172,12 +224,25 @@ public class WaveInfoDialog extends BaseDialog{
+@@ -172,21 +224,32 @@ public class WaveInfoDialog extends BaseDialog{
                      t.button(b -> {
                          b.left();
                          b.image(group.type.uiIcon).size(32f).padRight(3).scaling(Scaling.fit);
 -                        b.add(group.type.localizedName).ellipsis(true).width(110f).left().color(Pal.accent);
-+                        b.add(group.type.localizedName).ellipsis(true).width(110f).left().color(ArcWaveSpawner.unitTypeColor(group.type));
-+                        if(group.effect != null && group.effect != StatusEffects.none)
-+                            b.image(group.effect.uiIcon).size(20f).padRight(3).scaling(Scaling.fit);
++                        b.add(group.type.localizedName).ellipsis(true).maxWidth(110f).left().color(ArcWaveSpawner.unitTypeColor(group.type));
 +                        if(group.items != null && group.items.amount > 0)
 +                            b.image(group.items.item.uiIcon).size(20f).padRight(3).scaling(Scaling.fit);
 +                        if(group.payloads != null && group.payloads.size > 0)
@@ -140,7 +138,19 @@ index 55e675caa05e8b7fb43b92bc2460e19daae7840e..2955efa7ee997307b2b056d44685ca59
                          b.button(Icon.copySmall, Styles.emptyi, () -> {
                              groups.insert(groups.indexOf(group) + 1, expandedGroup = group.copy());
                              buildGroups();
-@@ -346,7 +411,48 @@ public class WaveInfoDialog extends BaseDialog{
+                         }).pad(-6).size(46f).tooltip("@editor.copy");
+ 
+                         b.button(group.effect != null ?
+-                            new TextureRegionDrawable(group.effect.uiIcon) :
+-                            Icon.logicSmall,
+-                        Styles.emptyi, () -> showEffects(group)).pad(-6).size(46f).scaling(Scaling.fit).tooltip(group.effect != null ? group.effect.localizedName : "@none");
++                        new TextureRegionDrawable(group.effect.uiIcon) :
++                        Icon.effectSmall,
++                        Styles.emptyi, iconSmall, () -> showEffects(group)).pad(-6).size(46f).scaling(Scaling.fit).tooltip(group.effect != null ? group.effect.localizedName : "@none");
+ 
+                         b.button(Icon.unitsSmall, Styles.emptyi, () -> showUnits(type -> group.type = type, false)).pad(-6).size(46f).tooltip("@stat.unittype");
+                         b.button(Icon.cancel, Styles.emptyi, () -> {
+@@ -346,7 +409,62 @@ public class WaveInfoDialog extends BaseDialog{
                                  dialog.show();
                              }).width(160f).height(36f).get().getLabel().setText(() -> group.spawn == -1 ? "@waves.spawn.all" : Point2.x(group.spawn) + ", " + Point2.y(group.spawn));
  
@@ -151,21 +161,35 @@ index 55e675caa05e8b7fb43b92bc2460e19daae7840e..2955efa7ee997307b2b056d44685ca59
 +                            a.defaults().pad(2);
 +                            a.add("携带物品[gold]X[]: ");
 +
-+                            if(group.items != null){
-+                                a.image(group.items.item.uiIcon);
-+                                a.add("x" + group.items.amount);
-+                            }else{
-+                                a.image(Icon.noneSmall).size(iconSmall);
-+                            }
-+
-+                            a.add().growX();
-+                            a.button(Icon.settingsSmall, Styles.emptyi, iconSmall, () -> {
++                            a.button((group.items != null ? new TextureRegionDrawable(group.items.item.uiIcon) : Icon.noneSmall), Styles.emptyi, iconSmall, () -> {
 +                                if(group.type.itemCapacity <= 0){
 +                                    UIExt.announce("[red]该单位不可携带物品");
 +                                    return;
 +                                }
-+                                showItems((it) -> group.items = it, group.type.itemCapacity);
-+                            }).padLeft(6f);
++                                var dialog = new ContentSelector();
++                                dialog.addNull(() -> {
++                                    group.items = null;
++                                    buildGroups();
++                                    dialog.hide();
++                                }).setChecked(group.items == null);
++                                dialog.addContents(content.items(), group.items != null ? group.items.item : null, (it) -> {
++                                    if(group.items == null)
++                                        group.items = new ItemStack(it, 1);
++                                    group.items.item = it;
++                                    dialog.hide();
++                                    buildGroups();
++                                });
++                                dialog.show();
++                            });
++                            if(group.items != null){
++                                a.label(() -> "x" + group.items.amount);
++
++                                a.slider(1, group.type.itemCapacity, 1, (it) -> {
++                                    group.items.amount = (int)it;
++                                }).padLeft(8).growX();
++                            }else{
++                                a.add().growX();
++                            }
 +                        }).margin(8).row();
 +
 +                        t.table(a -> {
@@ -190,50 +214,97 @@ index 55e675caa05e8b7fb43b92bc2460e19daae7840e..2955efa7ee997307b2b056d44685ca59
                      }
                  }).width(340f).pad(8);
  
-@@ -397,6 +503,46 @@ public class WaveInfoDialog extends BaseDialog{
-         dialog.show();
+@@ -364,68 +482,35 @@ public class WaveInfoDialog extends BaseDialog{
      }
  
-+    void showItems(Cons<ItemStack> cons, int max){
-+        BaseDialog dialog = new BaseDialog("");
-+        dialog.cont.pane(p -> {
-+            p.defaults().pad(2).fillX();
-+            int[] count = {max};
-+            p.table(items -> {
-+                items.add(Core.bundle.get("filter.option.amount") + ":");
-+                items.slider(1, max, 1, (it) -> {
-+                    count[0] = (int)it;
-+                }).width(120f).pad(2).margin(12f);
-+            }).padBottom(6f).row();
-+
-+            p.button(t -> {
-+                t.left();
-+                t.image(Icon.none).size(8 * 4).scaling(Scaling.fit).padRight(2f);
-+                t.add("@settings.resetKey");
-+            }, () -> {
+     void showUnits(Cons<UnitType> cons, boolean reset){
+-        BaseDialog dialog = new BaseDialog(reset ? "@waves.filter" : "");
+-        dialog.cont.pane(p -> {
+-            p.defaults().pad(2).fillX();
+-            if(reset){
+-                p.button(t -> {
+-                    t.left();
+-                    t.image(Icon.none).size(8 * 4).scaling(Scaling.fit).padRight(2f);
+-                    t.add("@settings.resetKey");
+-                }, () -> {
+-                    cons.get(null);
+-                    dialog.hide();
+-                    buildGroups();
+-                }).margin(12f);
+-            }
+-            int i = reset ? 1 : 0;
+-            for(UnitType type : content.units()){
+-                if(type.isHidden()) continue;
+-                p.button(t -> {
+-                    t.left();
+-                    t.image(type.uiIcon).size(8 * 4).scaling(Scaling.fit).padRight(2f);
+-                    t.add(type.localizedName);
+-                }, () -> {
+-                    cons.get(type);
+-                    dialog.hide();
+-                    buildGroups();
+-                }).margin(12f);
+-                if(++i % 3 == 0) p.row();
+-            }
+-        }).growX().scrollX(false);
+-        dialog.addCloseButton();
++        var dialog = new ContentSelector();
++        dialog.title.setText(reset ? "@waves.filter" : "");
++        if(reset){
++            dialog.addNull(()->{
 +                cons.get(null);
 +                dialog.hide();
 +                buildGroups();
-+            }).margin(12f);
-+            int i = 1;
-+            for(var type : content.items()){
-+                if(type.isHidden()) continue;
-+                p.button(t -> {
-+                    t.left();
-+                    t.image(type.uiIcon).size(8 * 4).scaling(Scaling.fit).padRight(2f);
-+                    t.add(type.localizedName);
-+                }, () -> {
-+                    cons.get(new ItemStack(type, count[0]));
-+                    dialog.hide();
-+                    buildGroups();
-+                }).margin(12f);
-+                if(++i % 3 == 0) p.row();
-+            }
-+        }).growX().scrollX(false);
-+        dialog.addCloseButton();
-+        dialog.show();
-+    }
-+
++            });
++        }
++        dialog.addContents(content.units().select((type) -> !type.isHidden() || LogicExt.allUnlocked), null, (type) -> {
++            cons.get(type);
++            dialog.hide();
++            buildGroups();
++        });
+         dialog.show();
+     }
+ 
      void showEffects(SpawnGroup group){
-         BaseDialog dialog = new BaseDialog("");
-         dialog.cont.pane(p -> {
+-        BaseDialog dialog = new BaseDialog("");
+-        dialog.cont.pane(p -> {
+-            p.defaults().pad(2).fillX();
+-            p.button(t -> {
+-                t.left();
+-                t.image(Icon.none).size(8 * 4).scaling(Scaling.fit).padRight(2f);
+-                t.add("@settings.resetKey");
+-            }, () -> {
+-                group.effect = null;
+-                dialog.hide();
+-                buildGroups();
+-            }).margin(12f);
+-            int i = 1;
+-            for(StatusEffect effect : content.statusEffects()){
+-                if(effect.isHidden() || effect.reactive) continue;
+-                p.button(t -> {
+-                    t.left();
+-                    t.image(effect.uiIcon).size(8 * 4).scaling(Scaling.fit).padRight(2f);
+-                    t.add(effect.localizedName);
+-                }, () -> {
+-                    group.effect = effect;
+-                    dialog.hide();
+-                    buildGroups();
+-                }).margin(12f);
+-                if(++i % 3 == 0) p.row();
+-            }
+-        }).growX().scrollX(false);
+-        dialog.addCloseButton();
++        var dialog = new ContentSelector();
++        dialog.addNull(() -> {
++            group.effect = null;
++            dialog.hide();
++            buildGroups();
++        });
++        dialog.addContents(content.statusEffects().select((effect) -> (!effect.isHidden() && !effect.reactive) || LogicExt.allUnlocked), null, (type) -> {
++            group.effect = type;
++            dialog.hide();
++            buildGroups();
++        });
+         dialog.show();
+     }
+ 
