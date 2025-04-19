@@ -168,7 +168,7 @@ index 0c22a5196673c56ecf9c73ec1278ad8592b84e1a..b113bad311f4bafacefe3122449783e9
      }
  
 diff --git a/core/src/mindustry/world/blocks/defense/OverdriveProjector.java b/core/src/mindustry/world/blocks/defense/OverdriveProjector.java
-index 4a35c8aeeebc86eff2d0fed53782b99c57702dd0..40fc3f66f6d35e2dfada669551a3aa8b9e26a4e4 100644
+index d9fc8ed8732a91815f2923fcdcad622e4c7a7789..3d310f4ddc7e2445aab3a8fc350d9c085fa18381 100644
 --- a/core/src/mindustry/world/blocks/defense/OverdriveProjector.java
 +++ b/core/src/mindustry/world/blocks/defense/OverdriveProjector.java
 @@ -1,6 +1,5 @@
@@ -178,7 +178,7 @@ index 4a35c8aeeebc86eff2d0fed53782b99c57702dd0..40fc3f66f6d35e2dfada669551a3aa8b
  import arc.graphics.*;
  import arc.graphics.g2d.*;
  import arc.math.*;
-@@ -54,6 +53,11 @@ public class OverdriveProjector extends Block{
+@@ -60,6 +59,11 @@ public class OverdriveProjector extends Block{
          super.drawPlace(x, y, rotation, valid);
  
          Drawf.dashCircle(x * tilesize + offset, y * tilesize + offset, range, baseColor);

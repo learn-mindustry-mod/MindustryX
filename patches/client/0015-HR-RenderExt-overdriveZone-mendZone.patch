@@ -4,11 +4,11 @@ Date: Sat, 17 Feb 2024 14:15:29 +0800
 Subject: [PATCH] HR(RenderExt) overdriveZone mendZone
 
 ---
- core/src/mindustry/core/Renderer.java          |  5 +++++
- core/src/mindustry/graphics/Layer.java         |  3 +++
- .../world/blocks/defense/MendProjector.java    |  8 ++++++++
- .../blocks/defense/OverdriveProjector.java     | 18 ++++++++++++++++++
- 4 files changed, 34 insertions(+)
+ core/src/mindustry/core/Renderer.java         |  5 ++++
+ core/src/mindustry/graphics/Layer.java        |  3 +++
+ .../world/blocks/defense/MendProjector.java   |  8 +++++++
+ .../blocks/defense/OverdriveProjector.java    | 24 +++++++++++++++++++
+ 4 files changed, 40 insertions(+)
 
 diff --git a/core/src/mindustry/core/Renderer.java b/core/src/mindustry/core/Renderer.java
 index e41d6c46d6ab99dd9f9029e3ce58968dc2ac91b3..0279b44e1da1d2425350843b4fe075fd9272d963 100644
@@ -67,7 +67,7 @@ index 34a69c5f1803f6053b35c76ee285032bb0e352b4..f950bb4cc72b8947445bc717940d1a8b
  
              Draw.color(baseColor, phaseColor, phaseHeat);
 diff --git a/core/src/mindustry/world/blocks/defense/OverdriveProjector.java b/core/src/mindustry/world/blocks/defense/OverdriveProjector.java
-index 9e957d0eee9dcd065ee76c99cb9fe07268570692..678b1ba33e654d50a0b250de3dc6e0560127b15e 100644
+index 9e957d0eee9dcd065ee76c99cb9fe07268570692..a1cc756f96ddad6791c054475d519f765938972b 100644
 --- a/core/src/mindustry/world/blocks/defense/OverdriveProjector.java
 +++ b/core/src/mindustry/world/blocks/defense/OverdriveProjector.java
 @@ -15,6 +15,7 @@ import mindustry.ui.*;
@@ -78,7 +78,20 @@ index 9e957d0eee9dcd065ee76c99cb9fe07268570692..678b1ba33e654d50a0b250de3dc6e056
  
  import static mindustry.Vars.*;
  
-@@ -135,6 +136,23 @@ public class OverdriveProjector extends Block{
+@@ -43,6 +44,12 @@ public class OverdriveProjector extends Block{
+         envEnabled |= Env.space;
+     }
+ 
++    @Override
++    public void init(){
++        updateClipRadius(range + phaseRangeBoost + 3f);
++        super.init();
++    }
++
+     @Override
+     public boolean outputsItems(){
+         return false;
+@@ -135,6 +142,23 @@ public class OverdriveProjector extends Block{
          public void draw(){
              super.draw();
  
