@@ -2428,7 +2428,7 @@ index 7ad999d0abdbc3b4d6098c689f0a11734ee798ab..06ad7e2d3d0db7e6df5fcf9aea12c099
      }
  
 diff --git a/core/src/mindustry/ui/fragments/PlacementFragment.java b/core/src/mindustry/ui/fragments/PlacementFragment.java
-index cd31c0fa231c0a0033ade71a9cc57f5cfa0209da..d02b50b1ea1625db8ecfc47d014ce5a4c65da457 100644
+index cd31c0fa231c0a0033ade71a9cc57f5cfa0209da..af64415d9423ee23186db2691a285532e8a2af10 100644
 --- a/core/src/mindustry/ui/fragments/PlacementFragment.java
 +++ b/core/src/mindustry/ui/fragments/PlacementFragment.java
 @@ -1,6 +1,7 @@
@@ -2443,7 +2443,7 @@ index cd31c0fa231c0a0033ade71a9cc57f5cfa0209da..d02b50b1ea1625db8ecfc47d014ce5a4
  import arc.struct.*;
  import arc.util.*;
  import mindustry.ai.*;
-+import mindustryX.features.ui.BlockSelectDialog;
++import mindustryX.features.ui.*;
  import mindustry.content.*;
  import mindustry.core.*;
  import mindustry.entities.*;
@@ -2653,13 +2653,13 @@ index cd31c0fa231c0a0033ade71a9cc57f5cfa0209da..d02b50b1ea1625db8ecfc47d014ce5a4
                          boolean needsAssign = categoryEmpty[currentCategory.ordinal()];
  
                          int f = 0;
-+                        if (maxRow > 5){
++                        if(maxRow > 5){
 +                            categories.button(Icon.zoom, Styles.clearTogglei, () -> {
-+                                new BlockSelectDialog(block -> block.replaceable, block -> {
++                                ContentSelectDialog.once(content.blocks().select(block -> block.replaceable), control.input.block, block -> {
 +                                    control.input.block = block;
 +                                    currentCategory = block.category;
 +                                    rebuildCategory.run();
-+                                    }, block -> control.input.block == block).show();
++                                });
 +                            }).group(group);
 +                            categories.image(Styles.black6);
 +                            categories.row();

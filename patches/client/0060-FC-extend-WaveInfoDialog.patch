@@ -15,7 +15,7 @@ Content-Transfer-Encoding: 8bit
  1 file changed, 151 insertions(+), 66 deletions(-)
 
 diff --git a/core/src/mindustry/editor/WaveInfoDialog.java b/core/src/mindustry/editor/WaveInfoDialog.java
-index 55e675caa05e8b7fb43b92bc2460e19daae7840e..3bc5093b9695528e8eb83683cf2aa5af341cd724 100644
+index 55e675caa05e8b7fb43b92bc2460e19daae7840e..787a7de1ac106991f3e24a3313542fc1d8bbe1cf 100644
 --- a/core/src/mindustry/editor/WaveInfoDialog.java
 +++ b/core/src/mindustry/editor/WaveInfoDialog.java
 @@ -6,6 +6,7 @@ import arc.graphics.*;
@@ -166,7 +166,7 @@ index 55e675caa05e8b7fb43b92bc2460e19daae7840e..3bc5093b9695528e8eb83683cf2aa5af
 +                                    UIExt.announce("[red]该单位不可携带物品");
 +                                    return;
 +                                }
-+                                var dialog = new ContentSelector();
++                                var dialog = new ContentSelectDialog();
 +                                dialog.addNull(() -> {
 +                                    group.items = null;
 +                                    buildGroups();
@@ -248,7 +248,7 @@ index 55e675caa05e8b7fb43b92bc2460e19daae7840e..3bc5093b9695528e8eb83683cf2aa5af
 -            }
 -        }).growX().scrollX(false);
 -        dialog.addCloseButton();
-+        var dialog = new ContentSelector();
++        var dialog = new ContentSelectDialog();
 +        dialog.title.setText(reset ? "@waves.filter" : "");
 +        if(reset){
 +            dialog.addNull(()->{
@@ -294,7 +294,7 @@ index 55e675caa05e8b7fb43b92bc2460e19daae7840e..3bc5093b9695528e8eb83683cf2aa5af
 -            }
 -        }).growX().scrollX(false);
 -        dialog.addCloseButton();
-+        var dialog = new ContentSelector();
++        var dialog = new ContentSelectDialog();
 +        dialog.addNull(() -> {
 +            group.effect = null;
 +            dialog.hide();

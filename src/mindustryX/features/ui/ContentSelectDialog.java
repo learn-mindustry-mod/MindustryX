@@ -14,13 +14,13 @@ import mindustry.ui.dialogs.*;
 
 /**
  * @author minri2
- * Create by 2024/2/17
+ * Create by 2024/2/17, Remake WayZer 2025/4/19
  */
-public class ContentSelector extends BaseDialog{
+public class ContentSelectDialog extends BaseDialog{
     private String query = "";
     private final GridTable contentTable = new GridTable();
 
-    public ContentSelector(){
+    public ContentSelectDialog(){
         super("@contentSelector");
 
         cont.table(queryTable -> {
@@ -80,7 +80,7 @@ public class ContentSelector extends BaseDialog{
     }
 
     public static <T extends UnlockableContent> void once(Seq<T> contents, @Nullable T current, Cons<T> consumer){
-        var dialog = new ContentSelector();
+        var dialog = new ContentSelectDialog();
         dialog.addContents(contents, current, (it) -> {
             consumer.get(it);
             dialog.hide();

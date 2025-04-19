@@ -393,7 +393,7 @@ public class UnitFactoryDialog extends BaseDialog{
         if(itemCapacity == 0) return;
 
         itemTable.add("携带物品:");
-        itemTable.button(b -> b.image(() -> unit.hasItem() ? unit.item().uiIcon : Icon.none.getRegion()).size(48f).scaling(Scaling.fit).padLeft(8f), Styles.clearNonei, () -> ContentSelector.once(content.items(), unit.item(), item -> unit.stack.item = item)).size(48f).padLeft(8f);
+        itemTable.button(b -> b.image(() -> unit.hasItem() ? unit.item().uiIcon : Icon.none.getRegion()).size(48f).scaling(Scaling.fit).padLeft(8f), Styles.clearNonei, () -> ContentSelectDialog.once(content.items(), unit.item(), item -> unit.stack.item = item)).size(48f).padLeft(8f);
 
         itemTable.field("" + unit.stack.amount, text -> unit.stack.amount = Mathf.clamp(Strings.parseInt(text), 0, itemCapacity))
         .update((it) -> it.setText("" + unit.stack.amount)).valid(Strings::canParsePositiveInt).padLeft(8f).expandX().left().width(80);
@@ -653,14 +653,14 @@ public class UnitFactoryDialog extends BaseDialog{
                 buttons.defaults().height(48f).pad(4f).growX();
 
                 buttons.button("装载建筑", new TextureRegionDrawable(Blocks.siliconSmelter.uiIcon), Styles.flatt, 32,
-                () -> ContentSelector.once(content.blocks().select(block -> !block.isFloor()),null, block -> {
+                () -> ContentSelectDialog.once(content.blocks().select(block -> !block.isFloor()),null, block -> {
                     BuildPayload payload = new BuildPayload(block, payloadUnit.team);
                     payloads.add(payload);
                     rebuildPayloadSettingTable(payloads, settingTable);
                 })).row();
 
                 buttons.button("装载单位", new TextureRegionDrawable(UnitTypes.alpha.uiIcon), Styles.flatt, 32f,
-                () -> ContentSelector.once(content.units(), null, unitType -> {
+                () -> ContentSelectDialog.once(content.units(), null, unitType -> {
                     UnitPayload payload = new UnitPayload(unitType.create(payloadUnit.team));
                     payloads.add(payload);
                     rebuildPayloadSettingTable(payloads, settingTable);
