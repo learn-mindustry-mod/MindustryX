@@ -40,7 +40,7 @@ public class WaveInfoDisplay extends Table{
             buttons.button(Icon.waves, Styles.clearNonei, iconMed, waveInfoDialog::show).tooltip("波次信息");
 
             buttons.button("<", Styles.cleart, () -> shiftWaveOffset(-1));
-            var i = buttons.button("", Styles.cleart, this::setWaveOffsetDialog).get();
+            var i = buttons.button("", Styles.cleart, this::setWaveOffsetDialog).minHeight(48).maxWidth(160f).get();
             i.getLabel().setAlignment(Align.center);
             i.getLabel().setText(() -> "" + (state.wave + waveOffset));
             buttons.button(">", Styles.cleart, () -> shiftWaveOffset(1));
