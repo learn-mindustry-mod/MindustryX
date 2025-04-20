@@ -1,6 +1,8 @@
 package mindustryX.features.ui
 
 import arc.math.Mathf
+import arc.scene.Element
+import arc.scene.ui.layout.Cell
 import arc.scene.ui.layout.Table
 import kotlin.math.min
 
@@ -9,21 +11,24 @@ import kotlin.math.min
  * - 支持检测子元素[visible]，进行动态增减
  * */
 class GridTable : Table() {
-    val cell = defaults()!!
+    private val elementsTmp = mutableListOf<Element>()
+    val cell: Cell<Element> = defaults()!!
+
     override fun act(delta: Float) {
         super.act(delta)
         if (!hasChildren()) return
 
+        val children = this.children.asIterable()
         val cellWidth = cell.setElement(children.firstOrNull { it.visible }).minWidth()
         val newColumns = Mathf.floor(width / cellWidth)
         val columnsChanged = columns != min(newColumns, children.count { it.visible })
         val visibleChanged = children.count { it.visible } != cells.size || cells.any { it.get()?.visible != true }
         if (!columnsChanged && !visibleChanged) return
 
-        val children = this.children.begin()
+        elementsTmp += children //Can't use children.begin, as clearChildren() use it internally.
         clearChildren()
         var i = 0
-        children.forEach {
+        elementsTmp.forEach {
             if (!it.visible) addChild(it)
             else {
                 add(it).set(cell)
@@ -31,6 +36,6 @@ class GridTable : Table() {
                 if (i % newColumns == 0) row()
             }
         }
-        this.children.end()
+        elementsTmp.clear()
     }
 }
