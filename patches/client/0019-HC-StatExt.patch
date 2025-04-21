@@ -97,7 +97,7 @@ index 05dc34595d11d67a878c5dbaef8340fe6becf3ce..423eece86780e56801cae15e5870bc25
          if(damage < 0) stats.add(Stat.healing, -damage * 60f, StatUnit.perSecond);
  
 diff --git a/core/src/mindustry/type/UnitType.java b/core/src/mindustry/type/UnitType.java
-index 260a0f3656c16819986bb14df22b8f4046847962..24e708bdac494a4fcad38b3090b3d515aab7ee7d 100644
+index c99fa2090d76b6babb27ec0890a362ea7b064f78..d4c79a9c732eee4cd7e2031d6cbf28e3961eb76d 100644
 --- a/core/src/mindustry/type/UnitType.java
 +++ b/core/src/mindustry/type/UnitType.java
 @@ -37,6 +37,7 @@ import mindustry.world.blocks.payloads.*;
@@ -108,7 +108,7 @@ index 260a0f3656c16819986bb14df22b8f4046847962..24e708bdac494a4fcad38b3090b3d515
  
  import static arc.graphics.g2d.Draw.*;
  import static mindustry.Vars.*;
-@@ -697,29 +698,47 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -699,29 +700,47 @@ public class UnitType extends UnlockableContent implements Senseable{
          stats.add(Stat.health, health);
          stats.add(Stat.armor, armor);
          stats.add(Stat.speed, speed * 60f / tilesize, StatUnit.tilesSecond);
@@ -162,7 +162,7 @@ index 260a0f3656c16819986bb14df22b8f4046847962..24e708bdac494a4fcad38b3090b3d515
          }
          if(buildSpeed > 0){
              stats.addPercent(Stat.buildSpeed, buildSpeed);
-@@ -738,6 +757,10 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -740,6 +759,10 @@ public class UnitType extends UnlockableContent implements Senseable{
              stats.add(Stat.weapons, StatValues.weapons(this, weapons));
          }
  
@@ -173,7 +173,7 @@ index 260a0f3656c16819986bb14df22b8f4046847962..24e708bdac494a4fcad38b3090b3d515
          if(immunities.size > 0){
              var imm = immunities.toSeq().sort();
              //it's redundant to list wet for naval units
-@@ -805,6 +828,8 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -807,6 +830,8 @@ public class UnitType extends UnlockableContent implements Senseable{
  
          allowLegStep = example instanceof Legsc || example instanceof Crawlc;
  
@@ -206,7 +206,7 @@ index 50dfe94b013184f1d860cb6ab4ff2910df008180..1bb5af3a7f362f1df2a44732c7c59d03
              t.row();
              t.add("[lightgray]" + Stat.inaccuracy.localized() + ": [white]" + (int)inaccuracy + " " + StatUnit.degrees.localized());
 diff --git a/core/src/mindustry/world/Block.java b/core/src/mindustry/world/Block.java
-index dd7995623b2c083f6227d0c9a9863dba2f5c657b..8ec54d65db2d42c30b340785f65aac3503d50747 100644
+index 74c07b7af58c3ef737115065aec1c85ad0072e12..114945ac017c87344a9bb14a9607b89946edaf6e 100644
 --- a/core/src/mindustry/world/Block.java
 +++ b/core/src/mindustry/world/Block.java
 @@ -32,6 +32,7 @@ import mindustry.world.blocks.environment.*;
@@ -217,7 +217,7 @@ index dd7995623b2c083f6227d0c9a9863dba2f5c657b..8ec54d65db2d42c30b340785f65aac35
  
  import java.lang.reflect.*;
  import java.util.*;
-@@ -575,7 +576,7 @@ public class Block extends UnlockableContent implements Senseable{
+@@ -579,7 +580,7 @@ public class Block extends UnlockableContent implements Senseable{
              }
          }
  
@@ -226,7 +226,7 @@ index dd7995623b2c083f6227d0c9a9863dba2f5c657b..8ec54d65db2d42c30b340785f65aac35
              stats.add(Stat.buildTime, buildTime / 60, StatUnit.seconds);
              stats.add(Stat.buildCost, StatValues.items(false, requirements));
          }
-@@ -587,6 +588,7 @@ public class Block extends UnlockableContent implements Senseable{
+@@ -591,6 +592,7 @@ public class Block extends UnlockableContent implements Senseable{
          for(var c : consumers){
              c.display(stats);
          }

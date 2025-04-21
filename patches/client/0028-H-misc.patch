@@ -58,7 +58,7 @@ index a64b7b36fdd74a29a3caae54a1f1a514039b891f..beea309f225be8de3799089a87d1fdcb
          }
  
 diff --git a/core/src/mindustry/Vars.java b/core/src/mindustry/Vars.java
-index fe68f1c673d2957227bd63f61de9bee14a0bb9aa..97871fdb3b827498496636146836ae483387d7e8 100644
+index 0fb443af5382271e684929c363e28e72d567b2bb..344c95e87e45dc6c06fd9a43cd4cfd14a447d40e 100644
 --- a/core/src/mindustry/Vars.java
 +++ b/core/src/mindustry/Vars.java
 @@ -398,6 +398,11 @@ public class Vars implements Loadable{
