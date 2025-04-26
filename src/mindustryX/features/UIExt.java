@@ -46,11 +46,12 @@ public class UIExt{
 
         ui.hudGroup.fill(t -> {
             t.right().name = "quickTool";
+            t.defaults().right();
             t.update(() -> t.y = quickToolOffset.getValue());
-            t.add(auxiliaryTools.wrapped()).growX().row();
-            t.add(hudSettingsTable.wrapped()).growX().row();
-            t.add(advanceToolTable.wrapped()).growX().row();
-            t.add(advanceBuildTool.wrapped()).growX().row();
+            t.add(auxiliaryTools.wrapped()).row();
+            t.add(hudSettingsTable.wrapped()).row();
+            t.add(advanceToolTable.wrapped()).row();
+            t.add(advanceBuildTool.wrapped()).row();
             t.visible(() -> ui.hudfrag.shown && Core.settings.getBool("showQuickToolTable"));
         });
     }

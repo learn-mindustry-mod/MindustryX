@@ -33,7 +33,7 @@ public class HudSettingsTable extends ToolTableBase{
 
     protected void rebuild(){
         table(t -> {
-            t.defaults().size(30);
+            t.defaults().size(iconMed);
             t.button("[cyan]信", Styles.flatBordert, () -> UIExt.arcMessageDialog.show()).tooltip("中央监控室");
             t.button("[cyan]资", Styles.flatTogglet, () -> Settings.toggle("showOtherTeamResource")).tooltip("多队伍资源信息显示(左侧)").checked(a -> Core.settings.getBool("showOtherTeamResource"));
             t.button("[cyan]S", Styles.flatBordert, () -> Call.sendChatMessage("/sync")).tooltip("同步一波");

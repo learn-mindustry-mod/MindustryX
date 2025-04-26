@@ -1,41 +1,40 @@
-package mindustryX.features.ui.toolTable;
+package mindustryX.features.ui.toolTable
 
-import arc.*;
-import arc.graphics.*;
-import arc.scene.*;
-import arc.scene.ui.*;
-import arc.scene.ui.layout.*;
-import mindustry.ui.*;
+import arc.Core
+import arc.graphics.Color
+import arc.scene.ui.TextButton
+import arc.scene.ui.layout.Table
+import mindustry.Vars
+import mindustry.ui.Styles
 
-public abstract class ToolTableBase extends Table{
-    public String icon = "";
-    public boolean expand = false;
-    protected float maxHeight = 0;
+abstract class ToolTableBase(var icon: String) : Table() {
+    var expand: Boolean = false
 
-    public ToolTableBase(String icon){
-        this.icon = icon;
-        setBackground(Styles.black6);
+    @JvmField
+    protected var maxHeight: Float = 0f
+
+    init {
+        background = Styles.black6
     }
 
-    public Table wrapped(){
-        return new Table(t -> {
-            t.add().growX();
-            Table main = this;
-            if(maxHeight > 0){
-                main = new Table();
-                ScrollPane pane = main.pane(this).maxSize(800f, maxHeight).get();
-                pane.update(() -> {
-                    Element e = Core.scene.hit(Core.input.mouseX(), Core.input.mouseY(), true);
-                    if(e != null && e.isDescendantOf(pane)){
-                        pane.requestScroll();
-                    }else if(pane.hasScroll()){
-                        Core.scene.setScrollFocus(null);
+    fun wrapped(): Table {
+        return Table { t: Table ->
+            var main: Table = this
+            if (maxHeight > 0) {
+                main = Table()
+                val pane = main.pane(this).maxSize(800f, maxHeight).get()
+                pane.update {
+                    val e = Core.scene.hit(Core.input.mouseX().toFloat(), Core.input.mouseY().toFloat(), true)
+                    if (e != null && e.isDescendantOf(pane)) {
+                        pane.requestScroll()
+                    } else if (pane.hasScroll()) {
+                        Core.scene.setScrollFocus(null)
                     }
-                });
+                }
             }
-            t.collapser(main, () -> expand);
-            t.button(icon, Styles.flatBordert, () -> expand = !expand).width(40f).minHeight(40f).fillY()
-            .update(i -> i.getLabel().setColor(expand ? Color.white : Color.lightGray));
-        });
+            t.collapser(main) { expand }
+            t.button(icon, Styles.flatBordert) { expand = !expand }.width(Vars.iconMed).minHeight(Vars.iconMed).fillY()
+                .update { i: TextButton -> i.label.setColor(if (expand) Color.white else Color.lightGray) }
+        }
     }
 }
