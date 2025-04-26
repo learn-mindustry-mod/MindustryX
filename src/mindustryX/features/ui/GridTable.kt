@@ -12,14 +12,14 @@ import kotlin.math.min
  * */
 class GridTable : Table() {
     private val elementsTmp = mutableListOf<Element>()
-    val cell: Cell<Element> = defaults()!!
+    private val cell: Cell<Element> = defaults()!! //readonly
 
     override fun act(delta: Float) {
         super.act(delta)
         if (!hasChildren()) return
 
         val children = this.children.asIterable()
-        val cellWidth = cell.setElement(children.firstOrNull { it.visible }).minWidth()
+        val cellWidth = cell.minWidth().takeIf { it > 0 } ?: children.firstOrNull { it.visible }?.minWidth ?: 0f
         val newColumns = Mathf.floor(width / cellWidth)
         val columnsChanged = columns != min(newColumns, children.count { it.visible })
         val visibleChanged = children.count { it.visible } != cells.size || cells.any { it.get()?.visible != true }
@@ -37,5 +37,9 @@ class GridTable : Table() {
             }
         }
         elementsTmp.clear()
+    }
+
+    fun firstElement(): Element? {
+        return cells.firstOrNull()?.get()
     }
 }
