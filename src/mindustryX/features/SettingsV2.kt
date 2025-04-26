@@ -15,8 +15,13 @@ import arc.util.Time
 import mindustry.Vars
 import mindustry.gen.Icon
 import mindustry.graphics.Pal
+import mindustry.io.JsonIO
 import mindustry.ui.Styles
 import mindustry.ui.dialogs.BaseDialog
+import java.io.ByteArrayInputStream
+import java.io.ByteArrayOutputStream
+import java.io.DataInputStream
+import java.io.DataOutputStream
 
 /**
  * 新的设置类
@@ -27,16 +32,25 @@ import mindustry.ui.dialogs.BaseDialog
 object SettingsV2 {
     //headless Data
     open class DataCore<T>(val name: String, val def: T) {
+        var persistentProvider: PersistentProvider<T> = PersistentProvider.Arc(name)
         var value: T = def
+            get() {
+                if (!init) {
+                    persistentProvider.get()?.let { field = it }
+                    init = true
+                }
+                return field
+            }
             private set
-        var persistentProvider: PersistentProvider = PersistentProvider.Arc
+
+        private var init = false
         private val changedSet = mutableSetOf<String>()
 
         fun get(): T = value //for java usage
         open fun set(value: T) {
             if (value == this.value) return
             this.value = value
-            persistentProvider.set(name, value)
+            (persistentProvider as? PersistentProvider.Savable)?.set(value)
             changedSet.clear()
         }
 
@@ -44,9 +58,6 @@ object SettingsV2 {
             if (name in ALL)
                 Log.warn("Settings initialized!: $name")
             ALL[name] = this
-            persistentProvider.run {
-                value = get(name, def)
-            }
         }
 
         @JvmOverloads
@@ -55,13 +66,20 @@ object SettingsV2 {
         }
 
         fun resetDefault() {
-            persistentProvider.reset(name)
             value = def
             changedSet.clear()
+            Core.settings.remove(name)
+        }
+
+        fun addFallback(provider: PersistentProvider<T>) {
+            if (value == def) {
+                set(provider.get() ?: def)
+            }
+            provider.reset()
         }
 
         fun addFallbackName(name: String) {
-            persistentProvider = PersistentProvider.WithFallback(name, persistentProvider)
+            addFallback(PersistentProvider.Arc(name))
         }
     }
 
@@ -87,45 +105,47 @@ object SettingsV2 {
         }
     }
 
-    sealed interface PersistentProvider {
-        fun <T> get(name: String, def: T): T
-        fun <T> set(name: String, value: T)
-        fun reset(name: String)
-
-        data object Noop : PersistentProvider {
-            override fun <T> get(name: String, def: T): T = def
-            override fun <T> set(name: String, value: T) {}
-            override fun reset(name: String) {}
+    interface PersistentProvider<out T> {
+        fun get(): T?
+        fun reset()
+        interface Savable<T> : PersistentProvider<T> {
+            fun set(value: T)
         }
 
-        data object Arc : PersistentProvider {
-            override fun <T> get(name: String, def: T): T {
-                @Suppress("UNCHECKED_CAST")
-                return Core.settings.get(name, def) as T
-            }
+        data object Noop : PersistentProvider<Nothing> {
+            override fun get(): Nothing? = null
+            override fun reset() = Unit
+        }
 
-            override fun <T> set(name: String, value: T) {
+        class Arc<T>(val name: String) : PersistentProvider<T>, Savable<T> {
+            @Suppress("UNCHECKED_CAST")
+            override fun get(): T? = Core.settings.get(name, null) as T?
+            override fun set(value: T) {
                 Core.settings.put(name, value)
             }
 
-            override fun reset(name: String) {
+            override fun reset() {
                 Core.settings.remove(name)
             }
         }
 
-        class WithFallback(private val fallback: String, private val impl: PersistentProvider) : PersistentProvider {
-            override fun <T> get(name: String, def: T): T {
-                return impl.get(name, impl.get(fallback, def))
+        class AsUBJson<T>(private val base: Savable<ByteArray>, val cls: Class<*>, val elementClass: Class<*>? = null) : Savable<T> {
+            override fun get(): T? {
+                val bs = base.get() ?: return null
+                @Suppress("UNCHECKED_CAST")
+                return JsonIO.readBytes<T>(cls as Class<T>, elementClass, DataInputStream(ByteArrayInputStream(bs)))
             }
 
-            override fun <T> set(name: String, value: T) {
-                impl.reset(fallback)
-                impl.set(name, value)
+            override fun set(value: T) {
+                val bs = ByteArrayOutputStream().use {
+                    JsonIO.writeBytes(value, elementClass, DataOutputStream(it))
+                    it.toByteArray()
+                }
+                base.set(bs)
             }
 
-            override fun reset(name: String) {
-                impl.reset(name)
-                impl.reset(fallback)
+            override fun reset() {
+                base.reset()
             }
         }
     }
@@ -247,7 +267,7 @@ object SettingsV2 {
                 val category = Core.bundle.get("settingV2.$c.category")
                 val categoryMatch = c.contains(settingSearch, ignoreCase = true) || category.contains(settingSearch, ignoreCase = true)
                 val settings = if (categoryMatch) settings0 else settings0.filter {
-                    if ("@modified" in settingSearch) return@filter it.changed()
+                    if ("@modified" in settingSearch) return@filter it.value != it.def
                     it.name.contains(settingSearch, true) || it.title.contains(settingSearch, true)
                 }
                 if (c.isNotEmpty() && settings.isNotEmpty()) {
