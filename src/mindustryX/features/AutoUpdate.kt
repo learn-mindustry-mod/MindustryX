@@ -78,7 +78,7 @@ object AutoUpdate {
             val versions = versions0.filter { it.tag == "v${it.version}" }//filter old release
             getReleases(devRepo) { devVersions ->
                 this.versions = versions + devVersions
-                fetchSuccess()
+                Core.app.post { fetchSuccess() }
             }
         }
     }
