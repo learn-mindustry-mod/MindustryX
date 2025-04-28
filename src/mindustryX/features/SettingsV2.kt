@@ -57,6 +57,7 @@ object SettingsV2 {
         init {
             if (name in ALL)
                 Log.warn("Settings initialized!: $name")
+            @Suppress("LeakingThis")
             ALL[name] = this
         }
 
@@ -133,7 +134,7 @@ object SettingsV2 {
             override fun get(): T? {
                 val bs = base.get() ?: return null
                 @Suppress("UNCHECKED_CAST")
-                return JsonIO.readBytes<T>(cls as Class<T>, elementClass, DataInputStream(ByteArrayInputStream(bs)))
+                return JsonIO.readBytes(cls as Class<T>, elementClass, DataInputStream(ByteArrayInputStream(bs)))
             }
 
             override fun set(value: T) {

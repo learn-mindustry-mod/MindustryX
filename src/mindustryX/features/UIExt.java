@@ -49,6 +49,7 @@ public class UIExt{
             t.defaults().right();
             t.update(() -> t.y = quickToolOffset.getValue());
             t.add(auxiliaryTools.wrapped()).row();
+            t.add(NewToolTable.INSTANCE.wrapped()).row();
             t.add(hudSettingsTable.wrapped()).row();
             t.add(advanceToolTable.wrapped()).row();
             t.add(advanceBuildTool.wrapped()).row();
@@ -58,14 +59,10 @@ public class UIExt{
 
     public static void buildPositionRow(Table tt, Vec2 vec){
         tt.add("x= ");
-        TextField x = tt.field(Strings.autoFixed(vec.x, 2), text -> {
-            vec.x = Float.parseFloat(text);
-        }).valid(Strings::canParseFloat).maxTextLength(8).get();
+        TextField x = tt.field(Strings.autoFixed(vec.x, 2), text -> vec.x = Float.parseFloat(text)).valid(Strings::canParseFloat).maxTextLength(8).get();
 
         tt.add("y= ").marginLeft(32f);
-        TextField y = tt.field(Strings.autoFixed(vec.y, 2), text -> {
-            vec.y = Float.parseFloat(text);
-        }).valid(Strings::canParseFloat).maxTextLength(8).get();
+        TextField y = tt.field(Strings.autoFixed(vec.y, 2), text -> vec.y = Float.parseFloat(text)).valid(Strings::canParseFloat).maxTextLength(8).get();
 
         tt.button(UnitTypes.gamma.emoji(), () -> {
             vec.set(player.tileX(), player.tileY());
@@ -150,7 +147,6 @@ public class UIExt{
                 if(cons.get(x, y)){
                     hitter.remove();
                 }
-                ;
             }
         });
 

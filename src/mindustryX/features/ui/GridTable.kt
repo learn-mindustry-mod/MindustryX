@@ -19,8 +19,8 @@ class GridTable : Table() {
         if (!hasChildren()) return
 
         val children = this.children.asIterable()
-        val cellWidth = cell.minWidth().takeIf { it > 0 } ?: children.firstOrNull { it.visible }?.minWidth ?: 0f
-        val newColumns = Mathf.floor(width / cellWidth)
+        val cellWidth = cell.minWidth().takeIf { it > 0 } ?: children.firstOrNull { it.visible }?.minWidth ?: Float.MAX_VALUE
+        val newColumns = Mathf.floor(width / cellWidth).coerceAtLeast(1)
         val columnsChanged = columns != min(newColumns, children.count { it.visible })
         val visibleChanged = children.count { it.visible } != cells.size || cells.any { it.get()?.visible != true }
         if (!columnsChanged && !visibleChanged) return
