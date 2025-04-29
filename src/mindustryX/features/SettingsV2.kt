@@ -17,7 +17,6 @@ import mindustry.gen.Icon
 import mindustry.graphics.Pal
 import mindustry.io.JsonIO
 import mindustry.ui.Styles
-import mindustry.ui.dialogs.BaseDialog
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
 import java.io.DataInputStream
@@ -227,55 +226,30 @@ object SettingsV2 {
 
     val ALL = LinkedHashMap<String, DataCore<*>>()
 
-    class SettingDialog(val settings: Iterable<Data<*>>) : BaseDialog("@settings") {
-        init {
-            cont.add(Table().also { t ->
-                settings.forEach { it.buildUI(t) }
-            }).fill().row()
-            cont.button("@setting.reset") {
-                settings.forEach { it.resetDefault() }
-            }
-            addCloseButton()
-            closeOnBack()
-        }
-
-        fun showFloatPanel(x: Float, y: Float) {
-            val table = Table().apply {
-                background(Styles.black8).margin(8f)
-                settings.forEach { it.buildUI(this) }
-                button("@close") { this.remove() }.fillX()
-            }
-            Core.scene.add(table)
-            table.pack()
-            table.setPosition(x, y, Align.center)
-            table.keepInStage()
-        }
-    }
-
-    private var settingSearch: String = ""
-
     @JvmStatic
-    fun buildSettingsTable(table: Table) {
+    @JvmOverloads
+    fun buildSettingsTable(table: Table, settings: List<Data<*>> = ALL.values.filterIsInstance<Data<*>>()) {
         table.clearChildren()
         val searchTable = table.table().growX().get()
         table.row()
         val contentTable = table.table().growX().get()
         table.row()
 
+        var settingSearch = ""
         fun rebuildContent() {
             contentTable.clearChildren()
-            ALL.values.filterIsInstance<Data<*>>().groupBy { it.category }.toSortedMap().forEach { (c, settings0) ->
+            settings.groupBy { it.category }.toSortedMap().forEach { (c, settings0) ->
                 val category = Core.bundle.get("settingV2.$c.category")
                 val categoryMatch = c.contains(settingSearch, ignoreCase = true) || category.contains(settingSearch, ignoreCase = true)
-                val settings = if (categoryMatch) settings0 else settings0.filter {
+                val filtered = if (categoryMatch) settings0 else settings0.filter {
                     if ("@modified" in settingSearch) return@filter it.value != it.def
                     it.name.contains(settingSearch, true) || it.title.contains(settingSearch, true)
                 }
-                if (c.isNotEmpty() && settings.isNotEmpty()) {
+                if (c.isNotEmpty() && filtered.isNotEmpty()) {
                     contentTable.add(category).color(Pal.accent).padTop(10f).padBottom(5f).center().row()
                     contentTable.image().color(Pal.accent).growX().height(3f).padBottom(10f).row()
                 }
-                settings.forEach { it.buildUI(contentTable) }
+                filtered.forEach { it.buildUI(contentTable) }
             }
         }
         searchTable.apply {
@@ -286,6 +260,19 @@ object SettingsV2 {
             }.growX()
         }
         rebuildContent()
+    }
+
+    @JvmStatic
+    fun showFloatSettingsPanel(x: Float, y: Float, settings: Iterable<Data<*>>) {
+        val table = Table().apply {
+            background(Styles.black8).margin(8f)
+            settings.forEach { it.buildUI(this) }
+            button("@close") { this.remove() }.fillX()
+        }
+        Core.scene.add(table)
+        table.pack()
+        table.setPosition(x, y, Align.center)
+        table.keepInStage()
     }
 
     @JvmStatic
@@ -303,7 +290,7 @@ object SettingsV2 {
 
             override fun clicked(event: InputEvent, x: Float, y: Float) {
                 if (Core.input.keyDown(KeyCode.shiftLeft) || Time.timeSinceMillis(startTime) > 500) {
-                    SettingDialog(settings).showFloatPanel(event.stageX, event.stageY)
+                    showFloatSettingsPanel(event.stageX, event.stageY, settings)
                 } else {
                     if (button.isDisabled) return
                     button.setProgrammaticChangeEvents(true)
