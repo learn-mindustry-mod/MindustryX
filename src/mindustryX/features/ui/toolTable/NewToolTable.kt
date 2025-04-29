@@ -1,14 +1,106 @@
 package mindustryX.features.ui.toolTable
 
 import arc.Core
+import arc.Events
+import arc.graphics.Colors
+import arc.scene.style.Drawable
+import arc.scene.ui.Dialog
 import arc.scene.ui.layout.Table
+import arc.struct.ObjectIntMap
 import mindustry.Vars
+import mindustry.content.Blocks
+import mindustry.game.EventType.WorldLoadEvent
 import mindustry.gen.Call
 import mindustry.gen.Icon
+import mindustry.gen.Iconc
+import mindustry.graphics.Pal
+import mindustry.ui.Fonts
 import mindustry.ui.Styles
-import mindustryX.features.SettingsV2
+import mindustry.ui.dialogs.BaseDialog
+import mindustry.ui.dialogs.EffectsDialog
+import mindustry.world.Block
+import mindustry.world.blocks.environment.Floor
+import mindustryX.features.*
+import mindustryX.features.ui.GridTable
 
-object NewToolTable {
+object NewToolTable : ToolTableBase("${Iconc.settings}") {
+    val gridTable = GridTable()
+
+    init {
+        add(gridTable).growX().row()
+        gridTable.defaults().size(Vars.iconLarge)
+
+        button("[cyan]信", "中央监控室") { UIExt.arcMessageDialog.show() }
+        toggle("[cyan]资", "多队伍资源信息显示(左侧)", { Core.settings.getBool("showOtherTeamResource") }) { Settings.toggle("showOtherTeamResource") }
+        button("[cyan]S", "同步一波") { Call.sendChatMessage("/sync") }
+        button("[cyan]观", "观察者模式") { Call.sendChatMessage("/ob") }
+        button("[cyan]版", "服务器信息版") { Call.sendChatMessage("/broad") }
+        toggle("[cyan]雾", "战争迷雾", { Vars.state.rules.fog }) {
+            Vars.state.rules.fog = Vars.state.rules.fog xor true
+        }.disabled { Vars.state.rules.pvp && Vars.player.team().id != 255 }
+        button("[white]法", "法国军礼") {
+            Vars.ui.showConfirm("受不了，直接投降？") { Call.sendChatMessage("/vote gameover") }
+        }
+
+        toggle("[cyan]块", "建筑显示", { RenderExt.blockRenderLevel > 0 }) { Settings.cycle("blockRenderLevel", 3) }
+        toggle("[cyan]兵", "兵种显示", { !RenderExt.unitHide }) { RenderExt.unitHide = !RenderExt.unitHide }
+        toggle("[cyan]弹", "子弹显示", { RenderExt.bulletShow }) { Settings.toggle("bulletShow") }
+        toggle("[cyan]效", "特效显示", { Vars.renderer.enableEffects }) { Settings.toggle("effects") }
+        toggle("[cyan]墙", "墙体阴影显示", { Vars.enableDarkness }) { Vars.enableDarkness = !Vars.enableDarkness }
+        toggle("[cyan]${Iconc.map}", "小地图显示", { Core.settings.getBool("minimap") }) { Settings.toggle("minimap") }
+
+        toggle("箱", "碰撞箱显示", { Core.settings.getBool("unithitbox") }) { Settings.toggle("unithitbox") }
+        toggle("扫", "扫描模式", { ArcScanMode.enabled }) { ArcScanMode.enabled = !ArcScanMode.enabled }
+        button("${Iconc.blockRadar}", "雷达开关") { ArcRadar.mobileRadar = !ArcRadar.mobileRadar }.get().also {
+            SettingsV2.bindQuickSettings(it, ArcRadar.settings)
+        }
+        toggle("${Iconc.blockWorldProcessor}", "移除逻辑锁定", { Core.settings.getBool("removeLogicLock") }) {
+            Settings.toggle("removeLogicLock")
+            if (Core.settings.getBool("removeLogicLock")) {
+                Vars.control.input.logicCutscene = false
+                Vars.ui.announce("已移除逻辑视角锁定")
+            }
+        }
+        toggle(Blocks.worldMessage.emoji(), "信息板全显示", { RenderExt.displayAllMessage }) { Settings.toggle("displayallmessage") }
+        button("${Iconc.itemCopper}", "矿物信息") { floorStatisticDialog() }
+
+        button("${Iconc.fill}", "特效大全") { EffectsDialog.withAllEffects().show() }
+        button("${Iconc.star}", "ui大全") { uiTableDialog().show() }
+
+
+        add(GridTable()).update { t: Table ->
+            if (customButtons.changed("ui")) t.clearChildren()
+            if (t.hasChildren()) return@update
+            t.defaults().size(Vars.iconLarge)
+            for (it in customButtons.get()) {
+                t.button(it.name, Styles.cleart) { it.run() }.tooltip(it.content)
+            }
+            t.button("${Iconc.settings}", Styles.cleart) {
+                Dialog("@settings").apply {
+                    customButtons.buildUI(cont)
+                    addCloseButton()
+                    closeOnBack()
+                }.show()
+            }.tooltip(customButtons.title)
+        }.fillX().row()
+
+        SettingsV2.minimapSize.buildUI(this)
+        UIExt.quickToolOffset.buildUI(this)
+
+
+        Events.on(WorldLoadEvent::class.java) { Core.settings.put("removeLogicLock", false) }
+    }
+
+    inline fun button(icon: String, tooltip: String, crossinline action: () -> Unit) = gridTable.button(icon, Styles.cleart) {
+        action()
+    }.tooltip(tooltip)!!
+
+    inline fun toggle(icon: String, tooltip: String, crossinline checked: () -> Boolean, crossinline action: () -> Unit) = gridTable.button(icon, Styles.flatToggleMenut) {
+        action()
+    }.checked { checked() }.tooltip(tooltip)!!
+
+    data class Button(val icon: Drawable, val tooltip: String, val action: () -> Unit)
+
     data class CustomButton(val name: String, val content: String) {
         constructor() : this("?", "未输入指令")
 
@@ -19,11 +111,6 @@ object NewToolTable {
                 Call.sendChatMessage(content)
             }
         }
-    }
-
-    @JvmField
-    val columns = SettingsV2.SliderPref("quickButtons.columns", 6, 3, 10).apply {
-        addFallbackName("arcQuickMsgKey")
     }
 
     @JvmField
@@ -89,5 +176,97 @@ object NewToolTable {
             }) { shown }.fillX()
             table.row()
         }
+    }
+
+
+    private fun floorStatisticDialog() {
+        val dialog = BaseDialog("ARC-矿物统计")
+        val table = dialog.cont
+        table.clear()
+
+        table.table { c: Table ->
+            c.add("矿物矿(地表/墙矿)").color(Pal.accent).center().fillX().row()
+            c.image().color(Pal.accent).fillX().row()
+            c.table { list: Table ->
+                var i = 0
+                for (item in Vars.content.items()) {
+                    if (!Vars.indexer.hasOre(item) && !Vars.indexer.hasWallOre(item)) continue
+                    if (i++ % 4 == 0) list.row()
+                    list.add(
+                        """${item.emoji()} ${item.localizedName}
+                            |${Vars.indexer.allOres[item]}/${Vars.indexer.allWallOres[item]}""".trimMargin()
+                    ).width(100f).height(50f)
+                }
+            }.row()
+
+            c.add("液体").color(Pal.accent).center().fillX().row()
+            c.image().color(Pal.accent).fillX().row()
+            c.table { list: Table ->
+                var i = 0
+                val counts = ObjectIntMap<Floor>()
+                for (tile in Vars.world.tiles) {
+                    counts.increment(tile.floor())
+                }
+                for (block in Vars.content.blocks().select { b: Block -> ((b is Floor && b.liquidDrop != null)) }) {
+                    if ((block !is Floor) || block.liquidDrop == null || counts[block.asFloor()] == 0) continue
+                    if (i++ % 4 == 0) list.row()
+                    list.add(
+                        """${block.emoji()} ${block.localizedName}
+                            |${counts[block.asFloor()]}""".trimMargin()
+                    ).width(100f).height(50f)
+                }
+            }.row()
+        }
+        dialog.addCloseButton()
+        dialog.show()
+    }
+
+
+    private fun uiTableDialog() = BaseDialog("UI图标大全").apply {
+        val sField = cont.field("") { }.fillX().get()
+        cont.row()
+        Table().apply {
+            defaults().minWidth(1f)
+            add("颜色").color(Pal.accent).center().row()
+            image().color(Pal.accent).fillX().row()
+            GridTable().apply {
+                defaults().height(32f).width(80f).pad(4f)
+                for (colorEntry in Colors.getColors()) {
+                    val value = colorEntry.value
+                    val key = colorEntry.key
+                    button("[#$value]$key", Styles.cleart) {
+                        Core.app.clipboardText = "[#$value]"
+                        sField.appendText("[#$value]")
+                    }.tooltip(key)
+                }
+            }.also { add(it).fillX().row() }
+
+            add("物品").color(Pal.accent).center().row()
+            image().color(Pal.accent).fillX().row()
+            GridTable().apply {
+                defaults().size(Vars.iconLarge)
+                for (it in Fonts.stringIcons) {
+                    val icon = it.value
+                    button(icon, Styles.cleart) {
+                        Core.app.clipboardText = icon
+                        sField.appendText(icon)
+                    }.tooltip(it.key)
+                }
+            }.also { add(it).fillX().row() }
+
+            add("图标").color(Pal.accent).center().row()
+            image().color(Pal.accent).fillX().row()
+            GridTable().apply {
+                defaults().size(Vars.iconLarge)
+                for (it in Iconc.codes) {
+                    val icon = it.value.toChar().toString()
+                    button(icon, Styles.cleart) {
+                        Core.app.clipboardText = icon
+                        sField.appendText(icon)
+                    }.tooltip(it.key)
+                }
+            }.also { add(it).fillX().row() }
+        }.also { cont.pane(it).apply { get().isScrollingDisabledX = true }.maxWidth(800f).row() }
+        addCloseButton()
     }
 }
