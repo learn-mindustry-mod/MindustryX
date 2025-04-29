@@ -5,6 +5,7 @@ import arc.Events
 import arc.graphics.Colors
 import arc.scene.style.Drawable
 import arc.scene.ui.Dialog
+import arc.scene.ui.layout.Scl
 import arc.scene.ui.layout.Table
 import arc.struct.ObjectIntMap
 import mindustry.Vars
@@ -27,6 +28,7 @@ object NewToolTable : ToolTableBase("${Iconc.settings}") {
     val gridTable = GridTable()
 
     init {
+        add().width(300f).row()//expand the table
         add(gridTable).growX().row()
         gridTable.defaults().size(Vars.iconLarge)
 
@@ -77,16 +79,24 @@ object NewToolTable : ToolTableBase("${Iconc.settings}") {
             }
             t.button("${Iconc.settings}", Styles.cleart) {
                 Dialog("@settings").apply {
-                    customButtons.buildUI(cont)
-                    addCloseButton()
+                    cont.pane {
+                        SettingsV2.buildSettingsTable(it)
+                    }.grow().row()
+                    cont.button("@close", Icon.left) { hide() }.fillX().row()
                     closeOnBack()
-                }.show()
+
+                    isCentered = true
+                    isModal = false
+                    margin(16f)
+                    style = Dialog.DialogStyle().apply {
+                        background = style.stageBackground //no stageBackground, only background
+                    }
+                    show()
+                    width = parent.width.coerceAtMost(Scl.scl(600f))
+                    height = parent.height.coerceAtMost(Scl.scl(800f))
+                }
             }.tooltip(customButtons.title)
         }.fillX().row()
-
-        SettingsV2.minimapSize.buildUI(this)
-        UIExt.quickToolOffset.buildUI(this)
-
 
         Events.on(WorldLoadEvent::class.java) { Core.settings.put("removeLogicLock", false) }
     }
