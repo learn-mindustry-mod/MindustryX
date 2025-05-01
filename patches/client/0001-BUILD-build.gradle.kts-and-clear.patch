@@ -7,7 +7,7 @@ clear and replce jabel(Support record)
 way-zer <himc.wicp@gmail.com> on 2024/6/9
 ---
  .gitignore                                    |   2 +-
- android/build.gradle                          |  80 +++--
+ android/build.gradle                          |  89 +++---
  android/proguard-rules.pro                    |   4 +
  .../com/github/bsideup/jabel/Desugar.java     |  13 +
  .../javax.annotation.processing.Processor     |   6 +
@@ -23,7 +23,7 @@ way-zer <himc.wicp@gmail.com> on 2024/6/9
  settings.gradle                               |  10 +-
  tools/build.gradle                            |  78 +++--
  tools/src/mindustry/tools/Generators.java     |   2 +-
- 17 files changed, 414 insertions(+), 644 deletions(-)
+ 17 files changed, 416 insertions(+), 651 deletions(-)
  create mode 100644 annotations/src/main/java/com/github/bsideup/jabel/Desugar.java
  create mode 100644 annotations/src/main/resources/META-INF/services/javax.annotation.processing.Processor
  delete mode 100644 core/build.gradle
@@ -50,7 +50,7 @@ index 5e3b7987ef4f776a0bc35dde58fb2c74f4acdb07..b5b2a237c2f5343aab2fb668337c2bc4
  /core/assets/locales
  /core/assets/cache/
 diff --git a/android/build.gradle b/android/build.gradle
-index f1dc45aa74b149babea9cce2535ed7dca8d49a1f..11f5fcf77dfc2e54ad1c18b183ad1957ff3dfe9a 100644
+index f1dc45aa74b149babea9cce2535ed7dca8d49a1f..3a851875928783627684b4c3fb0091d3df55f2b8 100644
 --- a/android/build.gradle
 +++ b/android/build.gradle
 @@ -1,18 +1,19 @@
@@ -62,7 +62,7 @@ index f1dc45aa74b149babea9cce2535ed7dca8d49a1f..11f5fcf77dfc2e54ad1c18b183ad1957
 -        maven{ url "https://oss.sonatype.org/content/repositories/snapshots/" }
 -    }
 +plugins{
-+    id("com.android.application") version "8.3.1"
++    id("com.android.application") version "8.9.2"
 +}
  
 -    dependencies{
@@ -141,7 +141,30 @@ index f1dc45aa74b149babea9cce2535ed7dca8d49a1f..11f5fcf77dfc2e54ad1c18b183ad1957
      }
  
      compileOptions{
-@@ -122,8 +115,8 @@ dependencies{
+@@ -96,7 +89,7 @@ android{
+     }
+ 
+     buildTypes{
+-        all{
++        release{
+             //TODO without these lines (r8 enabled), Mindustry crashes with missing default interface method errors.
+             //WHY THE HELL ARE DEFAULT INTERFACES NOT BEING DESUGARED? WHY DID UPDATING AGP MAKE THIS HAPPEN?
+             //When I ENABLE shrinking, r8 goes and REMOVES ALL DEFAULT INTERFACE CLASSES, which breaks mods. Why?
+@@ -104,12 +97,7 @@ android{
+             minifyEnabled = true
+             shrinkResources = true
+             proguardFiles("proguard-rules.pro")
+-        }
+-    }
+-
+-    if(project.hasProperty("RELEASE_STORE_FILE") || System.getenv("CI") == "true"){
+-        buildTypes{
+-            release{
++            if(project.hasProperty("RELEASE_STORE_FILE") || System.getenv("CI") == "true"){
+                 signingConfig signingConfigs.release
+             }
+         }
+@@ -122,8 +110,8 @@ dependencies{
      implementation arcModule("backends:backend-android")
      implementation 'com.jakewharton.android.repackaged:dalvik-dx:9.0.0_r3'
  
@@ -152,7 +175,7 @@ index f1dc45aa74b149babea9cce2535ed7dca8d49a1f..11f5fcf77dfc2e54ad1c18b183ad1957
  
      def version;
      def highestVersion;
-@@ -136,24 +129,25 @@ dependencies{
+@@ -136,24 +124,25 @@ dependencies{
      if(sdkFile.exists()) compileOnly files(sdkFile.absolutePath)
  }
  

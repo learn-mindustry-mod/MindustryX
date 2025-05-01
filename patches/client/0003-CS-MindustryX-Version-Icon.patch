@@ -35,7 +35,7 @@ index b5b2a237c2f5343aab2fb668337c2bc47a45c1b8..308ff12c92a06e11c18b33f540098a0f
  /out/
  ios/libs/
 diff --git a/android/build.gradle b/android/build.gradle
-index 11f5fcf77dfc2e54ad1c18b183ad1957ff3dfe9a..23eb0e5b84894538ee19ee7fa437950622c56a2a 100644
+index 3a851875928783627684b4c3fb0091d3df55f2b8..4a7a719f4a515be3070f0afd97fabdf8cbcdbfc9 100644
 --- a/android/build.gradle
 +++ b/android/build.gradle
 @@ -18,7 +18,7 @@ configurations{ natives }
