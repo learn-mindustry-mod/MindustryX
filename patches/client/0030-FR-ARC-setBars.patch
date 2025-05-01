@@ -539,7 +539,7 @@ index c87a05d828c63556bc8edcb54870f9a3b11b1de3..d414e1b86563a7990165b48db8549896
          new Bar(
              () -> e.unit() == null ? "[lightgray]" + Iconc.cancel :
 diff --git a/core/src/mindustry/world/blocks/units/UnitAssembler.java b/core/src/mindustry/world/blocks/units/UnitAssembler.java
-index 271ac5d744a5d2b97c49d5e817c728f0ac936d0b..ae378126b648bcfa9e1c770787429640ec8a015a 100644
+index c165cfb609e323e453a418445a69a38953cd6659..edeb6ee5e9ceba4a4e41a0eb6411d8b38fee87cb 100644
 --- a/core/src/mindustry/world/blocks/units/UnitAssembler.java
 +++ b/core/src/mindustry/world/blocks/units/UnitAssembler.java
 @@ -115,6 +115,10 @@ public class UnitAssembler extends PayloadBlock{

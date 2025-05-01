@@ -3215,7 +3215,7 @@ index b18346f65206aa9ddce3857083b40ce0c4001f53..3347bf0220d955a807ecde61a01573aa
  def hasSdk = System.getenv("ANDROID_HOME") != null
  
 diff --git a/tools/build.gradle b/tools/build.gradle
-index b02926630256dec9f95c9e6eed2b35d0ea496db9..c7239ea7f5200afabe3b8756f28c39a38865428d 100644
+index 6701a24f5fb261ed6ff21fc80d049577002861e0..33ef8cf683112f5284e23aac46012f1234aee12a 100644
 --- a/tools/build.gradle
 +++ b/tools/build.gradle
 @@ -1,3 +1,13 @@
@@ -3232,7 +3232,7 @@ index b02926630256dec9f95c9e6eed2b35d0ea496db9..c7239ea7f5200afabe3b8756f28c39a3
  sourceSets.main.java.srcDirs = ["src/"]
  
  import arc.files.Fi
-@@ -23,7 +33,7 @@ def genFolder = "../core/assets-raw/sprites_out/generated/"
+@@ -24,7 +34,7 @@ def genFolder = "../core/assets-raw/sprites_out/generated/"
  def enableAA = true
  
  @groovy.transform.CompileStatic
@@ -3241,7 +3241,7 @@ index b02926630256dec9f95c9e6eed2b35d0ea496db9..c7239ea7f5200afabe3b8756f28c39a3
      return image.getRaw(Math.max(Math.min(ix, image.width - 1), 0), Math.max(Math.min(iy, image.height - 1), 0))
  }
  
-@@ -71,7 +81,7 @@ static void antialias(File file){
+@@ -72,7 +82,7 @@ static void antialias(File file){
                  suma.a(suma.a + color.a)
              }
  
@@ -3250,7 +3250,7 @@ index b02926630256dec9f95c9e6eed2b35d0ea496db9..c7239ea7f5200afabe3b8756f28c39a3
              suma.mul(fm, fm, fm, fm)
  
              float total = 0
-@@ -88,7 +98,7 @@ static void antialias(File file){
+@@ -89,7 +99,7 @@ static void antialias(File file){
                  total += 1f
              }
  
@@ -3259,7 +3259,7 @@ index b02926630256dec9f95c9e6eed2b35d0ea496db9..c7239ea7f5200afabe3b8756f28c39a3
              sum.mul(fm, fm, fm, fm)
              out.setRaw(x, y, sum.rgba8888())
              sum.set(0)
-@@ -101,7 +111,7 @@ static void antialias(File file){
+@@ -102,7 +112,7 @@ static void antialias(File file){
      new Fi(file).writePng(out)
  }
  
@@ -3268,7 +3268,7 @@ index b02926630256dec9f95c9e6eed2b35d0ea496db9..c7239ea7f5200afabe3b8756f28c39a3
      doLast{
          for(def img : project.getProperty("images").split(",")){
              println(project.getProperty("startdir") + "/" + img)
-@@ -110,7 +120,7 @@ task antialiasImages(){
+@@ -111,7 +121,7 @@ task antialiasImages(){
      }
  }
  
@@ -3277,7 +3277,7 @@ index b02926630256dec9f95c9e6eed2b35d0ea496db9..c7239ea7f5200afabe3b8756f28c39a3
      doLast{
          for(def img : project.getProperty("images").split(",")){
              println(project.getProperty("startdir") + "/" + img)
-@@ -119,8 +129,11 @@ task tileImages(){
+@@ -120,8 +130,11 @@ task tileImages(){
      }
  }
  
@@ -3291,7 +3291,7 @@ index b02926630256dec9f95c9e6eed2b35d0ea496db9..c7239ea7f5200afabe3b8756f28c39a3
      doLast{
          //cleanup old sprites
          delete{
-@@ -145,10 +158,7 @@ task pack(dependsOn: [classes, configurations.runtimeClasspath]){
+@@ -146,10 +159,7 @@ task pack(dependsOn: [classes, configurations.runtimeClasspath]){
              from "../core/assets-raw/sprites_out/ui/icons"
              into "../core/assets-raw/sprites_out/ui/"
          }
@@ -3303,7 +3303,7 @@ index b02926630256dec9f95c9e6eed2b35d0ea496db9..c7239ea7f5200afabe3b8756f28c39a3
  
          if(enableAA){
              ExecutorService executor = Executors.newFixedThreadPool(OS.cores)
-@@ -171,23 +181,28 @@ task pack(dependsOn: [classes, configurations.runtimeClasspath]){
+@@ -172,23 +182,28 @@ task pack(dependsOn: [classes, configurations.runtimeClasspath]){
          println("\n\nPacking normal 4096 sprites...\n\n")
  
          //pack normal sprites
@@ -3342,7 +3342,7 @@ index b02926630256dec9f95c9e6eed2b35d0ea496db9..c7239ea7f5200afabe3b8756f28c39a3
      finalizedBy 'antialiasGen'
  
      mainClass = "mindustry.tools.ImagePacker"
-@@ -196,7 +211,8 @@ task genSprites(dependsOn: classes, type: JavaExec){
+@@ -197,7 +212,8 @@ task genSprites(dependsOn: classes, type: JavaExec){
      workingDir = genFolder
  }
  
@@ -3352,7 +3352,7 @@ index b02926630256dec9f95c9e6eed2b35d0ea496db9..c7239ea7f5200afabe3b8756f28c39a3
      /* icon font pipeline:
       1. take set of pre-defined icons and SVGs
       2. use Fontello API to get a font with these
-@@ -231,30 +247,32 @@ task fontgen(dependsOn: classes, type: JavaExec){
+@@ -232,30 +248,32 @@ task fontgen(dependsOn: classes, type: JavaExec){
          //TODO this is broken
  
          Log.info(OS.exec("fontforge", "-script",
@@ -3391,7 +3391,7 @@ index b02926630256dec9f95c9e6eed2b35d0ea496db9..c7239ea7f5200afabe3b8756f28c39a3
      doLast{
          def uniEscape = { String string ->
              StringBuilder outBuffer = new StringBuilder()
-@@ -262,12 +280,12 @@ task updateBundles{
+@@ -263,12 +281,12 @@ task updateBundles{
              for(int i = 0; i < len; i++){
                  char ch = string.charAt(i)
                  if((ch > 61) && (ch < 127)){

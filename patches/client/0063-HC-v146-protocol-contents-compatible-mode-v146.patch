@@ -18,7 +18,7 @@ Content-Transfer-Encoding: 8bit
  6 files changed, 77 insertions(+), 8 deletions(-)
 
 diff --git a/core/src/mindustry/core/ContentLoader.java b/core/src/mindustry/core/ContentLoader.java
-index 4e2f86410a33f8189976a143d0cd697ec7c56de5..67b051c81d5ce7f0f134ab5cd99d4aa7ad9c7b92 100644
+index 1ef48b5018109fbf1ab14475c93ad4867a7fffbf..1b6076ffaa5b184f0743e421b2f013bd04d0a9ee 100644
 --- a/core/src/mindustry/core/ContentLoader.java
 +++ b/core/src/mindustry/core/ContentLoader.java
 @@ -33,6 +33,8 @@ public class ContentLoader{
@@ -66,10 +66,10 @@ index e80d5029613f62f112e4f2c8e1be25eeca91dd4e..3a55382ddd0f404bf97d7c25d99507ed
              netClient.byteStream.setBytes(data);
              DataInputStream input = netClient.dataStream;
 diff --git a/core/src/mindustry/io/TypeIO.java b/core/src/mindustry/io/TypeIO.java
-index 21d16d848be4df4ab8c9317b6825717d4037f198..f1c536426a5485c32d4c71299a43b8c0c8ef3cc9 100644
+index c93d0921230fcbaacdd8cd673cf12fd4c313e823..bf922b62c173997e6d4d4e14b7533aaddcb97f22 100644
 --- a/core/src/mindustry/io/TypeIO.java
 +++ b/core/src/mindustry/io/TypeIO.java
-@@ -25,6 +25,7 @@ import mindustry.type.*;
+@@ -26,6 +26,7 @@ import mindustry.type.*;
  import mindustry.world.*;
  import mindustry.world.blocks.*;
  import mindustry.world.blocks.payloads.*;
@@ -77,7 +77,7 @@ index 21d16d848be4df4ab8c9317b6825717d4037f198..f1c536426a5485c32d4c71299a43b8c0
  
  import java.io.*;
  import java.nio.*;
-@@ -54,7 +55,10 @@ public class TypeIO{
+@@ -55,7 +56,10 @@ public class TypeIO{
          }else if(object instanceof Content map){
              write.b((byte)5);
              write.b((byte)map.getContentType().ordinal());
@@ -89,7 +89,7 @@ index 21d16d848be4df4ab8c9317b6825717d4037f198..f1c536426a5485c32d4c71299a43b8c0
          }else if(object instanceof IntSeq arr){
              write.b((byte)6);
              write.s((short)arr.size);
-@@ -349,6 +353,10 @@ public class TypeIO{
+@@ -390,6 +394,10 @@ public class TypeIO{
      }
  
      public static void writeBlock(Writes write, Block block){
@@ -100,7 +100,7 @@ index 21d16d848be4df4ab8c9317b6825717d4037f198..f1c536426a5485c32d4c71299a43b8c0
          write.s(block.id);
      }
  
-@@ -411,7 +419,7 @@ public class TypeIO{
+@@ -452,7 +460,7 @@ public class TypeIO{
          write.b(plan.breaking ? (byte)1 : 0);
          write.i(Point2.pack(plan.x, plan.y));
          if(!plan.breaking){

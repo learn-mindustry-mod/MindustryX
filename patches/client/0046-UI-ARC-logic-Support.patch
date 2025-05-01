@@ -173,7 +173,7 @@ index eda6c92c970e9f3f632094cd5018dcdf9a711d64..b65fb50382f246452b7c75a788e3bd5f
  
              String name = name();
 diff --git a/core/src/mindustry/logic/LogicDialog.java b/core/src/mindustry/logic/LogicDialog.java
-index 10e0d74ed3b6f5a1fb742c0ddd96b0e9fb885941..1b9cf7cf4c8e40d453a85565ceecdf08a04982ce 100644
+index 047e54c99c9605494ac29adc192f6f3b2ac5311a..a69ff47c5b380f76e0961fe776afeca38ca62572 100644
 --- a/core/src/mindustry/logic/LogicDialog.java
 +++ b/core/src/mindustry/logic/LogicDialog.java
 @@ -5,6 +5,7 @@ import arc.func.*;
@@ -204,7 +204,7 @@ index 10e0d74ed3b6f5a1fb742c0ddd96b0e9fb885941..1b9cf7cf4c8e40d453a85565ceecdf08
 +
      @Nullable LExecutor executor;
      GlobalVarsDialog globalsDialog = new GlobalVarsDialog();
-     boolean wasRows, wasPortrait;
+     boolean wasRows, wasPortrait, forceRestart;
 @@ -48,11 +56,17 @@ public class LogicDialog extends BaseDialog{
              wasRows = LCanvas.useRows();
              wasPortrait = Core.graphics.isPortrait();
@@ -351,10 +351,10 @@ index 10e0d74ed3b6f5a1fb742c0ddd96b0e9fb885941..1b9cf7cf4c8e40d453a85565ceecdf08
      public static Color typeColor(LVar s, Color color){
          return color.set(
              !s.isobj ? Pal.place :
-@@ -143,6 +271,12 @@ public class LogicDialog extends BaseDialog{
-                             ui.showException(e);
-                         }
-                     }).marginLeft(12f).disabled(b -> Core.app.getClipboardText() == null);
+@@ -150,6 +278,12 @@ public class LogicDialog extends BaseDialog{
+                         hide();
+                     }).marginLeft(12f);
+ 
 +                    t.row();
 +                    t.button("[orange]丢弃更改", Icon.cancel,style, () -> ui.showConfirm("确认丢弃?", () -> {
 +                        noSave = true;
@@ -364,7 +364,7 @@ index 10e0d74ed3b6f5a1fb742c0ddd96b0e9fb885941..1b9cf7cf4c8e40d453a85565ceecdf08
                  });
              });
  
-@@ -247,6 +381,11 @@ public class LogicDialog extends BaseDialog{
+@@ -254,6 +388,11 @@ public class LogicDialog extends BaseDialog{
      }
  
      public void showAddDialog(){
@@ -376,7 +376,7 @@ index 10e0d74ed3b6f5a1fb742c0ddd96b0e9fb885941..1b9cf7cf4c8e40d453a85565ceecdf08
          BaseDialog dialog = new BaseDialog("@add");
          dialog.cont.table(table -> {
              String[] searchText = {""};
-@@ -271,7 +410,7 @@ public class LogicDialog extends BaseDialog{
+@@ -278,7 +417,7 @@ public class LogicDialog extends BaseDialog{
  
                      search.keyDown(KeyCode.enter, () -> {
                          if(!searchText[0].isEmpty() && matched[0] != null){
@@ -385,7 +385,7 @@ index 10e0d74ed3b6f5a1fb742c0ddd96b0e9fb885941..1b9cf7cf4c8e40d453a85565ceecdf08
                              dialog.hide();
                          }
                      });
-@@ -318,7 +457,7 @@ public class LogicDialog extends BaseDialog{
+@@ -325,7 +464,7 @@ public class LogicDialog extends BaseDialog{
                          style.font = Fonts.outline;
  
                          cat.button(example.name(), style, () -> {
@@ -394,10 +394,10 @@ index 10e0d74ed3b6f5a1fb742c0ddd96b0e9fb885941..1b9cf7cf4c8e40d453a85565ceecdf08
                              dialog.hide();
                          }).size(130f, 50f).self(c -> tooltip(c, "lst." + example.name())).top().left();
  
-@@ -336,6 +475,7 @@ public class LogicDialog extends BaseDialog{
-     public void show(String code, LExecutor executor, boolean privileged, Cons<String> modified){
+@@ -344,6 +483,7 @@ public class LogicDialog extends BaseDialog{
          this.executor = executor;
          this.privileged = privileged;
+         this.forceRestart = false;
 +        varTable.clearChildren();
          canvas.statements.clearChildren();
          canvas.rebuild();
