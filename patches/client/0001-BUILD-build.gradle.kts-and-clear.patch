@@ -15,6 +15,7 @@ way-zer <himc.wicp@gmail.com> on 2024/6/9
  core/build.gradle                             |   2 -
  core/build.gradle.kts                         |  66 ++++
  desktop/build.gradle                          | 166 +---------
+ gradle.properties                             |   2 +-
  gradle/wrapper/gradle-wrapper.jar             | Bin 59203 -> 43583 bytes
  gradle/wrapper/gradle-wrapper.properties      |   4 +-
  gradlew                                       | 284 +++++++++++-------
@@ -24,7 +25,7 @@ way-zer <himc.wicp@gmail.com> on 2024/6/9
  settings.gradle                               |  10 +-
  tools/build.gradle                            |  78 +++--
  tools/src/mindustry/tools/Generators.java     |   2 +-
- 18 files changed, 423 insertions(+), 662 deletions(-)
+ 19 files changed, 424 insertions(+), 663 deletions(-)
  create mode 100644 annotations/src/main/java/com/github/bsideup/jabel/Desugar.java
  create mode 100644 annotations/src/main/resources/META-INF/services/javax.annotation.processing.Processor
  delete mode 100644 core/build.gradle
@@ -923,6 +924,17 @@ index b3f192bc75d3c1775179a7252c02f7ce0a39ff7e..b47e0569d82a8cc6331a1fe36952c206
 -}
 +}
 \ No newline at end of file
+diff --git a/gradle.properties b/gradle.properties
+index f3a62ec065f853aa4bdacf143b4bf115f36d34ad..775dc90a64c14506ef7529c199a23b895974a062 100644
+--- a/gradle.properties
++++ b/gradle.properties
+@@ -1,5 +1,5 @@
+ org.gradle.daemon=true
+-org.gradle.jvmargs=-Xms256m -Xmx1024m --illegal-access=permit \
++org.gradle.jvmargs=-Xms256m -Xmx2g --illegal-access=permit \
+ --add-opens=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED \
+ --add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED \
+ --add-opens=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED \
 diff --git a/gradle/wrapper/gradle-wrapper.jar b/gradle/wrapper/gradle-wrapper.jar
 index e708b1c023ec8b20f512888fe07c5bd3ff77bb8f..a4b76b9530d66f5e68d973ea569d8e19de379189 100644
 GIT binary patch

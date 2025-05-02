@@ -182,7 +182,7 @@ index 9e18ce5a54be5f6ca97395737d65de56495aeac0..bee67a07c282daadc799d3f345bee48b
          }catch(Throwable e){
              handleCrash(e);
 diff --git a/gradle.properties b/gradle.properties
-index 2073ba8091c39ed3455f6ea09d1131675c627d87..e40dc71f73b04c3360ad8ee5c98479457e98b266 100644
+index f88906e769655b07f711936997997c18336e35fb..00716a94ec8881cc099ba2498cdd484136293036 100644
 --- a/gradle.properties
 +++ b/gradle.properties
 @@ -27,3 +27,5 @@ org.gradle.internal.http.socketTimeout=100000
