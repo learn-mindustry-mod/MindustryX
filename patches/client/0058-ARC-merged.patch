@@ -100,7 +100,7 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  core/src/mindustry/game/Schematic.java        | 104 ++++++++
  .../src/mindustry/graphics/BlockRenderer.java |  17 +-
  .../mindustry/graphics/OverlayRenderer.java   |  39 ++-
- core/src/mindustry/input/DesktopInput.java    |  79 +++++-
+ core/src/mindustry/input/DesktopInput.java    |  80 +++++-
  core/src/mindustry/input/InputHandler.java    |  45 +++-
  core/src/mindustry/input/MobileInput.java     |  16 +-
  core/src/mindustry/logic/LExecutor.java       |  12 +-
@@ -120,7 +120,7 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  .../mindustry/ui/fragments/MenuFragment.java  |  51 +++-
  .../ui/fragments/PlacementFragment.java       | 164 ++++++++++--
  .../ui/fragments/PlayerListFragment.java      |  72 ++----
- 27 files changed, 1256 insertions(+), 167 deletions(-)
+ 27 files changed, 1257 insertions(+), 167 deletions(-)
 
 diff --git a/core/src/mindustry/editor/MapInfoDialog.java b/core/src/mindustry/editor/MapInfoDialog.java
 index ebc1f0b300d295e45333f1db38ea299c9658ec20..e7cba056743979206c84fc6d00472c2c44b565f6 100644
@@ -526,7 +526,7 @@ index 51c1fdc2398e34635f78e14caf2d1731c8f08bbd..8a641c444148bd17a9966635f45187c0
  
      public void checkApplySelection(Unit u){
 diff --git a/core/src/mindustry/input/DesktopInput.java b/core/src/mindustry/input/DesktopInput.java
-index eeca7177aaccd87f554796d95e6557ce8ad739f6..3fb0513ba1f833cf790a6c6fda427989bc4d0383 100644
+index eeca7177aaccd87f554796d95e6557ce8ad739f6..fad7e64e6668ca1905868a828d53fd40ab3d3c11 100644
 --- a/core/src/mindustry/input/DesktopInput.java
 +++ b/core/src/mindustry/input/DesktopInput.java
 @@ -14,17 +14,25 @@ import arc.scene.ui.layout.*;
@@ -600,14 +600,16 @@ index eeca7177aaccd87f554796d95e6557ce8ad739f6..3fb0513ba1f833cf790a6c6fda427989
  
          float speed = unit.speed();
          float xa = Core.input.axis(Binding.moveX);
-@@ -942,21 +965,63 @@ public class DesktopInput extends InputHandler{
+@@ -942,21 +965,64 @@ public class DesktopInput extends InputHandler{
              }
          }
  
 -        float mouseAngle = Angles.mouseAngle(unit.x, unit.y);
 -        boolean aimCursor = omni && player.shooting && unit.type.hasWeapons() && unit.type.faceTarget && !boosted;
 +        boolean busy = unit.mining() || unit.activelyBuilding();
-+
+ 
+-        if(aimCursor){
+-            unit.lookAt(mouseAngle);
 +        if (Core.settings.getBool("playerNeedShooting")){
 +            busy = false;
 +        }
@@ -630,10 +632,9 @@ index eeca7177aaccd87f554796d95e6557ce8ad739f6..3fb0513ba1f833cf790a6c6fda427989
 +                float range = unit.hasWeapons() ? unit.range() : 0f;
 +                player.shooting = false;
 +                if(!(player.unit() instanceof BlockUnitUnit u && u.tile() instanceof ControlBlock c && !c.shouldAutoTarget())){
-+                    target = Units.closestTarget(unit.team, unit.x, unit.y, range, u -> u.checkTarget(type.targetAir, type.targetGround), u -> type.targetGround);
- 
--        if(aimCursor){
--            unit.lookAt(mouseAngle);
++                    boolean targetBuilding = type.targetGround && type.hasWeapons() && type.weapons.first().bullet.buildingDamageMultiplier > 0.05f;
++                    target = Units.closestTarget(unit.team, unit.x, unit.y, range, u -> u.checkTarget(type.targetAir, type.targetGround), u -> targetBuilding);
++
 +                    if(type.canHeal && target == null){
 +                        target = Geometry.findClosest(unit.x, unit.y, indexer.getDamaged(unit.team));
 +                        if(target != null && !unit.within(target, range)){
