@@ -10,6 +10,7 @@ import mindustry.core.*;
 import mindustry.game.EventType.*;
 import mindustry.mod.*;
 import mindustry.mod.Mods.*;
+import mindustryX.features.*;
 
 import java.util.*;
 
@@ -55,7 +56,10 @@ public class Main extends Mod{
     static void preload(){
         if(Vars.clientLoaded) return;
         impl = getLoaderPlatform();
-        if(!checkVersion()) return;
+        if(!checkVersion()){
+            AutoUpdate.INSTANCE.checkUpdate();
+            return;
+        }
         Core.app.post(Main::load);
         try{
             Thread.sleep(9999999999999999L);
