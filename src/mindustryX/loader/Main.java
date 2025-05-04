@@ -10,6 +10,7 @@ import mindustry.core.*;
 import mindustry.game.EventType.*;
 import mindustry.mod.*;
 import mindustry.mod.Mods.*;
+import mindustryX.*;
 import mindustryX.features.*;
 
 import java.util.*;
@@ -57,7 +58,6 @@ public class Main extends Mod{
         if(Vars.clientLoaded) return;
         impl = getLoaderPlatform();
         if(!checkVersion()){
-            AutoUpdate.INSTANCE.checkUpdate();
             return;
         }
         Core.app.post(Main::load);
@@ -97,6 +97,11 @@ public class Main extends Mod{
         String version = meta.minGameVersion;
         if(!Version.buildString().equals(version)){
             loadError("Version not match, skip. (expect " + version + ", get " + Version.buildString() + ")");
+            if(meta.version != null){
+                VarsX.version = meta.version;
+                VarsX.devVersion = VarsX.version.endsWith("-dev");
+            }
+            AutoUpdate.INSTANCE.checkUpdate();
             return false;
         }
         return true;

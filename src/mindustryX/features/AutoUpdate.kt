@@ -3,6 +3,8 @@ package mindustryX.features
 import arc.Core
 import arc.Events
 import arc.files.Fi
+import arc.graphics.Color
+import arc.math.Mathf
 import arc.util.Align
 import arc.util.Http
 import arc.util.Log
@@ -58,6 +60,20 @@ object AutoUpdate {
     val showUpdateDialog = SettingsV2.CheckPref("AutoUpdate.showUpdateDialog", true).apply { addFallbackName("showUpdateDialog") }
     val ignoreOnce = SettingsV2.Data("AutoUpdate.ignoreOnce", "")
     val ignoreUntil = SettingsV2.Data("AutoUpdate.ignoreUntil", "")
+
+    init {
+        Events.on(EventType.ClientLoadEvent::class.java) {
+            Vars.ui.menuGroup.fill { c ->
+                c.bottom().right().button("@be.check", Icon.refresh) { showDialog() }.size(200f, 60f)
+                    .update {
+                        it.label.color.apply {
+                            set(Color.white)
+                            if (newVersion != null) lerp(Pal.accent, Mathf.absin(5f, 1f))
+                        }
+                    }
+            }
+        }
+    }
 
     fun getReleases(repo: String, result: (List<Release>) -> Unit) {
         Http.get("https://api.github.com/repos/$repo/releases")

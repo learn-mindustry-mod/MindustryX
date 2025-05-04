@@ -117,10 +117,10 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  .../mindustry/ui/fragments/ChatFragment.java  |   9 +-
  .../ui/fragments/ConsoleFragment.java         |   3 +
  .../mindustry/ui/fragments/HudFragment.java   | 168 +++++++++++-
- .../mindustry/ui/fragments/MenuFragment.java  |  51 +++-
+ .../mindustry/ui/fragments/MenuFragment.java  |  52 +++-
  .../ui/fragments/PlacementFragment.java       | 164 ++++++++++--
  .../ui/fragments/PlayerListFragment.java      |  72 ++----
- 27 files changed, 1257 insertions(+), 167 deletions(-)
+ 27 files changed, 1258 insertions(+), 167 deletions(-)
 
 diff --git a/core/src/mindustry/editor/MapInfoDialog.java b/core/src/mindustry/editor/MapInfoDialog.java
 index ebc1f0b300d295e45333f1db38ea299c9658ec20..e7cba056743979206c84fc6d00472c2c44b565f6 100644
@@ -2310,7 +2310,7 @@ index 19b779682d6375156fd8d792db79907ca57d2c6f..e1be03694cf3e5e2d70c0de2e35be392
  
  }
 diff --git a/core/src/mindustry/ui/fragments/MenuFragment.java b/core/src/mindustry/ui/fragments/MenuFragment.java
-index 7ad999d0abdbc3b4d6098c689f0a11734ee798ab..06ad7e2d3d0db7e6df5fcf9aea12c09941ab4f85 100644
+index 57f16a53a6910131be7d85122fcc6e5e31f0115c..09b88181603569052f95c5695b35f2c346602bbb 100644
 --- a/core/src/mindustry/ui/fragments/MenuFragment.java
 +++ b/core/src/mindustry/ui/fragments/MenuFragment.java
 @@ -1,6 +1,7 @@
@@ -2356,8 +2356,8 @@ index 7ad999d0abdbc3b4d6098c689f0a11734ee798ab..06ad7e2d3d0db7e6df5fcf9aea12c099
  
          parent.fill(c -> {
              c.pane(Styles.noBarPane, cont -> {
-@@ -92,6 +112,11 @@ public class MenuFragment{
-             }));
+@@ -84,6 +104,11 @@ public class MenuFragment{
+             });
          }
  
 +        parent.fill(c -> c.bottom().left().table(t -> {
@@ -2368,7 +2368,7 @@ index 7ad999d0abdbc3b4d6098c689f0a11734ee798ab..06ad7e2d3d0db7e6df5fcf9aea12c099
          String versionText = ((Version.build == -1) ? "[#fc8140aa]" : "[#ffffffba]") + Version.combined();
          parent.fill((x, y, w, h) -> {
              TextureRegion logo = Core.atlas.find("logo");
-@@ -117,6 +142,22 @@ public class MenuFragment{
+@@ -109,6 +134,22 @@ public class MenuFragment{
          }).touchable = Touchable.disabled;
      }
  
@@ -2391,7 +2391,7 @@ index 7ad999d0abdbc3b4d6098c689f0a11734ee798ab..06ad7e2d3d0db7e6df5fcf9aea12c099
      private void buildMobile(){
          container.clear();
          container.name = "buttons";
-@@ -134,7 +175,7 @@ public class MenuFragment{
+@@ -126,7 +167,7 @@ public class MenuFragment{
              tools = new MobileButton(Icon.settings, "@settings", ui.settings::show),
              mods = new MobileButton(Icon.book, "@mods", ui.mods::show),
              exit = new MobileButton(Icon.exit, "@quit", () -> Core.app.exit()),
@@ -2400,7 +2400,7 @@ index 7ad999d0abdbc3b4d6098c689f0a11734ee798ab..06ad7e2d3d0db7e6df5fcf9aea12c099
  
          Seq<MobileButton> customs = customButtons.map(b -> new MobileButton(b.icon, b.text, b.runnable == null ? () -> {} : b.runnable));
  
-@@ -153,11 +194,12 @@ public class MenuFragment{
+@@ -145,11 +186,12 @@ public class MenuFragment{
              container.add(editor);
              container.add(tools);
              container.add(mods);
@@ -2414,7 +2414,7 @@ index 7ad999d0abdbc3b4d6098c689f0a11734ee798ab..06ad7e2d3d0db7e6df5fcf9aea12c099
          }else{
              container.marginTop(0f);
              container.add(play);
-@@ -170,12 +212,13 @@ public class MenuFragment{
+@@ -162,12 +204,14 @@ public class MenuFragment{
              container.add(tools);
              container.row();
              container.add(mods);
@@ -2426,6 +2426,7 @@ index 7ad999d0abdbc3b4d6098c689f0a11734ee798ab..06ad7e2d3d0db7e6df5fcf9aea12c099
                  if(i % 2 == 0) container.row();
              }
 -            container.add(ios ? about : exit);
++            if(!ios) container.add(exit);
          }
      }
  
