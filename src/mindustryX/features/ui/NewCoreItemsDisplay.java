@@ -139,12 +139,20 @@ public class NewCoreItemsDisplay extends Table{
         new Table(t -> {
             t.add().growX();
             t.label(() -> Core.bundle.format("bar.powerbalance", (balance >= 0 ? "+" : "") + UI.formatAmount((long)balance)) +
-            (satisfaction >= 1 ? "" : " [gray]" + (int)(satisfaction * 100) + "%"));
+            (satisfaction >= 1 ? "" : " [gray]" + (int)(satisfaction * 100) + "%[]"));
             t.add().width(16);
             t.label(() -> Core.bundle.format("bar.powerstored", UI.formatAmount((long)stored), UI.formatAmount((long)capacity)));
             t.add().growX();
         })
         ).growX();
+    }
+
+    public void sharePowerInfo(){
+        UIExt.shareMessage(Iconc.power,
+        //电力: +xxx K/s 电力储存: xxx M/ xxx M
+        Core.bundle.format("bar.powerbalance", (balance >= 0 ? "[accent]+" : "[red]") + UI.formatAmount((long)balance) + "[]") + (satisfaction >= 1 ? "" : " [gray]" + (int)(satisfaction * 100) + "%[]") + "  "
+        + Core.bundle.format("bar.powerstored", UI.formatAmount((long)stored), UI.formatAmount((long)capacity))
+        );
     }
 
     private void updateItemMeans(){

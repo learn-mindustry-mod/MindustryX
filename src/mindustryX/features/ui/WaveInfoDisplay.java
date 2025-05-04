@@ -36,6 +36,7 @@ public class WaveInfoDisplay extends Table{
         margin(0, 4, 0, 4);
         table(buttons -> {
             buttons.defaults().size(32);
+            buttons.add().growX();
 
             buttons.button(Icon.waves, Styles.clearNonei, iconMed, waveInfoDialog::show).tooltip("波次信息");
 
@@ -50,7 +51,6 @@ public class WaveInfoDisplay extends Table{
                 state.wave += waveOffset;
                 setWaveOffset(0);
             })).tooltip("强制跳波").disabled((b) -> net.client());
-            buttons.button("♐", Styles.cleart, () -> ArcMessageDialog.shareWaveInfo(state.wave + waveOffset)).tooltip("分享波次信息");
 
             buttons.button(Icon.settingsSmall, Styles.clearNonei, iconMed, () -> {
             }).tooltip("配置资源显示").get().addListener(new ClickListener(){
@@ -60,7 +60,12 @@ public class WaveInfoDisplay extends Table{
                 }
             });
             buttons.button(Icon.eyeOffSmall, Styles.clearNonei, iconMed, () -> enable.set(false)).tooltip("隐藏波次显示");
-        }).center().row();
+
+            buttons.add().growX();
+            buttons.add("♐>");
+            buttons.button(Icon.wavesSmall, Styles.clearNonei, iconMed, () -> shareWaveInfo(state.wave + waveOffset)).tooltip("分享波次信息");
+            buttons.button(Icon.powerSmall, Styles.clearNonei, iconMed, () -> UIExt.coreItems.sharePowerInfo()).tooltip("分享电力情况");
+        }).fillX().row();
 
         waveInfo = new Table().left().top();
         add(new ScrollPane(waveInfo, Styles.noBarPane){
@@ -80,6 +85,24 @@ public class WaveInfoDisplay extends Table{
                 return 0f;
             }
         }).growX();
+    }
+
+    public void shareWaveInfo(int wave){
+        if(!state.rules.waves) return;
+        StringBuilder builder = new StringBuilder();
+        builder.append("第").append(wave).append("波");
+        if(wave >= state.wave){
+            builder.append("(");
+            if(wave > state.wave){
+                builder.append("还有").append(wave - state.wave).append("波, ");
+            }
+            int timer = (int)(state.wavetime + (wave - state.wave) * state.rules.waveSpacing);
+            builder.append(FormatDefault.duration((float)timer / 60)).append(")");
+        }
+        builder.append("：");
+
+        builder.append(ArcMessageDialog.getWaveInfo(wave));
+        UIExt.shareMessage(Iconc.waves, builder.toString());
     }
 
     public Element wrapped(){

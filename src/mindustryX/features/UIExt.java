@@ -119,6 +119,10 @@ public class UIExt{
         Call.sendChatMessage(ui.chatfrag.mode.normalizedPrefix() + message);
     }
 
+    public static void shareMessage(char icon, String message){
+        sendChatMessage("<MDTX " + icon + ">" + message);
+    }
+
     public static void openURI(String uri){
         if(!Core.app.openURI(uri)){
             ui.showErrorMessage("@linkfail");

@@ -6,8 +6,8 @@ import arc.graphics.*;
 import arc.math.geom.*;
 import arc.scene.ui.*;
 import arc.scene.ui.layout.*;
-import arc.struct.Queue;
 import arc.struct.*;
+import arc.struct.Queue;
 import arc.util.*;
 import mindustry.*;
 import mindustry.content.*;
@@ -70,24 +70,6 @@ public class ArcMessageDialog extends BaseDialog{
 
     public static void share(String type, String content){
         UIExt.sendChatMessage("<ARCxMDTX><" + type + ">" + content);
-    }
-
-    public static void shareWaveInfo(int waves){
-        if(!state.rules.waves) return;
-        StringBuilder builder = new StringBuilder();
-        builder.append("标记了第").append(waves).append("波");
-        if(waves < state.wave){
-            builder.append("。");
-        }else{
-            if(waves > state.wave){
-                builder.append("，还有").append(waves - state.wave).append("波");
-            }
-            int timer = (int)(state.wavetime + (waves - state.wave) * state.rules.waveSpacing);
-            builder.append("[[").append(FormatDefault.duration((float)timer / 60)).append("]。");
-        }
-
-        builder.append(getWaveInfo(waves));
-        share("Wave", builder.toString());
     }
 
     public static void shareContent(UnlockableContent content, boolean description){
