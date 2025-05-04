@@ -48,7 +48,7 @@ tasks {
             val baseMap = base.entries().asSequence().associateBy { it.name }
 
             for (entry in input.entries()) {
-                if (entry.name.startsWith("sprites") || entry.name == "version.properties") continue
+                if (entry.name.startsWith("sprites/") || entry.name == "version.properties") continue
                 val baseEntry = baseMap[entry.name]
                 if (baseEntry != null) {
                     val a = input.getInputStream(entry).use { it.readAllBytes() }
