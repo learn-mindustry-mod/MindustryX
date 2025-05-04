@@ -44,7 +44,7 @@ public class NewCoreItemsDisplay extends Table{
     private final ItemSeq planItems = new ItemSeq();
     private final ObjectIntMap<Block> planCounter = new ObjectIntMap<>();
 
-    private final SettingsV2.Data<Boolean> enable = new CheckPref("coreItems.enable", true);//Origin Setting
+    public final SettingsV2.Data<Boolean> enable = new CheckPref("coreItems.enable", true);//Origin Setting
     private final SettingsV2.Data<Integer> columns = new SettingsV2.SliderPref("coreItems.columns", 5, 4, 15);
     private final SettingsV2.Data<Boolean> showItem = new CheckPref("coreItems.showItem", true);
     private final SettingsV2.Data<Boolean> showUnit = new CheckPref("coreItems.showUnit", true);
