@@ -11,6 +11,7 @@ Content-Transfer-Encoding: 8bit
  core/src/mindustry/ClientLauncher.java        |  8 ++++++++
  core/src/mindustry/Vars.java                  |  5 +++++
  core/src/mindustry/ai/BlockIndexer.java       |  2 +-
+ core/src/mindustry/content/StatusEffects.java |  1 +
  core/src/mindustry/core/Control.java          |  3 ++-
  core/src/mindustry/core/NetClient.java        |  4 ++++
  core/src/mindustry/core/Renderer.java         |  2 +-
@@ -25,7 +26,7 @@ Content-Transfer-Encoding: 8bit
  .../world/blocks/distribution/Router.java     |  3 ++-
  .../world/blocks/production/BeamDrill.java    | 12 ++++-------
  .../mindustry/desktop/DesktopLauncher.java    | 18 ++++++++++++++++-
- 17 files changed, 89 insertions(+), 51 deletions(-)
+ 18 files changed, 90 insertions(+), 51 deletions(-)
 
 diff --git a/core/src/mindustry/ClientLauncher.java b/core/src/mindustry/ClientLauncher.java
 index a64b7b36fdd74a29a3caae54a1f1a514039b891f..beea309f225be8de3799089a87d1fdcb8e30ee5c 100644
@@ -86,6 +87,18 @@ index 4a87c1df67adce8d07ec55f14e42137154acbe84..7d2e3905eedb5bfeeb8de8027fedff66
      /** Stores teams that are present here as tiles. */
      private Seq<Team> activeTeams = new Seq<>(Team.class);
      /** Maps teams to a map of flagged tiles by flag. */
+diff --git a/core/src/mindustry/content/StatusEffects.java b/core/src/mindustry/content/StatusEffects.java
+index 1ccaabc80faeabf0acaf38ae371fcc1f98bd9750..c58b4ec28d39f53104fc4555646e4284917364cb 100644
+--- a/core/src/mindustry/content/StatusEffects.java
++++ b/core/src/mindustry/content/StatusEffects.java
+@@ -202,6 +202,7 @@ public class StatusEffects{
+ 
+         invincible = new StatusEffect("invincible"){{
+             healthMultiplier = Float.POSITIVE_INFINITY;
++            color = Color.red;
+         }};
+ 
+         dynamic = new StatusEffect("dynamic"){{
 diff --git a/core/src/mindustry/core/Control.java b/core/src/mindustry/core/Control.java
 index eb69d4e90442611e92881ba1fe266034f641f59d..47f55d3ff7f6605bafe4ff3ab52ab21498003916 100644
 --- a/core/src/mindustry/core/Control.java

@@ -22,6 +22,17 @@ public class InternalMods{
         return mods;
     }
 
+    public static Seq<Fi> spritesOverride(){
+        if(VarsX.isLoader) return Seq.with();
+        Fi root = files.internal("sprites-override");
+        //internal don't support findAll
+        return Seq.with(
+        root.child("status-invincible.png"),
+        root.child("ui/status-invincible-ui.png"),
+        root.child("ui/logo.png")
+        );
+    }
+
     private static ModMeta meta(String id, String displayName, String version, String author){
         ModMeta meta = new ModMeta();
         meta.name = id;
