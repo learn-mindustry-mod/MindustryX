@@ -10,9 +10,9 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 ---
- .../ui/dialogs/SchematicsDialog.java          | 20 +++++++++
- .../world/blocks/logic/LogicBlock.java        | 41 ++++++++++++++++---
- 2 files changed, 55 insertions(+), 6 deletions(-)
+ .../ui/dialogs/SchematicsDialog.java          | 20 ++++++++++
+ .../world/blocks/logic/LogicBlock.java        | 40 ++++++++++++++++---
+ 2 files changed, 54 insertions(+), 6 deletions(-)
 
 diff --git a/core/src/mindustry/ui/dialogs/SchematicsDialog.java b/core/src/mindustry/ui/dialogs/SchematicsDialog.java
 index a24c659a8ee848c12921e5bc3afae83972b3d2a7..eb07ca6105752d7e7299a355895905c91fdb06e5 100644
@@ -53,18 +53,10 @@ index a24c659a8ee848c12921e5bc3afae83972b3d2a7..eb07ca6105752d7e7299a355895905c9
              if(!Mathf.zero(cons) || !Mathf.zero(prod)){
                  cont.table(t -> {
 diff --git a/core/src/mindustry/world/blocks/logic/LogicBlock.java b/core/src/mindustry/world/blocks/logic/LogicBlock.java
-index cf8a94cf7f4bb1e0bf223aa406acc62b4b48fc78..ca05fd66db17f9422c397ccf927cebf9d38e1100 100644
+index 92bbb5b8d68b89c6d7ffad48bbe59ee868b98c62..40b1c4e481e8f9600aace4d3fa9be710aa52c992 100644
 --- a/core/src/mindustry/world/blocks/logic/LogicBlock.java
 +++ b/core/src/mindustry/world/blocks/logic/LogicBlock.java
-@@ -23,6 +23,7 @@ import mindustry.io.*;
- import mindustry.io.TypeIO.*;
- import mindustry.logic.*;
- import mindustry.ui.*;
-+import mindustry.ui.dialogs.*;
- import mindustry.world.*;
- import mindustry.world.blocks.ConstructBlock.*;
- import mindustry.world.meta.*;
-@@ -191,7 +192,7 @@ public class LogicBlock extends Block{
+@@ -193,7 +193,7 @@ public class LogicBlock extends Block{
      public void drawPlace(int x, int y, int rotation, boolean valid){
          if(privileged) return;
  
@@ -73,7 +65,7 @@ index cf8a94cf7f4bb1e0bf223aa406acc62b4b48fc78..ca05fd66db17f9422c397ccf927cebf9
      }
  
      @Override
-@@ -217,7 +218,7 @@ public class LogicBlock extends Block{
+@@ -219,7 +219,7 @@ public class LogicBlock extends Block{
                      String name = stream.readUTF();
                      short x = stream.readShort(), y = stream.readShort();
  
@@ -82,7 +74,7 @@ index cf8a94cf7f4bb1e0bf223aa406acc62b4b48fc78..ca05fd66db17f9422c397ccf927cebf9
                      transformer.get(Tmp.p1.set(x * 2, y * 2).sub(Tmp.p2));
                      Tmp.p1.add(Tmp.p2);
                      Tmp.p1.x /= 2;
-@@ -382,7 +383,7 @@ public class LogicBlock extends Block{
+@@ -384,7 +384,7 @@ public class LogicBlock extends Block{
                      for(LogicLink link : links){
                          if(link.active && link.valid){
                              Building build = world.build(link.x, link.y);
@@ -91,7 +83,7 @@ index cf8a94cf7f4bb1e0bf223aa406acc62b4b48fc78..ca05fd66db17f9422c397ccf927cebf9
                              if(build != null) executor.linkIds.add(build.id);
                          }
                      }
-@@ -562,7 +563,7 @@ public class LogicBlock extends Block{
+@@ -564,7 +564,7 @@ public class LogicBlock extends Block{
                  running = true;
                  while(accumulator >= 1f){
                      executor.runOnce();
@@ -100,7 +92,7 @@ index cf8a94cf7f4bb1e0bf223aa406acc62b4b48fc78..ca05fd66db17f9422c397ccf927cebf9
                      if(executor.yield){
                          executor.yield = false;
                          break;
-@@ -658,7 +659,7 @@ public class LogicBlock extends Block{
+@@ -667,7 +667,7 @@ public class LogicBlock extends Block{
          }
  
          public boolean validLink(Building other){
@@ -109,19 +101,19 @@ index cf8a94cf7f4bb1e0bf223aa406acc62b4b48fc78..ca05fd66db17f9422c397ccf927cebf9
          }
  
          @Override
-@@ -671,7 +672,7 @@ public class LogicBlock extends Block{
-             table.setBackground(Styles.black3);
+@@ -681,7 +681,7 @@ public class LogicBlock extends Block{
              Table vars = new Table();
              table.table(t -> {
+                 t.defaults().size(40);
 -                t.button(Icon.pencil, Styles.cleari, ()->{
 +                t.button(Icon.pencil, Styles.cleari, () -> {
                      if(!accessible())
                          UIExt.announce("[yellow]当前无权编辑，仅供查阅");
                      showEditDialog();
-@@ -681,6 +682,34 @@ public class LogicBlock extends Block{
-                     vars.clear();
-                     if(showVars) buildVarsTable(vars);
-                 }).size(40);
+@@ -695,6 +695,34 @@ public class LogicBlock extends Block{
+                     links.clear();
+                     updateCode(code, true, null);
+                 }).disabled(b -> net.client()).tooltip("重置所有链接");
 +                t.button(Icon.paste, Styles.cleari, () -> {
 +                    var all = schematics.all().select(it -> it.tiles.contains(s -> s.block instanceof LogicBlock));
 +                    new BaseDialog("选择代码"){{
