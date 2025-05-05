@@ -52,7 +52,7 @@ public class PayloadDropHint{
                 return;
             }
             Building build = on.build;
-            if(build == null) return;
+            if(build == null || build.interactable(unit.team)) return;
             Payload payload = build.getPayload();
             if(payload != null && unit.canPickupPayload(payload)){
                 draw(payload, payload.content(), payload instanceof BuildPayload b ? b.build.rotation * 90 : payload.rotation());
