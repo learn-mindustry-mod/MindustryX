@@ -20,13 +20,14 @@ Content-Transfer-Encoding: 8bit
  .../mindustry/graphics/MinimapRenderer.java   |  6 ++++--
  core/src/mindustry/ui/dialogs/JoinDialog.java | 19 ++++++++++--------
  .../mindustry/ui/dialogs/KeybindDialog.java   | 12 +++++++----
+ .../ui/dialogs/SettingsMenuDialog.java        |  4 ++--
  .../ui/fragments/BlockInventoryFragment.java  |  2 +-
  .../mindustry/ui/fragments/ChatFragment.java  |  7 +++++--
  .../mindustry/world/blocks/defense/Radar.java |  9 +++++++++
  .../world/blocks/distribution/Router.java     |  3 ++-
  .../world/blocks/production/BeamDrill.java    | 12 ++++-------
  .../mindustry/desktop/DesktopLauncher.java    | 18 ++++++++++++++++-
- 18 files changed, 90 insertions(+), 51 deletions(-)
+ 19 files changed, 92 insertions(+), 53 deletions(-)
 
 diff --git a/core/src/mindustry/ClientLauncher.java b/core/src/mindustry/ClientLauncher.java
 index a64b7b36fdd74a29a3caae54a1f1a514039b891f..beea309f225be8de3799089a87d1fdcb8e30ee5c 100644
@@ -314,6 +315,27 @@ index 2ef05ddf87a8fd4fa51a56ab91cd157345b59bd6..2aca87c9929d7c78b1bbf9004585233a
      }
  
      void rebind(KeyBind bind, KeyCode newKey){
+diff --git a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
+index 9fa6ca36f077ba1d4262863c7ff84a618667d944..1c4e5285e8cde6b14237c12c3cc2fed1ee71b5f1 100644
+--- a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
++++ b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
+@@ -400,14 +400,14 @@ public class SettingsMenuDialog extends BaseDialog{
+         graphics.sliderPref("unitlaseropacity", 100, 0, 100, 5, s -> s + "%");
+         graphics.sliderPref("bridgeopacity", 100, 0, 100, 5, s -> s + "%");
+ 
+-        graphics.sliderPref("maxmagnificationmultiplierpercent", 100, 100, 200, 25, s -> {
++        graphics.sliderPref("maxmagnificationmultiplierpercent", 100, 100, 300, 25, s -> { //MDTX max 200->300
+             if(ui.settings != null){
+                 Core.settings.put("maxzoomingamemultiplier", (float)s / 100.0f);
+             }
+             return s + "%";
+         });
+ 
+-        graphics.sliderPref("minmagnificationmultiplierpercent", 100, 100, 300, 25, s -> {
++        graphics.sliderPref("minmagnificationmultiplierpercent", 100, 100, 800, 25, s -> { //MDTX max 300->800
+             if(ui.settings != null){
+                 Core.settings.put("minzoomingamemultiplier", (float)s / 100.0f);
+             }
 diff --git a/core/src/mindustry/ui/fragments/BlockInventoryFragment.java b/core/src/mindustry/ui/fragments/BlockInventoryFragment.java
 index 54a36cde6eee102c9c8f3bfd5e4c76a2f4d0f1e1..f06641d677746d1f70880bea7c972ab1f65970fa 100644
 --- a/core/src/mindustry/ui/fragments/BlockInventoryFragment.java

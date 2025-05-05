@@ -1982,7 +1982,7 @@ index 1819d3cabac2aeadbb57bf74cf6962f829c7dded..a24c659a8ee848c12921e5bc3afae839
          }
      }
 diff --git a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
-index 9fa6ca36f077ba1d4262863c7ff84a618667d944..03143ca0e265cbb1013dfff18e25cf704469775b 100644
+index 1c4e5285e8cde6b14237c12c3cc2fed1ee71b5f1..9a1cc4d993e11ce8319e6fe08f7301c652e44016 100644
 --- a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
 +++ b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
 @@ -303,8 +303,8 @@ public class SettingsMenuDialog extends BaseDialog{
