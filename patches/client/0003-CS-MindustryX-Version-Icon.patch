@@ -35,7 +35,7 @@ index b5b2a237c2f5343aab2fb668337c2bc47a45c1b8..308ff12c92a06e11c18b33f540098a0f
  /out/
  ios/libs/
 diff --git a/android/build.gradle b/android/build.gradle
-index b03edcb51d25ecb8f2620060a6e73bf87b66cae3..9d3c12b23804cccfe45087336cffa30af106f86c 100644
+index 3e1c585a3bde20afaafc255844d01ae3e83724ec..b8f354dc147d4acbbe8be9b70da8c3b6a8fb3463 100644
 --- a/android/build.gradle
 +++ b/android/build.gradle
 @@ -31,7 +31,7 @@ android{
@@ -44,7 +44,7 @@ index b03edcb51d25ecb8f2620060a6e73bf87b66cae3..9d3c12b23804cccfe45087336cffa30a
  
 -        applicationId "io.anuke.mindustry"
 +        applicationId "com.github.tinylake.mindustryX"
-         minSdkVersion 14
+         minSdkVersion 21
          targetSdkVersion 34
          
 diff --git a/android/res/values/strings.xml b/android/res/values/strings.xml

@@ -7,7 +7,7 @@ clear and replce jabel(Support record)
 way-zer <himc.wicp@gmail.com> on 2024/6/9
 ---
  .gitignore                                    |   2 +-
- android/build.gradle                          | 101 ++-----
+ android/build.gradle                          | 103 +++----
  android/proguard-rules.pro                    |   4 +
  .../com/github/bsideup/jabel/Desugar.java     |  13 +
  .../javax.annotation.processing.Processor     |   6 +
@@ -25,7 +25,7 @@ way-zer <himc.wicp@gmail.com> on 2024/6/9
  settings.gradle                               |  10 +-
  tools/build.gradle                            |  78 +++--
  tools/src/mindustry/tools/Generators.java     |   2 +-
- 19 files changed, 418 insertions(+), 671 deletions(-)
+ 19 files changed, 419 insertions(+), 672 deletions(-)
  create mode 100644 annotations/src/main/java/com/github/bsideup/jabel/Desugar.java
  create mode 100644 annotations/src/main/resources/META-INF/services/javax.annotation.processing.Processor
  delete mode 100644 core/build.gradle
@@ -52,7 +52,7 @@ index 5e3b7987ef4f776a0bc35dde58fb2c74f4acdb07..b5b2a237c2f5343aab2fb668337c2bc4
  /core/assets/locales
  /core/assets/cache/
 diff --git a/android/build.gradle b/android/build.gradle
-index f1dc45aa74b149babea9cce2535ed7dca8d49a1f..b03edcb51d25ecb8f2620060a6e73bf87b66cae3 100644
+index f1dc45aa74b149babea9cce2535ed7dca8d49a1f..3e1c585a3bde20afaafc255844d01ae3e83724ec 100644
 --- a/android/build.gradle
 +++ b/android/build.gradle
 @@ -1,45 +1,23 @@
@@ -107,7 +107,7 @@ index f1dc45aa74b149babea9cce2535ed7dca8d49a1f..b03edcb51d25ecb8f2620060a6e73bf8
              jniLibs.srcDirs = ['libs']
          }
  
-@@ -51,8 +29,6 @@ android{
+@@ -51,23 +29,23 @@ android{
      }
  
      defaultConfig{
@@ -116,7 +116,8 @@ index f1dc45aa74b149babea9cce2535ed7dca8d49a1f..b03edcb51d25ecb8f2620060a6e73bf8
          def versionNameResult = "$versionNumber-$versionType-${getBuildVersion().replace(" ", "-")}"
  
          applicationId "io.anuke.mindustry"
-@@ -60,14 +36,16 @@ android{
+-        minSdkVersion 14
++        minSdkVersion 21
          targetSdkVersion 34
          
          versionName versionNameResult
