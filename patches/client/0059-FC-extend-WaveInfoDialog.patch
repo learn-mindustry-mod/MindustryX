@@ -11,11 +11,11 @@ Content-Transfer-Encoding: 8bit
 * 列表状波次浏览
 * 其他细节优化
 ---
- core/src/mindustry/editor/WaveInfoDialog.java | 217 ++++++++++++------
- 1 file changed, 151 insertions(+), 66 deletions(-)
+ core/src/mindustry/editor/WaveInfoDialog.java | 225 +++++++++++++-----
+ 1 file changed, 159 insertions(+), 66 deletions(-)
 
 diff --git a/core/src/mindustry/editor/WaveInfoDialog.java b/core/src/mindustry/editor/WaveInfoDialog.java
-index 55e675caa05e8b7fb43b92bc2460e19daae7840e..787a7de1ac106991f3e24a3313542fc1d8bbe1cf 100644
+index 55e675caa05e8b7fb43b92bc2460e19daae7840e..2f41e4f14b89e1b4b498081a7027953150652601 100644
 --- a/core/src/mindustry/editor/WaveInfoDialog.java
 +++ b/core/src/mindustry/editor/WaveInfoDialog.java
 @@ -6,6 +6,7 @@ import arc.graphics.*;
@@ -26,92 +26,98 @@ index 55e675caa05e8b7fb43b92bc2460e19daae7840e..787a7de1ac106991f3e24a3313542fc1
  import arc.scene.event.*;
  import arc.scene.style.*;
  import arc.scene.ui.*;
-@@ -22,6 +23,8 @@ import mindustry.io.*;
+@@ -22,6 +23,9 @@ import mindustry.io.*;
  import mindustry.type.*;
  import mindustry.ui.*;
  import mindustry.ui.dialogs.*;
 +import mindustryX.features.*;
++import mindustryX.features.ArcWaveSpawner.*;
 +import mindustryX.features.ui.*;
  
  import static mindustry.Vars.*;
  import static mindustry.game.SpawnGroup.*;
-@@ -38,6 +41,11 @@ public class WaveInfoDialog extends BaseDialog{
+@@ -38,6 +42,13 @@ public class WaveInfoDialog extends BaseDialog{
      private boolean checkedSpawns;
      private WaveGraph graph = new WaveGraph();
  
 +    //Arc extended;
++    private int winWave;
 +    private boolean wavesListMode;
 +    private Cell<?> wavesListCell;
-+    private Element wavesList;
++    private Table wavesList;
++    private Element wavesListPane;
 +
      public WaveInfoDialog(){
          super("@waves.title");
  
-@@ -90,6 +98,11 @@ public class WaveInfoDialog extends BaseDialog{
+@@ -90,6 +101,11 @@ public class WaveInfoDialog extends BaseDialog{
              dialog.show();
          }).size(250f, 64f);
  
 +        buttons.button("切换显示模式", () -> {
 +            wavesListMode = !wavesListMode;
-+            wavesListCell.setElement(wavesListMode ? wavesList : graph);
++            wavesListCell.setElement(wavesListMode ? wavesListPane : graph);
 +        }).width(200f);
 +
          buttons.button(Core.bundle.get("waves.random"), Icon.refresh, () -> {
              groups.clear();
              groups = Waves.generate(1f / 10f);
-@@ -149,11 +162,50 @@ public class WaveInfoDialog extends BaseDialog{
+@@ -149,11 +165,53 @@ public class WaveInfoDialog extends BaseDialog{
              setAlignment(Align.center, Align.center);
          }}).width(390f).growY();
  
 -        cont.add(graph = new WaveGraph()).grow();
 +        graph = new WaveGraph();
-+        var cell = wavesListCell = cont.pane(this::buildsWaveList).scrollX(false).grow();
-+        wavesList = cell.get();
++        wavesList = new Table();
++        winWave = Math.min(ArcWaveSpawner.calWinWave(), 200);//default 200 max
++
++        var cell = wavesListCell = cont.pane(wavesList).scrollX(false).grow();
++        wavesListPane = cell.get();
 +        if(!wavesListMode) wavesListCell.setElement(graph);
  
          buildGroups();
      }
  
-+    void buildsWaveList(Table p){
-+        int winWave = Math.min(ArcWaveSpawner.calWinWave(), 10000);
-+        p.table(Tex.button, t -> {
-+            p.margin(0).defaults().pad(5).growX();
-+            t.add("\uE86D 为单位数量；\uE813 为单位血+盾；\uE810 为计算buff的血+盾；\uE86E 为预估DPS。在游戏中时会考虑地图出怪点数目").color(Pal.accent);
-+        }).scrollX(false).growX().row();
-+        for(int wave = 0; wave < winWave; wave++){
-+            ArcWaveSpawner.waveInfo thisWave = ArcWaveSpawner.getOrInit(wave);
-+            thisWave.specLoc(-1, group -> true);
-+            int finalWave = wave;
-+            p.table(Tex.button, t -> {
++    void buildWavesList(){
++        wavesList.clearChildren();
++        int maxWaves = ArcWaveSpawner.calWinWaveClamped();
++        this.winWave = Math.min(this.winWave, maxWaves);
++        wavesList.margin(0).defaults().pad(5).growX();
++        wavesList.table(Tex.button, t -> t.add("\uE86D 为单位数量；\uE813 为单位血+盾；\uE810 为计算buff的血+盾；\uE86E 为预估DPS。在游戏中时会考虑地图出怪点数目").color(Pal.accent)).scrollX(false).growX().row();
++        float firstWaveTime = state.rules.initialWaveSpacing <= 0 ? (2 * state.rules.waveSpacing) : state.rules.initialWaveSpacing;
++        int winWave = this.winWave;
++        for(int waveI = 0; waveI < winWave; waveI++){
++            WaveInfo wave = ArcWaveSpawner.getOrInit(waveI);
++            wavesList.table(Tex.button, t -> {
 +                t.table(tt -> {
-+                    tt.add("第[accent]" + (finalWave + 1) + "[]波");
-+                    tt.row();
-+                    float firstWaveTime = state.rules.initialWaveSpacing <= 0 ? (2 * state.rules.waveSpacing) : state.rules.initialWaveSpacing;
-+                    int thisTime = (int)(finalWave * state.rules.waveSpacing + firstWaveTime);
++                    tt.add("第[accent]" + (wave.wave + 1) + "[]波").row();
++                    int thisTime = (int)(wave.wave * state.rules.waveSpacing + firstWaveTime);
 +                    tt.add(FormatDefault.duration(thisTime / 60f, false)).row();
-+                    Label waveTime = tt.add("").get();
-+                    tt.update(() -> {
-+                        if(!state.isGame()) waveTime.setText("");
-+                        else{
-+                            int deltaTime = thisTime - (int)(state.wave <= 1 ? (firstWaveTime - state.wavetime) : (firstWaveTime + state.rules.waveSpacing * (state.wave - 1) - state.wavetime));
-+                            waveTime.setText(FormatDefault.duration(deltaTime / 60, false));
-+                        }
-+                    });
++                    tt.label(() -> {
++                        if(!state.isGame()) return "";
++                        int deltaTime = thisTime - (int)(state.wave <= 1 ? (firstWaveTime - state.wavetime) : (firstWaveTime + state.rules.waveSpacing * (state.wave - 1) - state.wavetime));
++                        return FormatDefault.duration(deltaTime / 60f, false);
++                    }).row();
 +                }).width(120f).left();
-+                if(thisWave.amount == 0) t.add("该波次没有敌人");
-+                else{
-+                    t.add(thisWave.proTable(true));
-+                    t.pane(thisWave.unitTable(-1, group -> true, mobile ? 8 : 15)).scrollX(true).scrollY(false).growX();
++                if(wave.amount == 0){
++                    t.add();
++                    t.add("该波次没有敌人");
++                }else{
++                    t.add(wave.proTable(true, -1, group -> true));
++                    t.pane(wave.unitTable(-1, group -> true, mobile ? 8 : 15)).scrollX(true).scrollY(false).growX();
 +                }
 +            }).growX().row();
-+            p.margin(0).defaults().pad(5).growX();
 +        }
++        wavesList.button("加载更多波次", () -> {
++            this.winWave *= 2;
++            buildWavesList();
++        }).disabled(winWave == maxWaves).fillX().height(32f);
 +    }
 +
      void buildGroups(){
          table.clear();
          table.top();
-@@ -172,21 +224,32 @@ public class WaveInfoDialog extends BaseDialog{
+@@ -172,21 +230,32 @@ public class WaveInfoDialog extends BaseDialog{
                      t.button(b -> {
                          b.left();
                          b.image(group.type.uiIcon).size(32f).padRight(3).scaling(Scaling.fit);
@@ -150,7 +156,7 @@ index 55e675caa05e8b7fb43b92bc2460e19daae7840e..787a7de1ac106991f3e24a3313542fc1
  
                          b.button(Icon.unitsSmall, Styles.emptyi, () -> showUnits(type -> group.type = type, false)).pad(-6).size(46f).tooltip("@stat.unittype");
                          b.button(Icon.cancel, Styles.emptyi, () -> {
-@@ -346,7 +409,62 @@ public class WaveInfoDialog extends BaseDialog{
+@@ -346,7 +415,62 @@ public class WaveInfoDialog extends BaseDialog{
                                  dialog.show();
                              }).width(160f).height(36f).get().getLabel().setText(() -> group.spawn == -1 ? "@waves.spawn.all" : Point2.x(group.spawn) + ", " + Point2.y(group.spawn));
  
@@ -214,7 +220,7 @@ index 55e675caa05e8b7fb43b92bc2460e19daae7840e..787a7de1ac106991f3e24a3313542fc1
                      }
                  }).width(340f).pad(8);
  
-@@ -364,68 +482,35 @@ public class WaveInfoDialog extends BaseDialog{
+@@ -364,68 +488,35 @@ public class WaveInfoDialog extends BaseDialog{
      }
  
      void showUnits(Cons<UnitType> cons, boolean reset){
@@ -251,7 +257,7 @@ index 55e675caa05e8b7fb43b92bc2460e19daae7840e..787a7de1ac106991f3e24a3313542fc1
 +        var dialog = new ContentSelectDialog();
 +        dialog.title.setText(reset ? "@waves.filter" : "");
 +        if(reset){
-+            dialog.addNull(()->{
++            dialog.addNull(() -> {
 +                cons.get(null);
 +                dialog.hide();
 +                buildGroups();
@@ -308,3 +314,12 @@ index 55e675caa05e8b7fb43b92bc2460e19daae7840e..787a7de1ac106991f3e24a3313542fc1
          dialog.show();
      }
  
+@@ -451,5 +542,7 @@ public class WaveInfoDialog extends BaseDialog{
+     void updateWaves(){
+         graph.groups = groups;
+         graph.rebuild();
++        ArcWaveSpawner.reload(groups);
++        buildWavesList();
+     }
+ }
+\ No newline at end of file

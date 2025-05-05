@@ -21,6 +21,7 @@ import mindustry.world.blocks.liquid.*;
 import mindustry.world.blocks.production.*;
 import mindustry.world.blocks.storage.*;
 import mindustry.world.meta.*;
+import mindustryX.features.ArcWaveSpawner.*;
 import mindustryX.features.ui.*;
 
 import static mindustry.Vars.*;
@@ -68,7 +69,7 @@ public class ArcScanMode{
     private static void updateSpawnerDisplay(){
         spawnerTable.clear();
         flyerTable.clear();
-        ArcWaveSpawner.waveInfo thisWave = ArcWaveSpawner.getOrInit(state.wave - 1);
+        WaveInfo thisWave = ArcWaveSpawner.getOrInit(state.wave - 1);
         for(Tile tile : spawner.getSpawns()){
             if(Mathf.dst(tile.worldx(), tile.worldy(), Core.input.mouseWorldX(), Core.input.mouseWorldY()) < state.rules.dropZoneRadius){
                 float curve = Mathf.curve(Time.time % 240f, 120f, 240f);
@@ -91,8 +92,7 @@ public class ArcScanMode{
                     flyerTable.setPosition(v.x, v.y);
                     flyerTable.table(Styles.black3, tt -> {
                         tt.add(FormatDefault.duration(state.wavetime / 60, false)).row();
-                        thisWave.specLoc(tile.pos(), group -> group.type.flying);
-                        tt.add(thisWave.proTable(false));
+                        tt.add(thisWave.proTable(false, tile.pos(), group -> group.type.flying));
                         tt.row();
                         tt.add(thisWave.unitTable(tile.pos(), group -> group.type.flying)).maxWidth(mobile ? 400f : 750f).growX();
                     });
@@ -111,8 +111,7 @@ public class ArcScanMode{
                 spawnerTable.setPosition(v.x, v.y);
                 spawnerTable.table(Styles.black3, tt -> {
                     tt.add(FormatDefault.duration(state.wavetime / 60, false)).row();
-                    thisWave.specLoc(tile.pos(), group -> !group.type.flying);
-                    tt.add(thisWave.proTable(false));
+                    tt.add(thisWave.proTable(false, tile.pos(), group -> !group.type.flying));
                     tt.row();
                     tt.add(thisWave.unitTable(tile.pos(), group -> !group.type.flying)).maxWidth(mobile ? 400f : 750f).growX();
                 });

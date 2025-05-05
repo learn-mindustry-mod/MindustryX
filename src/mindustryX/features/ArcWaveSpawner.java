@@ -22,19 +22,17 @@ import static mindustry.Vars.*;
 public class ArcWaveSpawner{
     public static boolean hasFlyer = true;
     public static final float flyerSpawnerRadius = 5f * tilesize;
-    private static final Seq<waveInfo> arcWaveCache = new Seq<>();
+    private static final Seq<WaveInfo> arcWaveCache = new Seq<>();
+    private static Seq<SpawnGroup> groups;
 
     static{
-        Events.on(EventType.WorldLoadEvent.class, event -> {
-            hasFlyer = false;
-            for(SpawnGroup sg : state.rules.spawns){
-                if(sg.type.flying){
-                    hasFlyer = true;
-                    break;
-                }
-            }
-            arcWaveCache.clear();
-        });
+        Events.on(EventType.WorldLoadEvent.class, event -> reload(state.rules.spawns));
+    }
+
+    public static void reload(Seq<SpawnGroup> groups){
+        ArcWaveSpawner.groups = groups;
+        hasFlyer = groups.contains(sg -> sg.type.flying);
+        arcWaveCache.clear();
     }
 
     public static void drawFlyerSpawner(){
@@ -59,21 +57,23 @@ public class ArcWaveSpawner{
         }
     }
 
-    public static waveInfo getOrInit(int wave){
-        wave = Math.min(wave, calWinWave());
-        while(arcWaveCache.size <= wave) arcWaveCache.add(new waveInfo(wave));
+    public static WaveInfo getOrInit(int wave){
+        wave = Math.min(wave, calWinWaveClamped());
+        while(arcWaveCache.size <= wave) arcWaveCache.add(new WaveInfo(arcWaveCache.size));
         return arcWaveCache.get(wave);
     }
 
     public static int calWinWave(){
         if(state.rules.winWave >= 1) return state.rules.winWave;
-        int maxwave = 0;
-        for(SpawnGroup group : state.rules.spawns){
-            if(group.end > 99999) continue;
+        int maxwave = 1;
+        for(SpawnGroup group : groups){
             maxwave = Math.max(maxwave, group.end);
         }
-        if(maxwave == 0 && state.rules.waveSpacing > 10f * Time.toSeconds) maxwave = (int)(120 * Time.toMinutes / state.rules.waveSpacing);
-        return Math.min(maxwave + 1, 1000);
+        return maxwave;
+    }
+
+    public static int calWinWaveClamped(){
+        return Math.min(calWinWave(), 10000);
     }
 
     public static void arcDashCircling(float x, float y, float radius, float speed){
@@ -106,24 +106,19 @@ public class ArcWaveSpawner{
     /**
      * 单一波次详情
      */
-    public static class waveInfo{
-        public final int waveIndex;
-        public final Seq<waveGroup> groups = new Seq<>();
+    public static class WaveInfo{
+        public final int wave;//begin from 0
+        public final Seq<WaveGroup> groups = new Seq<>();
 
-        public int amount = 0, amountL = 0;
-
+        public int amount = 0;
         public float health = 0, effHealth = 0, dps = 0;
-        /**
-         * 临时数据记录
-         */
-        public long healthL = 0, effHealthL = 0, dpsL = 0;
 
-        waveInfo(int waveIndex){
-            this.waveIndex = waveIndex;
-            for(SpawnGroup group : state.rules.spawns){
-                int amount = group.getSpawned(waveIndex);
+        WaveInfo(int wave){
+            this.wave = wave;
+            for(SpawnGroup group : ArcWaveSpawner.groups){
+                int amount = group.getSpawned(wave);
                 if(amount == 0) continue;
-                groups.add(new waveGroup(waveIndex, group));
+                groups.add(new WaveGroup(wave, group));
             }
             initProperty();
         }
@@ -137,37 +132,34 @@ public class ArcWaveSpawner{
             });
         }
 
-        public void specLoc(int spawn, Boolf<SpawnGroup> pre){
-            amountL = 0;
-            healthL = 0;
-            effHealthL = 0;
-            dpsL = 0;
-            groups.each(waveGroup -> (spawn == -1 || waveGroup.group.spawn == -1 || waveGroup.group.spawn == spawn) && pre.get(waveGroup.group),
-            group -> {
-                amountL += group.amountT;
-                healthL += group.healthT;
-                effHealthL += group.effHealthT;
-                dpsL += group.dpsT;
-            });
-        }
+        public Table proTable(boolean doesRow, int spawn, Boolf<SpawnGroup> filter){
+            int amount = 0;
+            float health = effHealth = dps = 0;
+            for(var group : groups){
+                if(spawn != -1 && group.group.spawn != -1 && group.group.spawn != spawn) continue;
+                if(!filter.get(group.group)) continue;
+                amount += group.amountT;
+                health += group.healthT;
+                effHealth += group.effHealthT;
+                dps += group.dpsT;
+            }
 
-        public Table proTable(boolean doesRow){
-            if(amountL == 0) return new Table(t -> t.add("该波次没有敌人"));
-            return new Table(t -> {
-                t.add("\uE86D").width(50f);
-                t.add("[accent]" + amountL).growX().padRight(50f);
+            if(amount == 0) return new Table(t -> t.add("该波次没有敌人"));
+            Table t = new Table();
+            t.add("\uE86D").width(50f);
+            t.add("[accent]" + amount).growX().padRight(50f);
+            if(doesRow) t.row();
+            t.add("\uE813").width(50f);
+            t.add("[accent]" + UI.formatAmount((long)health)).growX().padRight(50f);
+            if(doesRow) t.row();
+            if(effHealth != health){
+                t.add("\uE810").width(50f);
+                t.add("[accent]" + UI.formatAmount((long)effHealth)).growX().padRight(50f);
                 if(doesRow) t.row();
-                t.add("\uE813").width(50f);
-                t.add("[accent]" + UI.formatAmount(healthL)).growX().padRight(50f);
-                if(doesRow) t.row();
-                if(effHealthL != healthL){
-                    t.add("\uE810").width(50f);
-                    t.add("[accent]" + UI.formatAmount(effHealthL)).growX().padRight(50f);
-                    if(doesRow) t.row();
-                }
-                t.add("\uE86E").width(50f);
-                t.add("[accent]" + UI.formatAmount(dpsL)).growX();
-            });
+            }
+            t.add("\uE86E").width(50f);
+            t.add("[accent]" + UI.formatAmount((long)dps)).growX();
+            return t;
         }
 
         public Table unitTable(int spawn, Boolf<SpawnGroup> pre){
@@ -206,31 +198,22 @@ public class ArcWaveSpawner{
     /**
      * 一种更为详细的spawnGroup
      */
-    public static class waveGroup{
-        public final int waveIndex;
+    public static class WaveGroup{
+        public final int wave;
         public final SpawnGroup group;
         public final int amount;
+        public final float shield, health, effHealth, dps;
         public final int amountT;
-        public final float shield;
-        public final float health;
-        public float effHealth;
-        public float dps;
-        public final float healthT;
-        public final float effHealthT;
-        public final float dpsT;
+        public final float healthT, effHealthT, dpsT;
 
-        public waveGroup(int waveIndex, SpawnGroup group){
-            this.waveIndex = waveIndex;
+        public WaveGroup(int wave, SpawnGroup group){
+            this.wave = wave;
             this.group = group;
-            this.amount = group.getSpawned(waveIndex);
-            this.shield = group.getShield(waveIndex);   //盾
+            this.amount = group.getSpawned(wave);
+            this.shield = group.getShield(wave);   //盾
             this.health = (group.type.health + shield) * amount;   //盾+血
-            this.dps = group.type.estimateDps() * amount;
-            this.effHealth = health;
-            if(group.effect != null){
-                this.effHealth *= group.effect.healthMultiplier;
-                this.dps *= group.effect.damageMultiplier * group.effect.reloadMultiplier;
-            }
+            this.effHealth = health * (group.effect != null ? group.effect.healthMultiplier : 1f); //血*效果
+            this.dps = group.type.estimateDps() * amount * (group.effect != null ? group.effect.damageMultiplier * group.effect.reloadMultiplier : 1f);
 
             int multiplier = group.spawn != -1 || spawner.countSpawns() < 2 ? 1 : spawner.countSpawns();
             this.amountT = amount * multiplier;

@@ -119,7 +119,7 @@ public class WaveInfoDisplay extends Table{
         lsSet.cont.add("设定查询波次").padRight(5f).left();
         TextField field = lsSet.cont.field(state.wave + waveOffset + "", text -> waveOffset = Integer.parseInt(text) - state.wave).size(320f, 54f).valid(Strings::canParsePositiveInt).maxTextLength(100).get();
         lsSet.cont.row();
-        lsSet.cont.slider(1, ArcWaveSpawner.calWinWave(), 1, res -> {
+        lsSet.cont.slider(1, ArcWaveSpawner.calWinWaveClamped(), 1, res -> {
             waveOffset = (int)res - state.wave;
             field.setText((int)res + "");
         }).fillX().colspan(2);
