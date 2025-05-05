@@ -53,7 +53,7 @@ index a24c659a8ee848c12921e5bc3afae83972b3d2a7..eb07ca6105752d7e7299a355895905c9
              if(!Mathf.zero(cons) || !Mathf.zero(prod)){
                  cont.table(t -> {
 diff --git a/core/src/mindustry/world/blocks/logic/LogicBlock.java b/core/src/mindustry/world/blocks/logic/LogicBlock.java
-index 92bbb5b8d68b89c6d7ffad48bbe59ee868b98c62..40b1c4e481e8f9600aace4d3fa9be710aa52c992 100644
+index 92bbb5b8d68b89c6d7ffad48bbe59ee868b98c62..545fcec5010faf88c92738fcf90d55ef3f6b85ab 100644
 --- a/core/src/mindustry/world/blocks/logic/LogicBlock.java
 +++ b/core/src/mindustry/world/blocks/logic/LogicBlock.java
 @@ -193,7 +193,7 @@ public class LogicBlock extends Block{
@@ -130,7 +130,7 @@ index 92bbb5b8d68b89c6d7ffad48bbe59ee868b98c62..40b1c4e481e8f9600aace4d3fa9be710
 +                                        tmp.readCompressed((byte[])block.config, false);
 +                                        String code = tmp.code;
 +                                        cont.button(block.block.emoji(), () -> {
-+                                            updateCode(code);
++                                            configure(block.config);
 +                                            hide();
 +                                        }).tooltip(Strings.truncate(code, 300, "\n...")).size(iconMed);
 +                                    }
