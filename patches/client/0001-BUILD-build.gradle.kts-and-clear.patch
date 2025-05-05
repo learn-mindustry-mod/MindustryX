@@ -7,7 +7,7 @@ clear and replce jabel(Support record)
 way-zer <himc.wicp@gmail.com> on 2024/6/9
 ---
  .gitignore                                    |   2 +-
- android/build.gradle                          |  99 +++---
+ android/build.gradle                          | 101 ++-----
  android/proguard-rules.pro                    |   4 +
  .../com/github/bsideup/jabel/Desugar.java     |  13 +
  .../javax.annotation.processing.Processor     |   6 +
@@ -25,7 +25,7 @@ way-zer <himc.wicp@gmail.com> on 2024/6/9
  settings.gradle                               |  10 +-
  tools/build.gradle                            |  78 +++--
  tools/src/mindustry/tools/Generators.java     |   2 +-
- 19 files changed, 424 insertions(+), 663 deletions(-)
+ 19 files changed, 418 insertions(+), 671 deletions(-)
  create mode 100644 annotations/src/main/java/com/github/bsideup/jabel/Desugar.java
  create mode 100644 annotations/src/main/resources/META-INF/services/javax.annotation.processing.Processor
  delete mode 100644 core/build.gradle
@@ -52,10 +52,10 @@ index 5e3b7987ef4f776a0bc35dde58fb2c74f4acdb07..b5b2a237c2f5343aab2fb668337c2bc4
  /core/assets/locales
  /core/assets/cache/
 diff --git a/android/build.gradle b/android/build.gradle
-index f1dc45aa74b149babea9cce2535ed7dca8d49a1f..3377ee1e7d5500b61612c10b7783a14a02544a74 100644
+index f1dc45aa74b149babea9cce2535ed7dca8d49a1f..b03edcb51d25ecb8f2620060a6e73bf87b66cae3 100644
 --- a/android/build.gradle
 +++ b/android/build.gradle
-@@ -1,18 +1,19 @@
+@@ -1,45 +1,23 @@
 -buildscript{
 -    repositories{
 -        mavenLocal()
@@ -63,22 +63,12 @@ index f1dc45aa74b149babea9cce2535ed7dca8d49a1f..3377ee1e7d5500b61612c10b7783a14a
 -        google()
 -        maven{ url "https://oss.sonatype.org/content/repositories/snapshots/" }
 -    }
-+plugins{
-+    id("com.android.application") version "8.9.2"
-+}
- 
+-
 -    dependencies{
 -        classpath 'com.android.tools.build:gradle:8.2.2'
-+ext{
-+    findSdkDir = {
-+        //null because IntelliJ doesn't get env variables
-+        def v = System.getenv("ANDROID_HOME")
-+        if(v != null) return v
-+        //rootDir is null here, amazing. brilliant.
-+        def file = new File(rootDir, "local.properties")
-+        def props = new Properties().with{ p -> p.load(file.newReader()); return p }
-+        return props.get("sdk.dir")
-     }
+-    }
++plugins{
++    id("com.android.application") version "8.9.2"
  }
  
 -apply plugin: "com.android.application"
@@ -86,34 +76,38 @@ index f1dc45aa74b149babea9cce2535ed7dca8d49a1f..3377ee1e7d5500b61612c10b7783a14a
  configurations{ natives }
  
  repositories{
-@@ -20,16 +21,8 @@ repositories{
-     maven{ url "https://maven.google.com" }
- }
- 
+     mavenCentral()
+-    maven{ url "https://maven.google.com" }
+-}
+-
 -task deploy(type: Copy){
 -    dependsOn "assembleRelease"
 -
 -    from "build/outputs/apk/release/android-release.apk"
 -    into "../deploy/"
 -    rename("android-release.apk", "${generateDeployName('android')}.apk")
--}
--
++    maven{ url "https://dl.google.com/dl/android/maven2/" }
+ }
+ 
  android{
 -    namespace = "io.anuke.mindustry"
+-    buildToolsVersion = '34.0.0'
+-    compileSdk = 34
 +    namespace = "com.github.tinylake.mindustryX"
-     buildToolsVersion = '34.0.0'
-     compileSdk = 34
++    compileSdk = 35
      sourceSets{
-@@ -39,7 +32,7 @@ android{
-             aidl.srcDirs = ['src']
-             renderscript.srcDirs = ['src']
+         main{
+             manifest.srcFile 'AndroidManifest.xml'
+             java.srcDirs = ['src']
+-            aidl.srcDirs = ['src']
+-            renderscript.srcDirs = ['src']
              res.srcDirs = ['res']
 -            assets.srcDirs = ['assets', 'src/main/assets', '../core/assets/']
-+            assets.srcDirs = ['assets', 'src/main/assets', '../core/assets/', '../../assets/']
++            assets.srcDirs = ['../core/assets/', '../../assets/']
              jniLibs.srcDirs = ['libs']
          }
  
-@@ -51,8 +44,6 @@ android{
+@@ -51,8 +29,6 @@ android{
      }
  
      defaultConfig{
@@ -122,7 +116,7 @@ index f1dc45aa74b149babea9cce2535ed7dca8d49a1f..3377ee1e7d5500b61612c10b7783a14a
          def versionNameResult = "$versionNumber-$versionType-${getBuildVersion().replace(" ", "-")}"
  
          applicationId "io.anuke.mindustry"
-@@ -60,14 +51,16 @@ android{
+@@ -60,14 +36,16 @@ android{
          targetSdkVersion 34
          
          versionName versionNameResult
@@ -143,7 +137,7 @@ index f1dc45aa74b149babea9cce2535ed7dca8d49a1f..3377ee1e7d5500b61612c10b7783a14a
      }
  
      compileOptions{
-@@ -96,7 +89,7 @@ android{
+@@ -96,7 +74,7 @@ android{
      }
  
      buildTypes{
@@ -152,7 +146,7 @@ index f1dc45aa74b149babea9cce2535ed7dca8d49a1f..3377ee1e7d5500b61612c10b7783a14a
              //TODO without these lines (r8 enabled), Mindustry crashes with missing default interface method errors.
              //WHY THE HELL ARE DEFAULT INTERFACES NOT BEING DESUGARED? WHY DID UPDATING AGP MAKE THIS HAPPEN?
              //When I ENABLE shrinking, r8 goes and REMOVES ALL DEFAULT INTERFACE CLASSES, which breaks mods. Why?
-@@ -104,12 +97,7 @@ android{
+@@ -104,12 +82,7 @@ android{
              minifyEnabled = true
              shrinkResources = true
              proguardFiles("proguard-rules.pro")
@@ -166,9 +160,11 @@ index f1dc45aa74b149babea9cce2535ed7dca8d49a1f..3377ee1e7d5500b61612c10b7783a14a
                  signingConfig signingConfigs.release
              }
          }
-@@ -122,38 +110,29 @@ dependencies{
+@@ -121,39 +94,31 @@ dependencies{
+ 
      implementation arcModule("backends:backend-android")
      implementation 'com.jakewharton.android.repackaged:dalvik-dx:9.0.0_r3'
++    implementation 'androidx.core:core:1.16.0'
  
 -    natives "com.github.Anuken.Arc:natives-android:$arcHash"
 -    natives "com.github.Anuken.Arc:natives-freetype-android:$arcHash"
@@ -201,8 +197,9 @@ index f1dc45aa74b149babea9cce2535ed7dca8d49a1f..3377ee1e7d5500b61612c10b7783a14a
  }
  
 -task run(type: Exec){
+-    commandLine "${findSdkDir()}/platform-tools/adb", 'shell', 'am', 'start', '-n', 'io.anuke.mindustry/mindustry.android.AndroidLauncher'
 +tasks.register('run', Exec){
-     commandLine "${findSdkDir()}/platform-tools/adb", 'shell', 'am', 'start', '-n', 'io.anuke.mindustry/mindustry.android.AndroidLauncher'
++    commandLine "adb", 'shell', 'am', 'start', '-n', 'io.anuke.mindustry/mindustry.android.AndroidLauncher'
  }
  
 -if(!project.ext.hasSprites()){

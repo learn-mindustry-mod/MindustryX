@@ -170,11 +170,18 @@ object AutoUpdate {
 
             button("自动下载更新") {
                 if (asset == null) return@button
-                if (!VarsX.isLoader && OS.isAndroid) {
-                    Vars.ui.showErrorMessage("目前不支持Apk自动安卓，请在浏览器打开后手动安装")
-                    return@button
+                startDownload(asset.copy(url = url)) { file ->
+                    if (VarsX.isLoader) {
+                        Vars.mods.importMod(file)
+                        file.delete()
+                        Vars.ui.mods.show()
+                    } else if (OS.isAndroid) {
+                        //Hook inside Android, invoke ApkInstallHelper
+                        Vars.platform.shareFile(file)
+                    } else {
+                        installDesktopJar(file)
+                    }
                 }
-                startDownload(asset.copy(url = url))
             }.fillX().row()
 
             if (version == newVersion) {
@@ -194,7 +201,7 @@ object AutoUpdate {
         dialog.show()
     }
 
-    private fun startDownload(asset: Release.Asset) {
+    private fun startDownload(asset: Release.Asset, endDownload: (Fi) -> Unit) {
         val file = Vars.bebuildDirectory.child(asset.name)
 
         var progress = 0f
@@ -213,26 +220,29 @@ object AutoUpdate {
             show()
         }
         Http.get(asset.url, { res ->
+            if (file.exists() && file.length() == res.contentLength) {
+                dialog.hide()
+                Core.app.post { endDownload(file) }
+                return@get
+            }
             length = res.contentLength.toFloat() / 1024 / 1024
             val buffer = 1024 * 1024
             file.write(false, buffer).use { out ->
-                Streams.copyProgress(res.resultAsStream, out, res.contentLength, buffer) { progress = it }
+                Streams.copyProgress(res.resultAsStream, out, res.contentLength, buffer) {
+                    progress = it
+                    if (canceled) res.resultAsStream.close()
+                }
             }
             if (canceled) return@get
-            endDownload(file)
+            Core.app.post { endDownload(file) }
+            dialog.hide()
         }) {
             dialog.hide()
             Vars.ui.showException(it)
         }
     }
 
-    private fun endDownload(file: Fi) {
-        if (VarsX.isLoader) {
-            Vars.mods.importMod(file)
-            file.delete()
-            Vars.ui.mods.show()
-            return
-        }
+    private fun installDesktopJar(file: Fi) {
         val fileDest = if (OS.hasProp("becopy")) Fi.get(OS.prop("becopy"))
         else Fi.get(BeControl::class.java.protectionDomain.codeSource.location.toURI().path)
         val args = if (OS.isMac) arrayOf<String>(Vars.javaPath, "-XstartOnFirstThread", "-DlastBuild=" + Version.build, "-Dberestart", "-Dbecopy=" + fileDest.absolutePath(), "-jar", file.absolutePath())

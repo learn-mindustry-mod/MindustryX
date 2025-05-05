@@ -10,7 +10,7 @@ Content-Transfer-Encoding: 8bit
 way-zer <himc.wicp@gmail.com> on 2024/9/8
 ---
  .gitignore                                         | 1 +
- android/build.gradle                               | 4 ++--
+ android/build.gradle                               | 2 +-
  android/res/values/strings.xml                     | 2 +-
  build.gradle                                       | 2 +-
  core/build.gradle.kts                              | 2 +-
@@ -20,7 +20,7 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  core/src/mindustry/net/NetworkIO.java              | 2 +-
  desktop/src/mindustry/desktop/DesktopLauncher.java | 2 +-
  gradle.properties                                  | 2 ++
- 11 files changed, 18 insertions(+), 9 deletions(-)
+ 11 files changed, 17 insertions(+), 8 deletions(-)
 
 diff --git a/.gitignore b/.gitignore
 index b5b2a237c2f5343aab2fb668337c2bc47a45c1b8..308ff12c92a06e11c18b33f540098a0f1347ab5e 100644
@@ -35,19 +35,10 @@ index b5b2a237c2f5343aab2fb668337c2bc47a45c1b8..308ff12c92a06e11c18b33f540098a0f
  /out/
  ios/libs/
 diff --git a/android/build.gradle b/android/build.gradle
-index 3377ee1e7d5500b61612c10b7783a14a02544a74..086afef51661c2d01e366f99e6afbcf6ce48f744 100644
+index b03edcb51d25ecb8f2620060a6e73bf87b66cae3..9d3c12b23804cccfe45087336cffa30af106f86c 100644
 --- a/android/build.gradle
 +++ b/android/build.gradle
-@@ -18,7 +18,7 @@ configurations{ natives }
- 
- repositories{
-     mavenCentral()
--    maven{ url "https://maven.google.com" }
-+    maven{ url "https://dl.google.com/dl/android/maven2/" }
- }
- 
- android{
-@@ -46,7 +46,7 @@ android{
+@@ -31,7 +31,7 @@ android{
      defaultConfig{
          def versionNameResult = "$versionNumber-$versionType-${getBuildVersion().replace(" ", "-")}"
  
