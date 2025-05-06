@@ -107,7 +107,7 @@ public class UIExt{
                 int add = maxSize;
                 //避免分割颜色
                 int sp = message.lastIndexOf('[', i + add);
-                int sp2 = message.lastIndexOf(']', i + add);
+                int sp2 = message.lastIndexOf(']', i + add + 10);
                 if(sp2 > sp && i + add - sp < 10) add = sp - i;
 
                 sendChatMessage(message.substring(i, i + add));
