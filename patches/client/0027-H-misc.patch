@@ -26,8 +26,8 @@ Content-Transfer-Encoding: 8bit
  .../mindustry/world/blocks/defense/Radar.java |  9 +++++++++
  .../world/blocks/distribution/Router.java     |  3 ++-
  .../world/blocks/production/BeamDrill.java    | 12 ++++-------
- .../mindustry/desktop/DesktopLauncher.java    | 18 ++++++++++++++++-
- 19 files changed, 92 insertions(+), 53 deletions(-)
+ .../mindustry/desktop/DesktopLauncher.java    | 20 ++++++++++++++++++-
+ 19 files changed, 94 insertions(+), 53 deletions(-)
 
 diff --git a/core/src/mindustry/ClientLauncher.java b/core/src/mindustry/ClientLauncher.java
 index a64b7b36fdd74a29a3caae54a1f1a514039b891f..beea309f225be8de3799089a87d1fdcb8e30ee5c 100644
@@ -459,7 +459,7 @@ index 9921e4d7cf3f704a666262479af575a7dec9d668..b5d675df53bf84bc68222c8556480cd3
              drawPlaceText(Core.bundle.get("bar.drilltierreq"), x, y, false);
          }
 diff --git a/desktop/src/mindustry/desktop/DesktopLauncher.java b/desktop/src/mindustry/desktop/DesktopLauncher.java
-index bee67a07c282daadc799d3f345bee48b9223b536..ec0580ac35748b7a329c4275a672daa00f1077b3 100644
+index bee67a07c282daadc799d3f345bee48b9223b536..868b6faa4b3deefd240e66260b7291c9380adf39 100644
 --- a/desktop/src/mindustry/desktop/DesktopLauncher.java
 +++ b/desktop/src/mindustry/desktop/DesktopLauncher.java
 @@ -23,6 +23,7 @@ import mindustry.net.*;
@@ -470,26 +470,28 @@ index bee67a07c282daadc799d3f345bee48b9223b536..ec0580ac35748b7a329c4275a672daa0
  
  import java.io.*;
  
-@@ -73,6 +74,18 @@ public class DesktopLauncher extends ClientLauncher{
+@@ -73,6 +74,20 @@ public class DesktopLauncher extends ClientLauncher{
  
      public DesktopLauncher(String[] args){
          Version.init();
 +        //MDTX, auto discover steam
 +        String steamJar = null;
 +        if(!OS.isAndroid && !OS.isIos){
-+            if(new Fi("addon_steam.jar").exists()){
-+                //exists in the addon
-+                steamJar = "addon_steam.jar";
-+                Version.modifier = "steam";
-+            }else if(new Fi("steamworks4j.dll", FileType.classpath).exists()){
-+                //already in the classpath
-+                Version.modifier = "steam";
++            if(new Fi("saves").exists() || new Fi("steam_appid.txt").exists()){
++                if(new Fi("addon_steam.jar").exists()){
++                    //exists in the addon
++                    steamJar = "addon_steam.jar";
++                    Version.modifier = "steam";
++                }else if(new Fi("steamworks4j.dll", FileType.classpath).exists()){
++                    //already in the classpath
++                    Version.modifier = "steam";
++                }
 +            }
 +        }
          boolean useSteam = Version.modifier.contains("steam");
          testMobile = Seq.with(args).contains("-testMobile");
  
-@@ -101,7 +114,10 @@ public class DesktopLauncher extends ClientLauncher{
+@@ -101,7 +116,10 @@ public class DesktopLauncher extends ClientLauncher{
              });
  
              try{
