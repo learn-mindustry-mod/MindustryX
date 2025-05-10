@@ -76,7 +76,7 @@ public class ReplayController{
     }
 
     public static void onConnect(String ip){
-        if(!Core.settings.getBool("replayRecord")) return;
+        if(!Core.settings.getBool("replayRecord") || LogicExt.contentsCompatibleMode) return;
         if(replaying) return;
         var file = saveDirectory.child(new Date().getTime() + ".mrep");
         try{
@@ -110,6 +110,7 @@ public class ReplayController{
             return true;
         }
     };
+
     public static void onClientPacket(Packet p){
         if(!recording || p instanceof Streamable) return;
         if(p instanceof Disconnect){
@@ -119,23 +120,22 @@ public class ReplayController{
         }
         try{
             byte id = Net.getPacketId(p);
+            writes.f(Time.time - startTime);
+            writes.b(id);
+            tmpBuf.position(0);
+            var bak = net;
+            net = fakeServer;
             try{
-                writes.f(Time.time - startTime);
-                writes.b(id);
-                tmpBuf.position(0);
-                var bak = net;
-                net = fakeServer;
                 p.write(tmpWr);
+            }finally{
                 net = bak;
-                int l = tmpBuf.position();
-                writes.s(l);
-                writes.b(tmpBuf.array(), 0, l);
-            }catch(Exception e){
-                net.disconnect();
-                Core.app.post(() -> ui.showException("录制出错!", e));
             }
+            int l = tmpBuf.position();
+            writes.s(l);
+            writes.b(tmpBuf.array(), 0, l);
         }catch(Exception e){
-            Log.err(e);
+            net.disconnect();
+            Core.app.post(() -> ui.showException("录制出错!", e));
         }
     }
 
