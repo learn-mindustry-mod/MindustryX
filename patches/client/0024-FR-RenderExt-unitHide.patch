@@ -8,7 +8,7 @@ Subject: [PATCH] FR(RenderExt) unitHide
  1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/input/InputHandler.java b/core/src/mindustry/input/InputHandler.java
-index 70a116842879233f2f1cb5b5b4008bf303e53805..b18d98f1bffd025eef6bf766458585983386fe0a 100644
+index 70a116842879233f2f1cb5b5b4008bf303e53805..07b9a851804b77f665e5cfb81493740bcac5f865 100644
 --- a/core/src/mindustry/input/InputHandler.java
 +++ b/core/src/mindustry/input/InputHandler.java
 @@ -42,6 +42,7 @@ import mindustry.world.blocks.payloads.*;
@@ -24,7 +24,7 @@ index 70a116842879233f2f1cb5b5b4008bf303e53805..b18d98f1bffd025eef6bf76645858598
      public @Nullable Unit selectedUnit(){
          Unit unit = Units.closest(player.team(), Core.input.mouseWorld().x, Core.input.mouseWorld().y, 40f, u -> u.isAI() && u.playerControllable());
 -        if(unit != null){
-+        if(!RenderExt.unitHide && unit != null){
++        if(!RenderExt.unitHide.get() && unit != null){
              unit.hitbox(Tmp.r1);
              Tmp.r1.grow(6f);
              if(Tmp.r1.contains(Core.input.mouseWorld())){

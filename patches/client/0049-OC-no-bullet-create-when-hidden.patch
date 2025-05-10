@@ -9,7 +9,7 @@ Subject: [PATCH] OC: no bullet create when hidden
  2 files changed, 3 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/entities/bullet/BulletType.java b/core/src/mindustry/entities/bullet/BulletType.java
-index 8eeb068c5548405867f7b4c3498ac197e0f8c5a5..097a3045042c6d4bf2af1d39095890a1cc9e0bc1 100644
+index 8eeb068c5548405867f7b4c3498ac197e0f8c5a5..cccb5a436099fc7b03398b223686bc0b60598b89 100644
 --- a/core/src/mindustry/entities/bullet/BulletType.java
 +++ b/core/src/mindustry/entities/bullet/BulletType.java
 @@ -22,6 +22,7 @@ import mindustry.graphics.*;
@@ -24,7 +24,7 @@ index 8eeb068c5548405867f7b4c3498ac197e0f8c5a5..097a3045042c6d4bf2af1d39095890a1
          @Nullable Entityc owner, @Nullable Entityc shooter, Team team, float x, float y, float angle, float damage, float velocityScl,
          float lifetimeScl, Object data, @Nullable Mover mover, float aimX, float aimY, @Nullable Teamc target
      ){
-+        if(!RenderExt.bulletShow && net.client() && !(this instanceof MassDriverBolt)) return null;
++        if(RenderExt.noBulletShow.get() && net.client() && !(this instanceof MassDriverBolt)) return null;
          angle += angleOffset + Mathf.range(randomAngleOffset);
  
          if(!Mathf.chance(createChance)) return null;

@@ -45,13 +45,13 @@ object NewToolTable : ToolTableBase("${Iconc.settings}") {
         }
 
         toggle("[cyan]块", "建筑显示", { RenderExt.blockRenderLevel > 0 }) { Settings.cycle("blockRenderLevel", 3) }
-        toggle("[cyan]兵", "兵种显示", { !RenderExt.unitHide }) { RenderExt.unitHide = !RenderExt.unitHide }
-        toggle("[cyan]弹", "子弹显示", { RenderExt.bulletShow }) { Settings.toggle("bulletShow") }
+        toggle("[cyan]兵", "兵种显示", { !RenderExt.unitHide.value }) { RenderExt.unitHide.toggle() }
+        toggle("[cyan]弹", "子弹显示", { !RenderExt.noBulletShow.value }) { RenderExt.noBulletShow.toggle() }
         toggle("[cyan]效", "特效显示", { Vars.renderer.enableEffects }) { Settings.toggle("effects") }
         toggle("[cyan]墙", "墙体阴影显示", { Vars.enableDarkness }) { Vars.enableDarkness = !Vars.enableDarkness }
         toggle("[cyan]${Iconc.map}", "小地图显示", { Core.settings.getBool("minimap") }) { Settings.toggle("minimap") }
 
-        toggle("箱", "碰撞箱显示", { Core.settings.getBool("unithitbox") }) { Settings.toggle("unithitbox") }
+        toggle("箱", "碰撞箱显示", { RenderExt.unitHitbox.value }) { RenderExt.unitHitbox.toggle() }
         toggle("扫", "扫描模式", { ArcScanMode.enabled }) { ArcScanMode.enabled = !ArcScanMode.enabled }
         button("${Iconc.blockRadar}", "雷达开关") { ArcRadar.mobileRadar = !ArcRadar.mobileRadar }.get().also {
             SettingsV2.bindQuickSettings(it, ArcRadar.settings)

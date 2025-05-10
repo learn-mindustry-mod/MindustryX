@@ -16,7 +16,7 @@ enum class BindingExt(val default: KeybindValue = KeyCode.unset, val category: S
     oreAdsorption(KeyCode.unset),
 
     //MDTX
-    toggle_unit(KeyCode.unset, "mindustryX", onTap = { RenderExt.unitHide = !RenderExt.unitHide }),
+    toggle_unit(KeyCode.unset, "mindustryX", onTap = { RenderExt.unitHide.toggle() }),
     point(KeyCode.j, onTap = MarkerType::showPanUI),
     lockonLastMark(KeyCode.unset, onTap = MarkerType::lockOnLastMark),
     toggle_block_render(KeyCode.unset, onTap = { Settings.cycle("blockRenderLevel", 3) }),

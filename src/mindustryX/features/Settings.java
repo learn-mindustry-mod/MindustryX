@@ -74,17 +74,6 @@ public class Settings{
             c.checkPref("editOtherBlock", false);
             c.checkPref("logicDisplayNoBorder", false);
 
-            c.addCategory("entitySettings");
-            c.checkPref("bulletShow", true);
-            c.checkPref("payloadpreview", true);
-            c.checkPref("unithitbox", false);
-            c.checkPref("unitHideExcludePlayers", true);
-            c.sliderPref("unitDrawMinHealth", 0, 0, 2500, 50, i -> i + "[red]HP");
-            c.checkPref("damagePopup", false);
-            c.checkPref("healPopup", true);
-            c.checkPref("playerPopupOnly", true);
-            c.sliderPref("popupMinHealth", 600, 0, 4000, 50, i -> i + "[red]HP");
-
             c.addCategory("developerMode");
             c.checkPref("renderSort", false);
             c.checkPref("reliableSync", false);

@@ -672,7 +672,7 @@ index eeca7177aaccd87f554796d95e6557ce8ad739f6..fad7e64e6668ca1905868a828d53fd40
          player.mouseY = unit.aimY();
  
 diff --git a/core/src/mindustry/input/InputHandler.java b/core/src/mindustry/input/InputHandler.java
-index b18d98f1bffd025eef6bf766458585983386fe0a..b7e5532864e45d37352bab6b244215658ca3689c 100644
+index 07b9a851804b77f665e5cfb81493740bcac5f865..70d4a237dfc6f969d7e578dfb8a83545de345bab 100644
 --- a/core/src/mindustry/input/InputHandler.java
 +++ b/core/src/mindustry/input/InputHandler.java
 @@ -38,11 +38,13 @@ import mindustry.world.*;
@@ -1406,7 +1406,7 @@ index a4a8879abc1bba679be3377e8871d8141fb7bc88..aff0affecf7dbc527a33ce3ebb5b8518
          ruleInfo(cell, text);
          current.row();
 diff --git a/core/src/mindustry/ui/dialogs/DatabaseDialog.java b/core/src/mindustry/ui/dialogs/DatabaseDialog.java
-index e48dc1c0d75a97ea64718bd5300bab072c513204..fea1ee710ae637781f21b43caf8f9cc90cce11ff 100644
+index 98a50593b20ee5bb45769183f1d575a96cd87e31..75c4dae5c77abc56c6aefa386e6867635ec01707 100644
 --- a/core/src/mindustry/ui/dialogs/DatabaseDialog.java
 +++ b/core/src/mindustry/ui/dialogs/DatabaseDialog.java
 @@ -21,7 +21,6 @@ import mindustry.world.*;

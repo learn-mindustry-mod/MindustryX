@@ -151,6 +151,10 @@ object SettingsV2 {
     }
 
     class CheckPref @JvmOverloads constructor(name: String, def: Boolean = false) : Data<Boolean>(name, def) {
+        fun toggle() {
+            set(!value)
+        }
+
         override fun buildUI(table: Table) {
             val box = CheckBox(title)
             box.changed { set(box.isChecked) }
@@ -187,7 +191,11 @@ object SettingsV2 {
         }
     }
 
-    class ChoosePref @JvmOverloads constructor(name: String, val values: List<String>, def: Int = 0) : SliderPref(name, def, 0, values.size - 1, labelMap = { values[it] })
+    class ChoosePref @JvmOverloads constructor(name: String, val values: List<String>, def: Int = 0) : SliderPref(name, def, 0, values.size - 1, labelMap = { values[it] }) {
+        fun circle() {
+            set((value + 1) % values.size)
+        }
+    }
 
     open class TextPref @JvmOverloads constructor(name: String, def: String = "") : Data<String>(name, def) {
         override fun set(value: String) {

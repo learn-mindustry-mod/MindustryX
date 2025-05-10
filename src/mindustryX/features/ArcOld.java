@@ -78,7 +78,6 @@ public class ArcOld{
 
             c.checkPref("unitWeaponTargetLine", false);
             c.checkPref("unitItemCarried", true);
-            c.checkPref("unithitbox", false);
             c.checkPref("unitLogicMoveLine", false);
             c.checkPref("unitLogicTimerBars", false);
             c.checkPref("arcBuildInfo", false);

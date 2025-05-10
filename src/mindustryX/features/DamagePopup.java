@@ -19,6 +19,7 @@ import mindustry.graphics.*;
 import mindustry.ui.*;
 import mindustry.world.blocks.*;
 import mindustryX.events.*;
+import mindustryX.features.SettingsV2.*;
 
 import java.util.*;
 
@@ -43,19 +44,23 @@ public class DamagePopup{
     public static float popupLifetime = 60f;
 
     // 设置
-    public static boolean enable;
-    public static boolean playerPopupOnly, healPopup;
-    public static float popupMinHealth;
+    private static final SettingsV2.CheckPref
+    enable = new CheckPref("damagePopup.enable"),
+    playerOnly = new CheckPref("damagePopup.playerOnly", true),
+    healPopup = new CheckPref("damagePopup.showHeal");
+    private static final SliderPref minHealth = new SliderPref("damagePopup.minHealth", 600, 0, 4000, 50, v -> v + "[red]HP");
+
+    static{
+        enable.addFallbackName("damagePopup");
+        playerOnly.addFallbackName("playerPopupOnly");
+        healPopup.addFallbackName("healPopup");
+        minHealth.addFallbackName("popupMinHealth");
+    }
 
     public static void init(){
         Events.on(HealthChangedEvent.class, DamagePopup::handleEvent);
 
         Events.run(Trigger.update, () -> {
-            enable = Core.settings.getBool("damagePopup");
-            healPopup = Core.settings.getBool("healPopup");
-            playerPopupOnly = Core.settings.getBool("playerPopupOnly");
-            popupMinHealth = Core.settings.getInt("popupMinHealth");
-
             if(Vars.state.isPaused()) return;
             if(popups.isEmpty()) return;
 
@@ -94,13 +99,13 @@ public class DamagePopup{
     }
 
     private static void handleEvent(HealthChangedEvent event){
-        if(!enable) return;
-        if(event.entity.maxHealth() < popupMinHealth) return;
-        if(event.amount < 0 && !healPopup) return;
+        if(!enable.get()) return;
+        if(event.entity.maxHealth() < minHealth.get()) return;
+        if(event.amount < 0 && !healPopup.get()) return;
         if(event.source != null){// 视角外的跳字
             Rect cameraBounds = Core.camera.bounds(r1).grow(4 * Vars.tilesize);
             if(!cameraBounds.contains(event.entity.getX(), event.entity.getY())) return;
-            if(event.source != null && playerPopupOnly && !inControl(getOwner(event.source))) return;
+            if(event.source != null && playerOnly.get() && !inControl(getOwner(event.source))) return;
         }
 
         if(event.entity instanceof Sized entitySized)

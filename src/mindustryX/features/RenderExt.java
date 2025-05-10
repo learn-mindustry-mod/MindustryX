@@ -23,13 +23,14 @@ import mindustry.world.blocks.logic.MessageBlock.*;
 import mindustry.world.blocks.production.Drill.*;
 import mindustry.world.blocks.storage.*;
 import mindustry.world.blocks.units.*;
+import mindustryX.features.SettingsV2.*;
 import mindustryX.features.draw.*;
 import mindustryX.features.func.*;
 
 import static mindustry.Vars.*;
 
 public class RenderExt{
-    public static boolean bulletShow, displayAllMessage;
+    public static boolean displayAllMessage;
     public static boolean arcChoiceUiIcon;
     public static boolean researchViewer;
     public static boolean showPlacementEffect;
@@ -43,17 +44,45 @@ public class RenderExt{
     public static int massDriverLineInterval;
     public static boolean drawBars, drawBarsMend;
     public static float healthBarMinHealth;
-    public static boolean payloadPreview;
     public static boolean deadOverlay;
     public static boolean drawBlockDisabled;
     public static boolean showOtherInfo, editOtherBlock;
-    public static boolean unitHideExcludePlayers;
-    public static float unitHideMinHealth;
     public static boolean unitWeaponTargetLine, unitItemCarried;
 
-    public static boolean unitHide = false;
     public static Color massDriverLineColor = Color.clear;
     public static Color playerEffectColor = Color.clear;
+
+    public static final SettingsV2.CheckPref noBulletShow = new CheckPref("entityRender.noBulletShow");
+    public static final SettingsV2.CheckPref unitHitbox = new CheckPref("entityRender.unitHitbox");
+    public static final SettingsV2.CheckPref payloadPreview = new CheckPref("entityRender.payloadPreview");
+
+    public static final SettingsV2.CheckPref unitHide = new CheckPref("entityRender.unitHide");
+    public static final SettingsV2.CheckPref unitHideExcludePlayers = new CheckPref("entityRender.unitHideExcludePlayers", true);
+    public static final SliderPref unitHideMinHealth = new SliderPref("entityRender.unitHideMinHealth", 0, 0, 4000, 50, v -> v + "[red]HP");
+
+    static{
+        var internal = new PersistentProvider.Arc<Boolean>("bulletShow");
+        noBulletShow.addFallback(new PersistentProvider<>(){
+            @Override
+            public Boolean get(){
+                if(internal.get() == null) return null;
+                //noinspection DataFlowIssue
+                return !internal.get();
+            }
+
+            @Override
+            public void reset(){
+                internal.reset();
+            }
+        });
+        unitHitbox.addFallbackName("unithitbox");
+        unitHitbox.addFallbackName("payloadpreview");
+
+        //noinspection unchecked
+        unitHide.setPersistentProvider(PersistentProvider.Noop.INSTANCE);
+        unitHideExcludePlayers.addFallbackName("unitHideExcludePlayers");
+        unitHideMinHealth.addFallbackName("unitDrawMinHealth");
+    }
 
     private static Effect placementEffect;
 
@@ -70,7 +99,6 @@ public class RenderExt{
         });
 
         Events.run(Trigger.update, () -> {
-            bulletShow = Core.settings.getBool("bulletShow");
             displayAllMessage = Core.settings.getBool("displayallmessage");
             arcChoiceUiIcon = Core.settings.getBool("arcchoiceuiIcon");
             researchViewer = Core.settings.getBool("researchViewer");
@@ -88,15 +116,12 @@ public class RenderExt{
             drawBars = Core.settings.getBool("blockBars");
             drawBarsMend = Core.settings.getBool("blockBars_mend");
             healthBarMinHealth = Core.settings.getInt("blockbarminhealth");
-            payloadPreview = Core.settings.getBool("payloadpreview");
             deadOverlay = Core.settings.getBool("deadOverlay");
             drawBlockDisabled = Core.settings.getBool("blockdisabled");
             showOtherInfo = Core.settings.getBool("showOtherTeamState");
             editOtherBlock = Core.settings.getBool("editOtherBlock");
             editOtherBlock &= !net.client();
 
-            unitHideExcludePlayers = Core.settings.getBool("unitHideExcludePlayers");
-            unitHideMinHealth = Core.settings.getInt("unitDrawMinHealth");
             unitWeaponTargetLine = Core.settings.getBool("unitWeaponTargetLine");
             unitItemCarried = Core.settings.getBool("unitItemCarried");
         });
@@ -129,18 +154,21 @@ public class RenderExt{
     }
 
     private static void draw(){
-        if(RenderExt.payloadPreview) PayloadDropHint.draw(player);
+        if(payloadPreview.get()) PayloadDropHint.draw(player);
     }
 
     public static void onGroupDraw(Drawc t){
-        if(!bulletShow && t instanceof Bulletc) return;
+        if(!noBulletShow.get() && t instanceof Bulletc) return;
         if(!renderer.enableEffects && t instanceof EffectState) return;
-        if(t instanceof Unitc u) hide:{
-            if(u.isPlayer() && (u.isLocal() || unitHideExcludePlayers)) break hide;
-            if(unitHide || u.maxHealth() + u.shield() < unitHideMinHealth) return;
+        if(t instanceof Unitc u && unitHide.get()) hide:{
+            if(u.isPlayer() && (u.isLocal() || unitHideExcludePlayers.get())) break hide;
+            if(u.maxHealth() + u.shield() < unitHideMinHealth.get()) return;
         }
         t.draw();
-        if(t instanceof Unit u) ArcUnits.draw(u);
+        if(t instanceof Unit u){
+            ArcUnits.draw(u);
+            if(unitHitbox.get()) drawHitBox(u);
+        }
     }
 
     public static void onBlockDraw(Tile tile, Block block, @Nullable Building build){
@@ -269,5 +297,11 @@ public class RenderExt{
         Lines.line(x1, y, Mathf.lerp(x1, x2, Mathf.clamp(ratio, 0f, 1f)), y);
 
         Draw.reset();
+    }
+
+    private static void drawHitBox(Unit unit){
+        Draw.color(unit.team.color, 0.5f);
+        Lines.circle(unit.x, unit.y, unit.hitSize / 2f);
+        Draw.color();
     }
 }

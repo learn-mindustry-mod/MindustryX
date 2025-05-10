@@ -20,7 +20,7 @@ import static mindustry.Vars.*;
 //move from mindustry.arcModule.draw.ARCUnits
 public class ArcUnits{
     private static final int maxBuildPlans = 100;
-    private static boolean alwaysShowUnitRTSAi, unitHealthBar, unitLogicMoveLine, unitLogicTimerBars, unithitbox, unitBuildPlan;
+    private static boolean alwaysShowUnitRTSAi, unitHealthBar, unitLogicMoveLine, unitLogicTimerBars, unitBuildPlan;
     private static float unitWeaponRange, unitWeaponRangeAlpha;
     public static boolean selectedUnitsFlyer, selectedUnitsLand;
 
@@ -35,7 +35,6 @@ public class ArcUnits{
             unitHealthBar = Core.settings.getBool("unitHealthBar");
             unitLogicMoveLine = Core.settings.getBool("unitLogicMoveLine");
             unitLogicTimerBars = Core.settings.getBool("unitLogicTimerBars");
-            unithitbox = Core.settings.getBool("unithitbox");
             unitBuildPlan = Core.settings.getBool("unitbuildplan");
 
             unitWeaponRange = Core.settings.getInt("unitWeaponRange") * tilesize;
@@ -68,7 +67,6 @@ public class ArcUnits{
             }
             if(unitBuildPlan) drawBuildPlan(unit);
         }
-        if(unithitbox) drawHitBox(unit);
     }
 
     private static void drawAimRange(Unit unit){
@@ -273,12 +271,6 @@ public class ArcUnits{
             counter--;
             if(counter < 0) break;
         }
-    }
-
-    private static void drawHitBox(Unit unit){
-        Draw.color(unit.team.color, 0.5f);
-        Lines.circle(unit.x, unit.y, unit.hitSize / 2f);
-        Draw.color();
     }
 
     private static void drawBuildRange(Unit unit){

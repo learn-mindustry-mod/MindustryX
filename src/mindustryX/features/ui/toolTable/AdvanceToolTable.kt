@@ -73,7 +73,7 @@ class AdvanceToolTable : ToolTableBase(Iconc.wrench.toString()) {
             button("创世神", Styles.flatToggleMenut) { Settings.toggle("worldCreator") }
                 .checked { LogicExt.worldCreator }.wrapLabel(false)
             button("解禁", Styles.flatToggleMenut) {
-                SettingsV2.allUnlocked.set(!LogicExt.allUnlocked)
+                SettingsV2.allUnlocked.toggle()
             }.checked { LogicExt.allUnlocked }.tooltip("[acid]显示并允许建造所有物品").wrapLabel(false)
             button("地形蓝图", Styles.flatToggleMenut) { Settings.toggle("terrainSchematic") }
                 .checked { LogicExt.terrainSchematic }.wrapLabel(false)
