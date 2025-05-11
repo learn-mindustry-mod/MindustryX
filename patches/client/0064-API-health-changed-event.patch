@@ -5,12 +5,12 @@ Subject: [PATCH] API: health changed event
 
 ---
  core/src/mindustry/entities/Damage.java        |  5 +++++
- core/src/mindustry/entities/Lightning.java     |  3 ++-
+ core/src/mindustry/entities/Lightning.java     |  1 +
  .../mindustry/entities/bullet/BulletType.java  |  7 +++++++
  .../mindustry/entities/comp/BuildingComp.java  |  7 ++++++-
  .../mindustry/entities/comp/HealthComp.java    | 18 ++++++++++++++++++
  .../mindustry/entities/comp/ShieldComp.java    |  3 +++
- 6 files changed, 41 insertions(+), 2 deletions(-)
+ 6 files changed, 40 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/entities/Damage.java b/core/src/mindustry/entities/Damage.java
 index 767a7ace780dde0eb6247e291a0da8a14866fc2d..f8f8d0dcae2c6e407d1b7160a45f02c8cef86d27 100644
@@ -43,19 +43,17 @@ index 767a7ace780dde0eb6247e291a0da8a14866fc2d..f8f8d0dcae2c6e407d1b7160a45f02c8
                  float d = damage * Math.min((in.block.size), baseRadius * 0.4f);
                  if(source != null){
 diff --git a/core/src/mindustry/entities/Lightning.java b/core/src/mindustry/entities/Lightning.java
-index 0bd26d7cebe9118efacc6382c1eb27009ed36f01..19c35cc94b913fed2996c86779b6f7509b199e34 100644
+index 0bd26d7cebe9118efacc6382c1eb27009ed36f01..a33380f36ca6243efa6c19835e61de2a7d9361ac 100644
 --- a/core/src/mindustry/entities/Lightning.java
 +++ b/core/src/mindustry/entities/Lightning.java
-@@ -43,7 +43,8 @@ public class Lightning{
+@@ -43,6 +43,7 @@ public class Lightning{
          bhit = false;
  
          for(int i = 0; i < length / 2; i++){
--            hitCreate.create(null, team, x, y, rotation, damage * (hitter == null ? 1f : hitter.damageMultiplier()), 1f, 1f, hitter);
 +            // MDTX: hitBullet set the owner to hitter.
-+            hitCreate.create(hitter, team, x, y, rotation, damage * (hitter == null ? 1f : hitter.damageMultiplier()), 1f, 1f, hitter);
+             hitCreate.create(null, team, x, y, rotation, damage * (hitter == null ? 1f : hitter.damageMultiplier()), 1f, 1f, hitter);
              lines.add(new Vec2(x + Mathf.range(3f), y + Mathf.range(3f)));
  
-             if(lines.size > 1){
 diff --git a/core/src/mindustry/entities/bullet/BulletType.java b/core/src/mindustry/entities/bullet/BulletType.java
 index cccb5a436099fc7b03398b223686bc0b60598b89..92a8b7ea489385bd1bd5788bba95b9aa6094865a 100644
 --- a/core/src/mindustry/entities/bullet/BulletType.java

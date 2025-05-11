@@ -9,7 +9,6 @@ import arc.scene.ui.layout.*;
 import arc.struct.*;
 import arc.util.*;
 import arc.util.pooling.*;
-import arc.util.pooling.Pool.*;
 import mindustry.*;
 import mindustry.content.*;
 import mindustry.entities.*;
@@ -21,8 +20,6 @@ import mindustry.world.blocks.*;
 import mindustryX.events.*;
 import mindustryX.features.SettingsV2.*;
 
-import java.util.*;
-
 import static arc.util.Tmp.*;
 
 /**
@@ -30,10 +27,6 @@ import static arc.util.Tmp.*;
  * Create by 2024/6/5
  */
 public class DamagePopup{
-    private static final Pool<Popup> popupPool = Pools.get(Popup.class, Popup::new);
-
-    /** 所有的跳字 */
-    private static final Seq<Popup> popups = new Seq<>();
     private static final ObjectMap<Sized, ObjectMap<DamageType, Popup>> mappedPopup = new ObjectMap<>();
 
     // 跳字初始缩放限制
@@ -60,42 +53,7 @@ public class DamagePopup{
     public static void init(){
         Events.on(HealthChangedEvent.class, DamagePopup::handleEvent);
 
-        Events.run(Trigger.update, () -> {
-            if(Vars.state.isPaused()) return;
-            if(popups.isEmpty()) return;
-
-            Iterator<Popup> iterator = popups.iterator();
-
-            while(iterator.hasNext()){
-                Popup popup = iterator.next();
-
-                if(popup.dead()){
-                    if(popup.damaged != null && superpose(popup.type)){
-                        mappedPopup.get(popup.damaged, ObjectMap::new).remove(popup.type);
-                    }
-
-                    iterator.remove();
-
-                    popupPool.free(popup);
-                }else{
-                    popup.update();
-                }
-            }
-        });
-
-        Events.run(Trigger.draw, () -> {
-            if(popups.isEmpty()) return;
-
-            Rect cameraBounds = Core.camera.bounds(r1).grow(4 * Vars.tilesize);
-
-            for(Popup popup : popups){
-                if(cameraBounds.contains(popup.getX(), popup.getY())){
-                    popup.draw();
-                }
-            }
-        });
-
-        Events.on(ResetEvent.class, e -> clearPopup());
+        Events.on(ResetEvent.class, e -> mappedPopup.clear());
     }
 
     private static void handleEvent(HealthChangedEvent event){
@@ -112,20 +70,14 @@ public class DamagePopup{
             popup(event.source instanceof Sized sized ? sized : null, entitySized, event.amount, event.isSplash);
     }
 
-    public static void clearPopup(){
-        popupPool.freeAll(popups);
-        popups.clear();
-
-        for(ObjectMap<DamageType, Popup> map : mappedPopup.values()){
-            map.clear();
-        }
-        mappedPopup.clear();
-    }
-
     private static @Nullable Entityc getOwner(Entityc source){
         Entityc current = source;
         while(current instanceof Ownerc o){
             current = o.owner();
+            //Lightning create Bullet(owner=null,data=hitter)
+            if(current == null && o instanceof Bulletc o2 && o2.data() instanceof Bulletc bullet){
+                current = bullet;
+            }
         }
         return current;
     }
@@ -166,15 +118,15 @@ public class DamagePopup{
             Popup popup = map.get(type);
 
             if(popup == null){
-                popup = popupPool.obtain().set(damaged, type, offsetX, offsetY, popupLifetime, Math.abs(amount), 1f, scale, rotation, offsetLength);
+                popup = Popup.create().set(damaged, type, offsetX, offsetY, popupLifetime, Math.abs(amount), 1f, scale, rotation, offsetLength);
                 map.put(type, popup);
-                popups.add(popup);
+                popup.add();
             }else{
                 popup.superposeAmount(Math.abs(amount));
             }
         }else{
-            Popup popup = popupPool.obtain().set(damaged, type, offsetX, offsetY, popupLifetime, Math.abs(amount), 1f, scale, rotation, offsetLength);
-            popups.add(popup);
+            Popup popup = Popup.create().set(damaged, type, offsetX, offsetY, popupLifetime, Math.abs(amount), 1f, scale, rotation, offsetLength);
+            popup.add();
         }
     }
 
@@ -182,7 +134,7 @@ public class DamagePopup{
         return type == DamageType.normal || type == DamageType.heal;
     }
 
-    private static class Popup implements Poolable, Position{
+    private static class Popup extends Decal{
         public static float maxAmountEffect = 5_000;
         public static int maxCountEffect = 50;
         public static float amountEffect = 3f;
@@ -265,11 +217,9 @@ public class DamagePopup{
             Draw.reset();
         }
 
-        public boolean dead(){
-            return timer >= lifetime;
-        }
-
         public void update(){
+            x = !superpose(type) ? originX : damaged.getX();
+            y = !superpose(type) ? originY : damaged.getY();
             if(floatTimer > 0){
                 floatTimer = Math.max(0, floatTimer - Time.delta);
             }else{
@@ -295,6 +245,18 @@ public class DamagePopup{
             splashTimer = splashTime;
         }
 
+        public static Popup create(){
+            return Pools.obtain(Popup.class, Popup::new);
+        }
+
+        @Override
+        public void remove(){
+            if(damaged != null && superpose(type)){
+                mappedPopup.get(damaged, ObjectMap::new).remove(type);
+            }
+            super.remove();
+        }
+
         @Override
         public void reset(){
             damaged = null;
@@ -313,16 +275,6 @@ public class DamagePopup{
             amount = 0f;
             count = 0;
             timer = 0f;
-        }
-
-        @Override
-        public float getX(){
-            return !superpose(type) ? originX : damaged.getX();
-        }
-
-        @Override
-        public float getY(){
-            return !superpose(type) ? originY : damaged.getY();
         }
     }
 
