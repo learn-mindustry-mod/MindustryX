@@ -166,9 +166,9 @@ public class RenderExt{
     public static void onGroupDraw(Drawc t){
         if(noBulletShow.get() && t instanceof Bulletc) return;
         if(!renderer.enableEffects && t instanceof EffectState) return;
-        if(t instanceof Unitc u && unitHide.get()) hide:{
+        if(t instanceof Unitc u) hide:{
             if(u.isPlayer() && (u.isLocal() || unitHideExcludePlayers.get())) break hide;
-            if(u.maxHealth() + u.shield() < unitHideMinHealth.get()) return;
+            if(unitHide.get() || u.maxHealth() + u.shield() < unitHideMinHealth.get()) return;
         }
         t.draw();
         if(t instanceof Unit u){
