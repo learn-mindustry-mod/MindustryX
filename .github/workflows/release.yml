@@ -62,4 +62,5 @@ jobs:
           name: ${{ env.RELEASE_VERSION }}
           target_commitish: ${{github.sha}}
           files: artifacts/*
+          draft: true
       - uses: oven-sh/setup-bun@v1
