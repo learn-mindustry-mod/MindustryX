@@ -12,7 +12,7 @@ enum class BindingExt(val default: KeybindValue = KeyCode.unset, val category: S
     superUnitEffect(KeyCode.o, "ARC", onTap = { Settings.cycle("superUnitEffect", 3) }),
     showRTSAi(KeyCode.l, onTap = { Settings.toggle("alwaysShowUnitRTSAi") }),
     arcDetail(KeyCode.unset),
-    arcScanMode(KeyCode.unset, onTap = { ArcScanMode.enabled = !ArcScanMode.enabled }),
+    arcScanMode(KeyCode.unset, onTap = { RenderExt.transportScan.toggle() }),
     oreAdsorption(KeyCode.unset),
 
     //MDTX

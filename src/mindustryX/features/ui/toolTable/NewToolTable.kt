@@ -52,7 +52,7 @@ object NewToolTable : ToolTableBase("${Iconc.settings}") {
         toggle("[cyan]${Iconc.map}", "小地图显示", { Core.settings.getBool("minimap") }) { Settings.toggle("minimap") }
 
         toggle("箱", "碰撞箱显示", { RenderExt.unitHitbox.value }) { RenderExt.unitHitbox.toggle() }
-        toggle("扫", "扫描模式", { ArcScanMode.enabled }) { ArcScanMode.enabled = !ArcScanMode.enabled }
+        toggle("扫", "扫描模式", { RenderExt.transportScan.value }) { RenderExt.transportScan.toggle() }
         button("${Iconc.blockRadar}", "雷达开关") { ArcRadar.mobileRadar = !ArcRadar.mobileRadar }.get().also {
             SettingsV2.bindQuickSettings(it, ArcRadar.settings)
         }

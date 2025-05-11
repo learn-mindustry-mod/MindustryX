@@ -60,6 +60,9 @@ public class RenderExt{
     public static final SettingsV2.CheckPref unitHideExcludePlayers = new CheckPref("entityRender.unitHideExcludePlayers", true);
     public static final SliderPref unitHideMinHealth = new SliderPref("entityRender.unitHideMinHealth", 0, 0, 4000, 50, v -> v + "[red]HP");
 
+    public static final SettingsV2.CheckPref spawnerWaveDisplay = new CheckPref("gameUI.spawnerWaveDisplay", true);
+    public static final SettingsV2.CheckPref transportScan = new CheckPref("gameUI.transportScan");
+
     static{
         var internal = new PersistentProvider.Arc<Boolean>("bulletShow");
         noBulletShow.addFallback(new PersistentProvider<>(){
@@ -154,7 +157,10 @@ public class RenderExt{
     }
 
     private static void draw(){
+        ArcSpawnerShow.update(player != null && !player.dead() && spawnerWaveDisplay.get());
+        if(player == null || player.dead()) return;
         if(payloadPreview.get()) PayloadDropHint.draw(player);
+        if(transportScan.get()) ArcTransportScanMode.draw();
     }
 
     public static void onGroupDraw(Drawc t){
