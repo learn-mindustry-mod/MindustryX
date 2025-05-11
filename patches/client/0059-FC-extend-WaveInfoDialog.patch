@@ -11,11 +11,11 @@ Content-Transfer-Encoding: 8bit
 * 列表状波次浏览
 * 其他细节优化
 ---
- core/src/mindustry/editor/WaveInfoDialog.java | 225 +++++++++++++-----
- 1 file changed, 159 insertions(+), 66 deletions(-)
+ core/src/mindustry/editor/WaveInfoDialog.java | 229 +++++++++++++-----
+ 1 file changed, 163 insertions(+), 66 deletions(-)
 
 diff --git a/core/src/mindustry/editor/WaveInfoDialog.java b/core/src/mindustry/editor/WaveInfoDialog.java
-index 55e675caa05e8b7fb43b92bc2460e19daae7840e..2f41e4f14b89e1b4b498081a7027953150652601 100644
+index 55e675caa05e8b7fb43b92bc2460e19daae7840e..3eba887c2196a9976e56546aae3dbb4113020bf1 100644
 --- a/core/src/mindustry/editor/WaveInfoDialog.java
 +++ b/core/src/mindustry/editor/WaveInfoDialog.java
 @@ -6,6 +6,7 @@ import arc.graphics.*;
@@ -62,14 +62,14 @@ index 55e675caa05e8b7fb43b92bc2460e19daae7840e..2f41e4f14b89e1b4b498081a70279531
          buttons.button(Core.bundle.get("waves.random"), Icon.refresh, () -> {
              groups.clear();
              groups = Waves.generate(1f / 10f);
-@@ -149,11 +165,53 @@ public class WaveInfoDialog extends BaseDialog{
+@@ -149,11 +165,57 @@ public class WaveInfoDialog extends BaseDialog{
              setAlignment(Align.center, Align.center);
          }}).width(390f).growY();
  
 -        cont.add(graph = new WaveGraph()).grow();
 +        graph = new WaveGraph();
 +        wavesList = new Table();
-+        winWave = Math.min(ArcWaveSpawner.calWinWave(), 200);//default 200 max
++        winWave = -1;
 +
 +        var cell = wavesListCell = cont.pane(wavesList).scrollX(false).grow();
 +        wavesListPane = cell.get();
@@ -79,9 +79,13 @@ index 55e675caa05e8b7fb43b92bc2460e19daae7840e..2f41e4f14b89e1b4b498081a70279531
      }
  
 +    void buildWavesList(){
-+        wavesList.clearChildren();
++        if(winWave < 0){
++            winWave = Math.min(ArcWaveSpawner.calWinWave(), 200);//default 200 max
++        }
 +        int maxWaves = ArcWaveSpawner.calWinWaveClamped();
-+        this.winWave = Math.min(this.winWave, maxWaves);
++        winWave = Math.min(winWave, maxWaves);
++
++        wavesList.clearChildren();
 +        wavesList.margin(0).defaults().pad(5).growX();
 +        wavesList.table(Tex.button, t -> t.add("\uE86D 为单位数量；\uE813 为单位血+盾；\uE810 为计算buff的血+盾；\uE86E 为预估DPS。在游戏中时会考虑地图出怪点数目").color(Pal.accent)).scrollX(false).growX().row();
 +        float firstWaveTime = state.rules.initialWaveSpacing <= 0 ? (2 * state.rules.waveSpacing) : state.rules.initialWaveSpacing;
@@ -117,7 +121,7 @@ index 55e675caa05e8b7fb43b92bc2460e19daae7840e..2f41e4f14b89e1b4b498081a70279531
      void buildGroups(){
          table.clear();
          table.top();
-@@ -172,21 +230,32 @@ public class WaveInfoDialog extends BaseDialog{
+@@ -172,21 +234,32 @@ public class WaveInfoDialog extends BaseDialog{
                      t.button(b -> {
                          b.left();
                          b.image(group.type.uiIcon).size(32f).padRight(3).scaling(Scaling.fit);
@@ -156,7 +160,7 @@ index 55e675caa05e8b7fb43b92bc2460e19daae7840e..2f41e4f14b89e1b4b498081a70279531
  
                          b.button(Icon.unitsSmall, Styles.emptyi, () -> showUnits(type -> group.type = type, false)).pad(-6).size(46f).tooltip("@stat.unittype");
                          b.button(Icon.cancel, Styles.emptyi, () -> {
-@@ -346,7 +415,62 @@ public class WaveInfoDialog extends BaseDialog{
+@@ -346,7 +419,62 @@ public class WaveInfoDialog extends BaseDialog{
                                  dialog.show();
                              }).width(160f).height(36f).get().getLabel().setText(() -> group.spawn == -1 ? "@waves.spawn.all" : Point2.x(group.spawn) + ", " + Point2.y(group.spawn));
  
@@ -220,7 +224,7 @@ index 55e675caa05e8b7fb43b92bc2460e19daae7840e..2f41e4f14b89e1b4b498081a70279531
                      }
                  }).width(340f).pad(8);
  
-@@ -364,68 +488,35 @@ public class WaveInfoDialog extends BaseDialog{
+@@ -364,68 +492,35 @@ public class WaveInfoDialog extends BaseDialog{
      }
  
      void showUnits(Cons<UnitType> cons, boolean reset){
@@ -314,7 +318,7 @@ index 55e675caa05e8b7fb43b92bc2460e19daae7840e..2f41e4f14b89e1b4b498081a70279531
          dialog.show();
      }
  
-@@ -451,5 +542,7 @@ public class WaveInfoDialog extends BaseDialog{
+@@ -451,5 +546,7 @@ public class WaveInfoDialog extends BaseDialog{
      void updateWaves(){
          graph.groups = groups;
          graph.rebuild();
