@@ -23,7 +23,7 @@ public class ArcWaveSpawner{
     public static boolean hasFlyer = true;
     public static final float flyerSpawnerRadius = 5f * tilesize;
     private static final Seq<WaveInfo> arcWaveCache = new Seq<>();
-    private static Seq<SpawnGroup> groups;
+    private static Seq<SpawnGroup> groups = state.rules.spawns;
 
     static{
         Events.on(EventType.WorldLoadEvent.class, event -> reload(state.rules.spawns));
