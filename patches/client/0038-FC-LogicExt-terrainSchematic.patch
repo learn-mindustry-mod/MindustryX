@@ -8,12 +8,44 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 ---
- core/src/mindustry/game/Schematics.java       | 38 ++++++++++++++++---
+ .../mindustry/entities/comp/BuilderComp.java  |  5 +--
+ core/src/mindustry/game/Schematics.java       | 36 +++++++++++++++----
+ core/src/mindustry/input/MobileInput.java     | 11 ++----
  .../world/blocks/environment/Floor.java       |  1 +
- 2 files changed, 33 insertions(+), 6 deletions(-)
+ 4 files changed, 36 insertions(+), 17 deletions(-)
 
+diff --git a/core/src/mindustry/entities/comp/BuilderComp.java b/core/src/mindustry/entities/comp/BuilderComp.java
+index 866717c452850ab14c94e81c4b34b540afbc9553..05b6b25f0cf612d8cf39a798e9422f769e97b667 100644
+--- a/core/src/mindustry/entities/comp/BuilderComp.java
++++ b/core/src/mindustry/entities/comp/BuilderComp.java
+@@ -18,6 +18,7 @@ import mindustry.type.*;
+ import mindustry.world.*;
+ import mindustry.world.blocks.*;
+ import mindustry.world.blocks.ConstructBlock.*;
++import mindustryX.features.*;
+ 
+ import java.util.*;
+ 
+@@ -147,7 +148,7 @@ abstract class BuilderComp implements Posc, Statusc, Teamc, Rotc{
+                         if(hasAll){
+                             Call.beginPlace(self(), current.block, team, current.x, current.y, current.rotation);
+ 
+-                            if(current.block.instantBuild){
++                            if(!net.client() && current.block.instantBuild){
+                                 if(plans.size > 0){
+                                     plans.removeFirst();
+                                 }
+@@ -276,7 +277,7 @@ abstract class BuilderComp implements Posc, Statusc, Teamc, Rotc{
+                 break;
+             }
+         }
+-        if(replace != null){
++        if(!LogicExt.terrainSchematic && replace != null){
+             plans.remove(replace);
+         }
+         Tile tile = world.tile(place.x, place.y);
 diff --git a/core/src/mindustry/game/Schematics.java b/core/src/mindustry/game/Schematics.java
-index 20e5aeac5a46c49c792904f3eb6c5ec702b947a9..004d1f7f97e43ec51af4dfc4818e84e49e8166aa 100644
+index 20e5aeac5a46c49c792904f3eb6c5ec702b947a9..ce8f648cf5d11cc8585b734a7fe6778a13f3cdcf 100644
 --- a/core/src/mindustry/game/Schematics.java
 +++ b/core/src/mindustry/game/Schematics.java
 @@ -34,6 +34,7 @@ import mindustry.world.blocks.sandbox.*;
@@ -57,7 +89,7 @@ index 20e5aeac5a46c49c792904f3eb6c5ec702b947a9..004d1f7f97e43ec51af4dfc4818e84e4
              x = minx;
              y = miny;
              x2 = maxx;
-@@ -409,6 +410,22 @@ public class Schematics implements Loadable{
+@@ -409,6 +410,20 @@ public class Schematics implements Loadable{
              return new Schematic(new Seq<>(), new StringMap(), 1, 1);
          }
  
@@ -72,15 +104,13 @@ index 20e5aeac5a46c49c792904f3eb6c5ec702b947a9..004d1f7f97e43ec51af4dfc4818e84e4
 +                    tiles.add(new Stile(tile.floor(), tile.x - x, tile.y - y, null, (byte)0));
 +                    if(!tile.overlay().isAir())
 +                        tiles.add(new Stile(tile.overlay(), tile.x - x, tile.y - y, null, (byte)0));
-+                    if(!tile.block().isAir() && tile.build == null)
-+                        tiles.add(new Stile(tile.block(), tile.x - x, tile.y - y, null, (byte)0));
 +                }
 +            }
 +        }
          int width = x2 - x + 1, height = y2 - y + 1;
          int offsetX = -x, offsetY = -y;
          IntSet counted = new IntSet();
-@@ -427,6 +444,15 @@ public class Schematics implements Loadable{
+@@ -427,6 +442,15 @@ public class Schematics implements Loadable{
                  }
              }
          }
@@ -96,6 +126,28 @@ index 20e5aeac5a46c49c792904f3eb6c5ec702b947a9..004d1f7f97e43ec51af4dfc4818e84e4
  
          return new Schematic(tiles, new StringMap(), width, height);
      }
+diff --git a/core/src/mindustry/input/MobileInput.java b/core/src/mindustry/input/MobileInput.java
+index 5b61bcb907807316906682135f04f710ac270790..5981c4395cd97d988109f1325dd0fd67f4f38fa1 100644
+--- a/core/src/mindustry/input/MobileInput.java
++++ b/core/src/mindustry/input/MobileInput.java
+@@ -235,15 +235,8 @@ public class MobileInput extends InputHandler implements GestureListener{
+                     if(tile != null){
+                         if(!plan.breaking){
+                             if(validPlace(plan.x, plan.y, plan.block, plan.rotation, null, true)){
+-                                BuildPlan other = getPlan(plan.x, plan.y, plan.block.size, null);
+-                                BuildPlan copy = plan.copy();
+-
+-                                if(other == null){
+-                                    player.unit().addBuild(copy);
+-                                }else if(!other.breaking && other.x == plan.x && other.y == plan.y && other.block.size == plan.block.size){
+-                                    player.unit().plans().remove(other);
+-                                    player.unit().addBuild(copy);
+-                                }
++                                //MDTX: no need check other, addBuild will do it
++                                player.unit().addBuild(plan.copy());
+                             }
+ 
+                             rotation = plan.rotation;
 diff --git a/core/src/mindustry/world/blocks/environment/Floor.java b/core/src/mindustry/world/blocks/environment/Floor.java
 index 79d31cd6486de86ff156d41dbfe83c1f0121306d..5d7f080d9435b7e6e03be7691c76e0f7c40040cf 100644
 --- a/core/src/mindustry/world/blocks/environment/Floor.java

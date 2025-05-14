@@ -809,10 +809,10 @@ index 07b9a851804b77f665e5cfb81493740bcac5f865..70d4a237dfc6f969d7e578dfb8a83545
          !(player.unit() instanceof Mechc && player.unit().isFlying()) && !player.unit().mining() && !commandMode;
      }
 diff --git a/core/src/mindustry/input/MobileInput.java b/core/src/mindustry/input/MobileInput.java
-index 5b61bcb907807316906682135f04f710ac270790..31d9514c57d17272d5820ed9cb7a49c686bd0272 100644
+index 5981c4395cd97d988109f1325dd0fd67f4f38fa1..7c8f4970edadca4bd4e205852d25af47e6e9b629 100644
 --- a/core/src/mindustry/input/MobileInput.java
 +++ b/core/src/mindustry/input/MobileInput.java
-@@ -341,7 +341,7 @@ public class MobileInput extends InputHandler implements GestureListener{
+@@ -334,7 +334,7 @@ public class MobileInput extends InputHandler implements GestureListener{
                      //why the heck doesn't setOrigin work for scaling
                      img.setTranslation(img.getWidth(), 0f);
                  });
@@ -821,7 +821,7 @@ index 5b61bcb907807316906682135f04f710ac270790..31d9514c57d17272d5820ed9cb7a49c6
              }).margin(4f);
          });
      }
-@@ -1037,18 +1037,22 @@ public class MobileInput extends InputHandler implements GestureListener{
+@@ -1030,18 +1030,22 @@ public class MobileInput extends InputHandler implements GestureListener{
              payloadTarget = null;
          }
  
