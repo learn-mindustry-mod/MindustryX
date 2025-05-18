@@ -101,7 +101,7 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  .../src/mindustry/graphics/BlockRenderer.java |  17 +-
  .../mindustry/graphics/OverlayRenderer.java   |  38 ++-
  core/src/mindustry/input/DesktopInput.java    |  80 +++++-
- core/src/mindustry/input/InputHandler.java    |  45 +++-
+ core/src/mindustry/input/InputHandler.java    |  43 +++-
  core/src/mindustry/input/MobileInput.java     |  16 +-
  core/src/mindustry/logic/LExecutor.java       |  12 +-
  core/src/mindustry/type/UnitType.java         |  91 ++++++-
@@ -120,7 +120,7 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  .../mindustry/ui/fragments/MenuFragment.java  |  52 +++-
  .../ui/fragments/PlacementFragment.java       | 164 ++++++++++--
  .../ui/fragments/PlayerListFragment.java      |  72 ++----
- 27 files changed, 1257 insertions(+), 167 deletions(-)
+ 27 files changed, 1255 insertions(+), 167 deletions(-)
 
 diff --git a/core/src/mindustry/editor/MapInfoDialog.java b/core/src/mindustry/editor/MapInfoDialog.java
 index ebc1f0b300d295e45333f1db38ea299c9658ec20..e7cba056743979206c84fc6d00472c2c44b565f6 100644
@@ -671,7 +671,7 @@ index eeca7177aaccd87f554796d95e6557ce8ad739f6..fad7e64e6668ca1905868a828d53fd40
          player.mouseY = unit.aimY();
  
 diff --git a/core/src/mindustry/input/InputHandler.java b/core/src/mindustry/input/InputHandler.java
-index 07b9a851804b77f665e5cfb81493740bcac5f865..70d4a237dfc6f969d7e578dfb8a83545de345bab 100644
+index 07b9a851804b77f665e5cfb81493740bcac5f865..3c199030774c3617b19169f7d460933ecb684123 100644
 --- a/core/src/mindustry/input/InputHandler.java
 +++ b/core/src/mindustry/input/InputHandler.java
 @@ -38,11 +38,13 @@ import mindustry.world.*;
@@ -770,16 +770,7 @@ index 07b9a851804b77f665e5cfb81493740bcac5f865..70d4a237dfc6f969d7e578dfb8a83545
          });
      }
  
-@@ -1535,6 +1566,8 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
-     protected void drawSelection(int x1, int y1, int x2, int y2, int maxLength, Color col1, Color col2){
-         NormalizeDrawResult result = Placement.normalizeDrawArea(Blocks.air, x1, y1, x2, y2, false, maxLength, 1f);
- 
-+        String arcSelectionSize = Math.abs(x2 - x1) + 1 + "×" + (Math.abs(y1 - y2) + 1);
-+        FuncX.drawText(Tmp.v1.set((x1 + x2) / 2f, Math.max(y1, y2) + 1).scl(tilesize), arcSelectionSize, 2f, Pal.accent, Align.bottom);
-         Lines.stroke(2f);
- 
-         Draw.color(col1);
-@@ -1563,6 +1596,9 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -1563,6 +1594,9 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
          font.getData().setScale(1);
          font.setUseIntegerPositions(ints);
          Draw.z(z);
@@ -789,7 +780,7 @@ index 07b9a851804b77f665e5cfb81493740bcac5f865..70d4a237dfc6f969d7e578dfb8a83545
      }
  
      protected void flushSelectPlans(Seq<BuildPlan> plans){
-@@ -1933,7 +1969,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -1933,7 +1967,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
  
      public @Nullable Building selectedControlBuild(){
          Building build = world.buildWorld(Core.input.mouseWorld().x, Core.input.mouseWorld().y);
@@ -798,7 +789,7 @@ index 07b9a851804b77f665e5cfb81493740bcac5f865..70d4a237dfc6f969d7e578dfb8a83545
              return build;
          }
          return null;
-@@ -2020,6 +2056,9 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+@@ -2020,6 +2054,9 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
      }
  
      public boolean canShoot(){
