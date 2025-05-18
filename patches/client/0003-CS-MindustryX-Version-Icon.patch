@@ -97,7 +97,7 @@ index e2394a3c0d37199f177f9d24f14a6c85e6f19548..0c630ca7902a615c9773b3e42e0dcef0
      public static final Seq<ServerGroup> defaultServers = Seq.with();
      /** maximum openGL errors logged */
 diff --git a/core/src/mindustry/core/NetClient.java b/core/src/mindustry/core/NetClient.java
-index ac8803d3f486e4f2018dd765e1b6a9dd18fe1903..7e3a1a0c0410a2e5af371a418004e4b1807f28cb 100644
+index ac8803d3f486e4f2018dd765e1b6a9dd18fe1903..d4bf4d900113045c5f781f8a92ad3c65a9ac766d 100644
 --- a/core/src/mindustry/core/NetClient.java
 +++ b/core/src/mindustry/core/NetClient.java
 @@ -26,6 +26,7 @@ import mindustry.net.*;
@@ -112,7 +112,7 @@ index ac8803d3f486e4f2018dd765e1b6a9dd18fe1903..7e3a1a0c0410a2e5af371a418004e4b1
              Log.info("Received world data: @ bytes.", data.stream.available());
              NetworkIO.loadWorld(new InflaterInputStream(data.stream));
  
-+            Call.serverPacketReliable("MDTX", VarsX.version);
++            Time.run(60f, () -> Call.serverPacketReliable("MDTX", VarsX.version));
              finishConnecting();
          });
      }

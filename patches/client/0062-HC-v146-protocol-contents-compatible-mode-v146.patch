@@ -53,7 +53,7 @@ index 1ef48b5018109fbf1ab14475c93ad4867a7fffbf..1b6076ffaa5b184f0743e421b2f013bd
  
      /** @return the last registered content with the specified name. Note that the content loader makes no attempt to resolve name conflicts. This method can be unreliable. */
 diff --git a/core/src/mindustry/core/NetClient.java b/core/src/mindustry/core/NetClient.java
-index e80d5029613f62f112e4f2c8e1be25eeca91dd4e..3a55382ddd0f404bf97d7c25d99507ed2942ae01 100644
+index 0b53d3ac2298a86d3da59bd16280d551289221b0..29b3a28d291ec2fea67ad1ea097b922a3e34e994 100644
 --- a/core/src/mindustry/core/NetClient.java
 +++ b/core/src/mindustry/core/NetClient.java
 @@ -520,6 +520,8 @@ public class NetClient implements ApplicationListener{
