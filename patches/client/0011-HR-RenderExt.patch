@@ -6,7 +6,8 @@ Subject: [PATCH] HR: RenderExt
 ---
  core/src/mindustry/core/Renderer.java          | 3 ++-
  core/src/mindustry/graphics/BlockRenderer.java | 3 ++-
- 2 files changed, 4 insertions(+), 2 deletions(-)
+ core/src/mindustry/input/InputHandler.java     | 2 +-
+ 3 files changed, 5 insertions(+), 3 deletions(-)
 
 diff --git a/core/src/mindustry/core/Renderer.java b/core/src/mindustry/core/Renderer.java
 index 3afdb572016951071cb58933b567e43a851ef5b3..df1caf14d2130450e34a8caa97924c1f5e22396d 100644
@@ -50,3 +51,16 @@ index 4949a90bc375ec0d7fb7bc8f3ac49d8f9c42459b..b88bd5bbd47e5659390c711fa86adc2e
                  Draw.reset();
                  Draw.z(Layer.block);
  
+diff --git a/core/src/mindustry/input/InputHandler.java b/core/src/mindustry/input/InputHandler.java
+index 70a116842879233f2f1cb5b5b4008bf303e53805..56983dc4d8a92d2b824b32ecc594f3a5f988e947 100644
+--- a/core/src/mindustry/input/InputHandler.java
++++ b/core/src/mindustry/input/InputHandler.java
+@@ -302,7 +302,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+ 
+                     //remove when other player command
+                     if(!headless && player != Vars.player){
+-                        control.input.selectedUnits.remove(unit);
++                        if(control.input.selectedUnits.remove(unit)) RenderExt.onRtsRemoveUnit(player, unit);
+                     }
+ 
+                     toAdd.add(unit);

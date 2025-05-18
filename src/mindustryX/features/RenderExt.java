@@ -6,6 +6,7 @@ import arc.graphics.g2d.*;
 import arc.graphics.g2d.TextureAtlas.*;
 import arc.math.*;
 import arc.math.geom.*;
+import arc.struct.*;
 import arc.util.*;
 import mindustry.*;
 import mindustry.entities.*;
@@ -26,6 +27,8 @@ import mindustry.world.blocks.units.*;
 import mindustryX.features.SettingsV2.*;
 import mindustryX.features.draw.*;
 import mindustryX.features.func.*;
+
+import java.util.*;
 
 import static mindustry.Vars.*;
 
@@ -62,6 +65,7 @@ public class RenderExt{
 
     public static final SettingsV2.CheckPref spawnerWaveDisplay = new CheckPref("gameUI.spawnerWaveDisplay", true);
     public static final SettingsV2.CheckPref transportScan = new CheckPref("gameUI.transportScan");
+    public static final SettingsV2.CheckPref announceRtsTake = new CheckPref("gameUI.announceRtsTake", true);
 
     static{
         var internal = new PersistentProvider.Arc<Boolean>("bulletShow");
@@ -130,6 +134,9 @@ public class RenderExt{
         });
         Events.run(Trigger.draw, RenderExt::draw);
         Events.on(TileChangeEvent.class, RenderExt::onSetBlock);
+        Events.on(ResetEvent.class, (e) -> {
+            removePool.clear();
+        });
 
         //Optimize white() for ui
         AtlasRegion white = Core.atlas.white(),
@@ -309,5 +316,30 @@ public class RenderExt{
         Draw.color(unit.team.color, 0.5f);
         Lines.circle(unit.x, unit.y, unit.hitSize / 2f);
         Draw.color();
+    }
+
+    static ObjectMap<String, HashSet<Unit>> removePool = new ObjectMap<>();
+
+    public static void onRtsRemoveUnit(Player player, Unit unit){
+        if(!announceRtsTake.get())return;
+        if(removePool.containsKey(player.name)){
+            removePool.get(player.name).add(unit);
+            return;
+        }
+        var set = new HashSet<Unit>();
+        set.add(unit);
+        removePool.put(player.name, set);
+        Time.run(60f, () -> {
+            var count = new ObjectIntMap<UnitType>();
+            for(Unit u : set){
+                count.increment(u.type);
+            }
+            StringBuilder builder = new StringBuilder();
+            builder.append("[gold][MDTX][]").append(player.name).append("\n[white]抢走了单位: ");
+            for(UnitType type : count.keys()){
+                builder.append(type.emoji()).append("x").append(count.get(type)).append(" ");
+            }
+            UIExt.announce(builder.toString());
+        });
     }
 }
