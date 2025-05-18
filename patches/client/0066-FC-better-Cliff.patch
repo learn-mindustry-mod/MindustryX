@@ -1,0 +1,70 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: way-zer <himc.wicp@gmail.com>
+Date: Sun, 18 May 2025 14:10:18 +0800
+Subject: [PATCH] =?UTF-8?q?FC=20better=20Cliff(=E6=82=AC=E5=B4=96=E6=94=BE?=
+ =?UTF-8?q?=E7=BD=AE=E5=92=8C=E6=B8=B2=E6=9F=93=E4=BC=98=E5=8C=96)?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ core/src/mindustry/content/Blocks.java        |  1 -
+ .../world/blocks/environment/Cliff.java       | 19 ++++++++++++++++++-
+ 2 files changed, 18 insertions(+), 2 deletions(-)
+
+diff --git a/core/src/mindustry/content/Blocks.java b/core/src/mindustry/content/Blocks.java
+index 3e7f67adcc2f6cae233783d63c138fc0548aaf02..3ac41c0a62336e6b568a70e5c09ad62cf6e78881 100644
+--- a/core/src/mindustry/content/Blocks.java
++++ b/core/src/mindustry/content/Blocks.java
+@@ -180,7 +180,6 @@ public class Blocks{
+         removeOre = new RemoveOre("remove-ore");
+ 
+         cliff = new Cliff("cliff"){{
+-            inEditor = false;
+             saveData = true;
+         }};
+ 
+diff --git a/core/src/mindustry/world/blocks/environment/Cliff.java b/core/src/mindustry/world/blocks/environment/Cliff.java
+index d3a0c99771bbc3c2ed3a296f23ee61c8ed4e78a6..9eea6a5b7670850eb3a7bb33997c91f8354b4106 100644
+--- a/core/src/mindustry/world/blocks/environment/Cliff.java
++++ b/core/src/mindustry/world/blocks/environment/Cliff.java
+@@ -1,10 +1,15 @@
+ package mindustry.world.blocks.environment;
+ 
+ import arc.graphics.g2d.*;
++import arc.math.geom.*;
+ import arc.util.*;
+ import mindustry.annotations.Annotations.*;
++import mindustry.gen.*;
+ import mindustry.graphics.*;
+ import mindustry.world.*;
++import org.jetbrains.annotations.Nullable;
++
++import static mindustry.Vars.world;
+ 
+ public class Cliff extends Block{
+     public float size = 11f;
+@@ -23,10 +28,22 @@ public class Cliff extends Block{
+     @Override
+     public void drawBase(Tile tile){
+         Draw.color(Tmp.c1.set(tile.floor().mapColor).mul(1.6f));
+-        Draw.rect(cliffs[tile.data & 0xff], tile.worldx(), tile.worldy());
++        Draw.rect(tile.data != 0 ? cliffs[tile.data & 0xff] : region, tile.worldx(), tile.worldy());
+         Draw.color();
+     }
+ 
++    @Override
++    public void placeEnded(Tile tile, @Nullable Unit builder){
++        int rotationb = 0;
++        for(int i = 0; i < 8; i++){
++            Tile other = world.tiles.get(tile.x + Geometry.d8[i].x, tile.y + Geometry.d8[i].y);
++            if(other != null && !other.floor().hasSurface()){
++                rotationb |= (1 << i);
++            }
++        }
++        tile.data = (byte)rotationb;
++    }
++
+     @Override
+     public int minimapColor(Tile tile){
+         return Tmp.c1.set(tile.floor().mapColor).mul(1.2f).rgba();

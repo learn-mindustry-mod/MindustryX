@@ -8,13 +8,13 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 ---
- .../mindustry/ctype/UnlockableContent.java    |  5 ++-
- .../mindustry/ui/dialogs/DatabaseDialog.java  | 13 +++++-
- .../ui/fragments/PlacementFragment.java       | 32 ++++++++++++-
- core/src/mindustry/world/Block.java           |  4 +-
- core/src/mindustry/world/Build.java           | 45 +++++++++++++++++++
+ .../mindustry/ctype/UnlockableContent.java    |  5 +--
+ .../mindustry/ui/dialogs/DatabaseDialog.java  | 13 ++++++--
+ .../ui/fragments/PlacementFragment.java       | 32 ++++++++++++++++++-
+ core/src/mindustry/world/Block.java           |  4 +--
+ core/src/mindustry/world/Build.java           |  6 ++++
  .../mindustry/world/blocks/ItemSelection.java |  3 +-
- 6 files changed, 94 insertions(+), 8 deletions(-)
+ 6 files changed, 55 insertions(+), 8 deletions(-)
 
 diff --git a/core/src/mindustry/ctype/UnlockableContent.java b/core/src/mindustry/ctype/UnlockableContent.java
 index f8fdc28679649f8b0612246590d272aac69ef5a1..913fd680af4cb2f9a53af24c7bbb8e8b95e28e8b 100644
@@ -194,76 +194,29 @@ index dec2a2c4db241a26f7d2721eeae0efaa4dbf6b81..0876d188c8ed09a946e8b14d4bdf8769
  
      /** @return whether this block supports a specific environment. */
 diff --git a/core/src/mindustry/world/Build.java b/core/src/mindustry/world/Build.java
-index 8340229257797f5a7e11291957ecddd3cce52465..8679cdec9a5cffba907b37b301534d963b148e0f 100644
+index 8340229257797f5a7e11291957ecddd3cce52465..28209a606e074bae37789099caa6edb2d6d9a616 100644
 --- a/core/src/mindustry/world/Build.java
 +++ b/core/src/mindustry/world/Build.java
-@@ -14,7 +14,10 @@ import mindustry.game.Teams.*;
- import mindustry.gen.*;
+@@ -15,6 +15,7 @@ import mindustry.gen.*;
  import mindustry.world.blocks.*;
  import mindustry.world.blocks.ConstructBlock.*;
-+import mindustry.world.blocks.environment.Floor;
-+import mindustry.world.blocks.environment.OverlayFloor;
  import mindustry.world.blocks.storage.CoreBlock.*;
 +import mindustryX.features.*;
  
  import static mindustry.Vars.*;
  
-@@ -73,6 +76,36 @@ public class Build{
-             return;
-         }
- 
-+        if(LogicExt.worldCreator){
-+            Tile tile = world.tile(x, y);
-+            if(tile == null) return;
-+            if(result == Blocks.cliff) {
-+                int rotationb = 0;
-+                for(int i = 0; i < 8; i++){
-+                    Tile other = world.tiles.get(tile.x + Geometry.d8[i].x, tile.y + Geometry.d8[i].y);
-+                    if(other != null && !other.floor().hasSurface()){
-+                        rotationb |= (1 << i);
-+                    }
-+                }
-+
-+                if(rotationb != 0){
-+                    tile.setBlock(Blocks.cliff);
-+                }
-+
-+                tile.data = (byte)rotationb;
-+                return;
-+            };
-+            if(result instanceof OverlayFloor){
-+                tile.setOverlay(result);
-+                return;
-+            }
-+            if(result instanceof Floor floor){
-+                tile.setFloor(floor);
-+                pathfinder.updateTile(tile);
-+                return;
-+            }
-+        }
-+
-         Tile tile = world.tile(x, y);
- 
-         //just in case
-@@ -179,6 +212,17 @@ public class Build{
+@@ -179,6 +180,10 @@ public class Build{
  
      /** @return whether a tile can be placed at this location by this team. Ignores units at this location. */
      public static boolean validPlaceIgnoreUnits(Block type, Team team, int x, int y, int rotation, boolean checkVisible, boolean checkCoreRadius){
 +        if (LogicExt.worldCreator) {
 +            Tile tile = world.tile(x, y);
-+            if (tile == null) return false;
-+            if (type instanceof OverlayFloor of) {
-+                return !(tile.overlay == of);
-+            }
-+            if (type instanceof Floor f) {
-+                return !(tile.floor == f);
-+            }
-+            return true;
++            return tile != null;
 +        }
          //the wave team can build whatever they want as long as it's visible - banned blocks are not applicable
          if(type == null || (!state.rules.editor && (checkVisible && (!type.environmentBuildable() || (!type.isPlaceable() && !(state.rules.waves && team == state.rules.waveTeam && type.isVisible())))))){
              return false;
-@@ -306,6 +350,7 @@ public class Build{
+@@ -306,6 +311,7 @@ public class Build{
      /** @return whether the tile at this position is breakable by this team */
      public static boolean validBreak(Team team, int x, int y){
          Tile tile = world.tile(x, y);
