@@ -79,7 +79,14 @@ class AdvanceToolTable : ToolTableBase(Iconc.wrench.toString()) {
                 .checked { LogicExt.terrainSchematic }.wrapLabel(false)
             button("瞬间完成", Styles.cleart) {
                 Vars.player.unit()?.apply {
-                    while (!plans.isEmpty) updateBuildLogic()
+                    if (!canBuild()) {
+                        UIExt.announce("[red]当前单位不可建筑")
+                        return@apply
+                    }
+                    val bak = updateBuilding
+                    updateBuilding = true
+                    repeat(10000) { updateBuildLogic() }
+                    updateBuilding = bak
                 }
             }.wrapLabel(false).disabled { Vars.net.client() }
         }
