@@ -77,7 +77,7 @@ object AutoUpdate {
 
     fun getReleases(repo: String, result: (List<Release>) -> Unit) {
         Http.get("https://api.github.com/repos/$repo/releases")
-            .timeout(10000)
+            .timeout(30000)
             .error { Log.warn("Fetch releases fail from $repo: $it");result(emptyList()) }
             .submit { res ->
                 val json = Jval.read(res.resultAsString)
@@ -219,27 +219,29 @@ object AutoUpdate {
             setFillParent(false)
             show()
         }
-        Http.get(asset.url, { res ->
-            if (file.exists() && file.length() == res.contentLength) {
+        Http.get(asset.url).timeout(30000)
+            .error {
                 dialog.hide()
-                Core.app.post { endDownload(file) }
-                return@get
+                Vars.ui.showException(it)
             }
-            length = res.contentLength.toFloat() / 1024 / 1024
-            val buffer = 1024 * 1024
-            file.write(false, buffer).use { out ->
-                Streams.copyProgress(res.resultAsStream, out, res.contentLength, buffer) {
-                    progress = it
-                    if (canceled) res.resultAsStream.close()
+            .submit { res ->
+                if (file.exists() && file.length() == res.contentLength) {
+                    dialog.hide()
+                    Core.app.post { endDownload(file) }
+                    return@submit
                 }
+                length = res.contentLength.toFloat() / 1024 / 1024
+                val buffer = 1024 * 1024
+                file.write(false, buffer).use { out ->
+                    Streams.copyProgress(res.resultAsStream, out, res.contentLength, buffer) {
+                        progress = it
+                        if (canceled) res.resultAsStream.close()
+                    }
+                }
+                if (canceled) return@submit
+                Core.app.post { endDownload(file) }
+                dialog.hide()
             }
-            if (canceled) return@get
-            Core.app.post { endDownload(file) }
-            dialog.hide()
-        }) {
-            dialog.hide()
-            Vars.ui.showException(it)
-        }
     }
 
     private fun installDesktopJar(file: Fi) {
