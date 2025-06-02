@@ -45,7 +45,7 @@ object PingService {
                     val packet = DatagramPacket(ByteArray(512), 512)
                     socket.receive(packet)
                     val req = synchronized(requests) {
-                        requests.removeFirst { it.addr == packet.address && it.port == packet.port }
+                        requests.removeFirst { it.addr == packet.address && it.port == packet.port && !it.handled.get() }
                     } ?: continue
                     kotlin.runCatching { req.handle(packet) }.onFailure {
                         Log.warn("Failed to handle ping request", it)
