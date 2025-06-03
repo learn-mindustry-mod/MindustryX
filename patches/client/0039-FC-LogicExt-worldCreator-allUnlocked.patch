@@ -91,7 +91,7 @@ index df3b0c68e7c5d93371cc42f95a497535a9a167dd..98a50593b20ee5bb45769183f1d575a9
      }
  }
 diff --git a/core/src/mindustry/ui/fragments/PlacementFragment.java b/core/src/mindustry/ui/fragments/PlacementFragment.java
-index 01c84ab75d3c426989595868089525f07c3de047..b64e11daa8366ff1e2c3093c63ece8288c17b2c5 100644
+index 9f826ded301115dbbeed5ae05ba1b3627fc985cb..4c667d13638b16c54dfdc8c81315feb38905b22c 100644
 --- a/core/src/mindustry/ui/fragments/PlacementFragment.java
 +++ b/core/src/mindustry/ui/fragments/PlacementFragment.java
 @@ -26,13 +26,16 @@ import mindustry.input.*;

@@ -2415,7 +2415,7 @@ index 57f16a53a6910131be7d85122fcc6e5e31f0115c..09b88181603569052f95c5695b35f2c3
      }
  
 diff --git a/core/src/mindustry/ui/fragments/PlacementFragment.java b/core/src/mindustry/ui/fragments/PlacementFragment.java
-index b64e11daa8366ff1e2c3093c63ece8288c17b2c5..d7dfeaedf239ca28fdedd48883173b74363e9020 100644
+index 4c667d13638b16c54dfdc8c81315feb38905b22c..3a9a37b6417e71ecab44009030d4ece7a22bcd07 100644
 --- a/core/src/mindustry/ui/fragments/PlacementFragment.java
 +++ b/core/src/mindustry/ui/fragments/PlacementFragment.java
 @@ -1,6 +1,7 @@
@@ -2658,9 +2658,9 @@ index b64e11daa8366ff1e2c3093c63ece8288c17b2c5..d7dfeaedf239ca28fdedd48883173b74
      }
  
      /** @return the thing being hovered over. */
-@@ -784,25 +885,40 @@ public class PlacementFragment{
-         //if the mouse intersects the table or the UI has the mouse, no hovering can occur
-         if(Core.scene.hasMouse(Core.input.mouseX(), Core.input.mouseY()) || topTable.hit(v.x, v.y, false) != null) return null;
+@@ -782,25 +883,40 @@ public class PlacementFragment{
+         //MDTX: fix flashing. Don't clear hover if the mouse just on topTable.
+         if(Core.scene.hasMouse(Core.input.mouseX(), Core.input.mouseY()) && !topTable.hasMouse()) return null;
  
 +        //check tile being hovered over
 +        Tile hoverTile = world.tileWorld(Core.input.mouseWorld().x, Core.input.mouseWorld().y);

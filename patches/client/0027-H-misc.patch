@@ -23,11 +23,12 @@ Content-Transfer-Encoding: 8bit
  .../ui/dialogs/SettingsMenuDialog.java        |  4 ++--
  .../ui/fragments/BlockInventoryFragment.java  |  2 +-
  .../mindustry/ui/fragments/ChatFragment.java  |  7 +++++--
+ .../ui/fragments/PlacementFragment.java       |  6 ++----
  .../mindustry/world/blocks/defense/Radar.java |  9 +++++++++
  .../world/blocks/distribution/Router.java     |  3 ++-
  .../world/blocks/production/BeamDrill.java    | 12 ++++-------
  .../mindustry/desktop/DesktopLauncher.java    | 20 ++++++++++++++++++-
- 19 files changed, 94 insertions(+), 53 deletions(-)
+ 20 files changed, 96 insertions(+), 57 deletions(-)
 
 diff --git a/core/src/mindustry/ClientLauncher.java b/core/src/mindustry/ClientLauncher.java
 index a64b7b36fdd74a29a3caae54a1f1a514039b891f..beea309f225be8de3799089a87d1fdcb8e30ee5c 100644
@@ -388,6 +389,23 @@ index add50b5864c311b66d4278e684a4e0260170139f..6202aadb499174630a04c0210e7390a0
          normal(""),
          team("/t"),
          admin("/a", player::admin)
+diff --git a/core/src/mindustry/ui/fragments/PlacementFragment.java b/core/src/mindustry/ui/fragments/PlacementFragment.java
+index 01c84ab75d3c426989595868089525f07c3de047..9f826ded301115dbbeed5ae05ba1b3627fc985cb 100644
+--- a/core/src/mindustry/ui/fragments/PlacementFragment.java
++++ b/core/src/mindustry/ui/fragments/PlacementFragment.java
+@@ -749,10 +749,8 @@ public class PlacementFragment{
+ 
+     /** @return the thing being hovered over. */
+     public @Nullable Displayable hovered(){
+-        Vec2 v = topTable.stageToLocalCoordinates(Core.input.mouse());
+-
+-        //if the mouse intersects the table or the UI has the mouse, no hovering can occur
+-        if(Core.scene.hasMouse(Core.input.mouseX(), Core.input.mouseY()) || topTable.hit(v.x, v.y, false) != null) return null;
++        //MDTX: fix flashing. Don't clear hover if the mouse just on topTable.
++        if(Core.scene.hasMouse(Core.input.mouseX(), Core.input.mouseY()) && !topTable.hasMouse()) return null;
+ 
+         //check for a unit
+         Unit unit = Units.closestOverlap(player.team(), Core.input.mouseWorldX(), Core.input.mouseWorldY(), 5f, u -> !u.isLocal() && u.displayable());
 diff --git a/core/src/mindustry/world/blocks/defense/Radar.java b/core/src/mindustry/world/blocks/defense/Radar.java
 index e24a3368d190f64fdaf002130a76f4799834c9a5..0811c4520865cff648084cbc743a141367a103c5 100644
 --- a/core/src/mindustry/world/blocks/defense/Radar.java
