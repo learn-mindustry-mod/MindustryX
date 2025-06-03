@@ -6,8 +6,8 @@ import arc.util.*;
 import mindustry.*;
 import mindustry.gen.*;
 import mindustry.mod.*;
-import mindustryX.features.Settings;
 import mindustryX.features.*;
+import mindustryX.features.Settings;
 import mindustryX.features.ui.*;
 
 import java.net.*;
@@ -72,7 +72,7 @@ public class Hooks implements ApplicationListener{
                 StringBuilder builder = new StringBuilder();
                 if(Vars.state.rules.pvp){
                     builder.append("[#").append(sender.team().color).append("]");
-                    builder.append(sender.team() == Vars.player.team() ? "T" : Iconc.effect);
+                    builder.append(sender.team() == Vars.player.team() ? Iconc.players + " " : Iconc.units);
                     builder.append("[]");
                 }
                 builder.append(sender.dead() ? Iconc.alphaaaa : sender.unit().type.emoji());
