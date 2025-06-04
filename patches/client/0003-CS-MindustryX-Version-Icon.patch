@@ -58,7 +58,7 @@ index d42ffe6d4a318ce558f1010eae46140f88ed5c99..bf44ead5c58abfb79c500e6daae30c3e
 +    <string name="app_name">MindustryX</string>
  </resources>
 diff --git a/build.gradle b/build.gradle
-index 732a40718528b0f73643a001d3b45f55af6ecfdf..40be71c9583bbf9fd96646f407f051dfd33ae0e4 100644
+index 67184c9a4359ebf2cedccfa4098c4393013b70db..474953f0b7610058572ba9fa10de89b2db774f83 100644
 --- a/build.gradle
 +++ b/build.gradle
 @@ -22,7 +22,7 @@ allprojects{
@@ -173,13 +173,13 @@ index 9e18ce5a54be5f6ca97395737d65de56495aeac0..bee67a07c282daadc799d3f345bee48b
          }catch(Throwable e){
              handleCrash(e);
 diff --git a/gradle.properties b/gradle.properties
-index f88906e769655b07f711936997997c18336e35fb..00716a94ec8881cc099ba2498cdd484136293036 100644
+index 91165484dfd304f019be3295031d6dd8b584b623..d23f72a54a0f5caeef2d6f2da433b06a4e363069 100644
 --- a/gradle.properties
 +++ b/gradle.properties
 @@ -27,3 +27,5 @@ org.gradle.internal.http.socketTimeout=100000
  org.gradle.internal.http.connectionTimeout=100000
  android.enableR8.fullMode=false
- archash=23264f9514
+ archash=v149
 +
 +upstreamBuild=149
 \ No newline at end of file

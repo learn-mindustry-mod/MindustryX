@@ -7,25 +7,25 @@ clear and replce jabel(Support record)
 way-zer <himc.wicp@gmail.com> on 2024/6/9
 ---
  .gitignore                                    |   2 +-
- android/build.gradle                          | 103 +++----
+ android/build.gradle                          | 103 ++----
  android/proguard-rules.pro                    |   4 +
  .../com/github/bsideup/jabel/Desugar.java     |  13 +
  .../javax.annotation.processing.Processor     |   6 +
- build.gradle                                  | 266 ++--------------
+ build.gradle                                  | 293 +++---------------
  core/build.gradle                             |   2 -
  core/build.gradle.kts                         |  66 ++++
  desktop/build.gradle                          | 166 +---------
- gradle.properties                             |   2 +-
+ gradle.properties                             |   4 +-
  gradle/wrapper/gradle-wrapper.jar             | Bin 59203 -> 43583 bytes
  gradle/wrapper/gradle-wrapper.properties      |   4 +-
- gradlew                                       | 284 +++++++++++-------
+ gradlew                                       | 284 ++++++++++-------
  gradlew.bat                                   |  37 ++-
  ios/build.gradle                              |   2 +-
  server/build.gradle                           |  44 +--
  settings.gradle                               |  10 +-
  tools/build.gradle                            |  78 +++--
  tools/src/mindustry/tools/Generators.java     |   2 +-
- 19 files changed, 419 insertions(+), 672 deletions(-)
+ 19 files changed, 435 insertions(+), 685 deletions(-)
  create mode 100644 annotations/src/main/java/com/github/bsideup/jabel/Desugar.java
  create mode 100644 annotations/src/main/resources/META-INF/services/javax.annotation.processing.Processor
  delete mode 100644 core/build.gradle
@@ -268,7 +268,7 @@ index 0000000000000000000000000000000000000000..181b87c1d5f3755f16a01c0528d0a89f
 +mindustry.annotations.misc.LogicStatementProcessor
 +mindustry.annotations.remote.RemoteProcess
 diff --git a/build.gradle b/build.gradle
-index 27106c2f57aea8b01092f24b90c4c2b7a3b7eead..42526fba40e1c2a4aed99351ddd30da06b3e5a1b 100644
+index 27106c2f57aea8b01092f24b90c4c2b7a3b7eead..07ee51d50055b866f1ff271565bfa26530554fa5 100644
 --- a/build.gradle
 +++ b/build.gradle
 @@ -5,24 +5,12 @@ buildscript{
@@ -580,7 +580,7 @@ index 27106c2f57aea8b01092f24b90c4c2b7a3b7eead..42526fba40e1c2a4aed99351ddd30da0
          api "org.lz4:lz4-java:1.8.0"
          api arcModule("arc-core")
          api arcModule("extensions:flabel")
-@@ -332,20 +154,18 @@ project(":core"){
+@@ -332,33 +154,34 @@ project(":core"){
          api arcModule("extensions:arcnet")
          implementation arcModule("extensions:filedialogs")
          api "com.github.Anuken:rhino:$rhinoVersion"
@@ -596,16 +596,44 @@ index 27106c2f57aea8b01092f24b90c4c2b7a3b7eead..42526fba40e1c2a4aed99351ddd30da0
      }
  
      afterEvaluate{
-         task mergedJavadoc(type: Javadoc){
+-        task mergedJavadoc(type: Javadoc){
 -            def blacklist = [project(":ios"), project(":desktop"), project(":server"), project(":annotations")]
 -            if(findProject(":android") != null){
 -                blacklist += project(":android")
--            }
++        tasks.register("mergedJavadoc", Javadoc){
 +            def blacklist = [project(":server"), project(":annotations"), findProject(":ios"), findProject(":desktop"), findProject(":android")]
++
++            source = provider{
++                return rootProject.subprojects.collect{ project ->
++                    if(!blacklist.contains(project) && project.hasProperty("sourceSets")){
++                        return project.sourceSets.main.allJava
++                    }
++                }.findAll{ it != null }
+             }
+-
+-            source rootProject.subprojects.collect{ project ->
+-                if(!blacklist.contains(project) && project.hasProperty("sourceSets")){
+-                    return project.sourceSets.main.allJava
+-                }
++            classpath = provider{
++                return rootProject.subprojects.collect{ project ->
++                    if(!blacklist.contains(project) && project.hasProperty("sourceSets")){
++                        return project.sourceSets.main.compileClasspath
++                    }
++                }.findAll{ it != null }
+             }
+-
+-            classpath = files(rootProject.subprojects.collect { project ->
+-                if(!blacklist.contains(project) && project.hasProperty("sourceSets")){
+-                    return project.sourceSets.main.compileClasspath
+-                }
+-            })
+-            destinationDir = new File(buildDir, 'javadoc')
++            destinationDir = layout.buildDirectory.dir('javadoc')
+         }
+     }
  
-             source rootProject.subprojects.collect{ project ->
-                 if(!blacklist.contains(project) && project.hasProperty("sourceSets")){
-@@ -442,42 +262,16 @@ configure([":core", ":server"].collect{project(it)}){
+@@ -442,42 +265,16 @@ configure([":core", ":server"].collect{project(it)}){
          publications{
              maven(MavenPublication){
                  from components.java
@@ -923,7 +951,7 @@ index b3f192bc75d3c1775179a7252c02f7ce0a39ff7e..b47e0569d82a8cc6331a1fe36952c206
 +}
 \ No newline at end of file
 diff --git a/gradle.properties b/gradle.properties
-index f3a62ec065f853aa4bdacf143b4bf115f36d34ad..775dc90a64c14506ef7529c199a23b895974a062 100644
+index f3a62ec065f853aa4bdacf143b4bf115f36d34ad..1c1ffb92946665ad15ea574c1d27e4d7b7ebf443 100644
 --- a/gradle.properties
 +++ b/gradle.properties
 @@ -1,5 +1,5 @@
@@ -933,6 +961,12 @@ index f3a62ec065f853aa4bdacf143b4bf115f36d34ad..775dc90a64c14506ef7529c199a23b89
  --add-opens=jdk.compiler/com.sun.tools.javac.api=ALL-UNNAMED \
  --add-opens=jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED \
  --add-opens=jdk.compiler/com.sun.tools.javac.model=ALL-UNNAMED \
+@@ -26,4 +26,4 @@ org.gradle.caching=true
+ org.gradle.internal.http.socketTimeout=100000
+ org.gradle.internal.http.connectionTimeout=100000
+ android.enableR8.fullMode=false
+-archash=23264f9514
++archash=v149
 diff --git a/gradle/wrapper/gradle-wrapper.jar b/gradle/wrapper/gradle-wrapper.jar
 index e708b1c023ec8b20f512888fe07c5bd3ff77bb8f..a4b76b9530d66f5e68d973ea569d8e19de379189 100644
 GIT binary patch
