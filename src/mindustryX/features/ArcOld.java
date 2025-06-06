@@ -1,17 +1,35 @@
 package mindustryX.features;
 
+import arc.*;
 import arc.func.*;
 import arc.graphics.*;
+import arc.math.*;
 import arc.struct.*;
+import mindustry.content.*;
 import mindustry.ctype.*;
 import mindustry.gen.*;
 import mindustry.graphics.*;
+import mindustry.world.*;
 import mindustryX.features.Settings.*;
 
 import static arc.Core.settings;
 import static mindustry.Vars.*;
 
 public class ArcOld{
+    public static void doOreAdsorption(){
+        Unit unit = player.unit();
+        if(Core.scene.hasMouse() || unit == null) return;
+        Tile center = unit.tileOn();
+        if(center == null) return;
+        center.circle(Mathf.ceil(unit.type.mineRange / 8f), tile -> {
+            Tile ptile = unit.mineTile;
+            if((ptile == null || player.dst(ptile) > player.dst(tile) || ptile.drop() == Items.sand) &&
+            unit.validMine(tile) && unit.acceptsItem(unit.getMineResult(tile)) && tile.drop() != Items.sand){
+                unit.mineTile = tile;
+            }
+        });
+    }
+
     public static void init(Seq<LazySettingsCategory> categories){
         categories.add(new LazySettingsCategory("@settings.arc", () -> Icon.star, (c) -> {
             c.addCategory("arcCgameview");

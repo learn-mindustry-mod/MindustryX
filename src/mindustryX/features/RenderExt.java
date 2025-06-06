@@ -166,6 +166,7 @@ public class RenderExt{
     private static void draw(){
         ArcSpawnerShow.update(player != null && !player.dead() && spawnerWaveDisplay.get());
         if(player == null || player.dead()) return;
+        ArcRadar.draw();
         if(payloadPreview.get()) PayloadDropHint.draw(player);
         if(transportScan.get()) ArcTransportScanMode.draw();
     }

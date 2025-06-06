@@ -67,7 +67,7 @@ public class ArcRadar{
         Events.on(EventType.WorldLoadEvent.class, event -> scanTime = Math.max(Mathf.dst(world.width(), world.height()) / 20f, 7.5f));
     }
 
-    public static void drawScanner(){
+    public static void draw(){
         float extendSpd = mode.getValue() * 0.2f;
 
         if(extendSpd >= 6){

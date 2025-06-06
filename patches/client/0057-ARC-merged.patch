@@ -99,8 +99,8 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  .../mindustry/entities/comp/StatusComp.java   |   3 +
  core/src/mindustry/game/Schematic.java        | 104 ++++++++
  .../src/mindustry/graphics/BlockRenderer.java |  17 +-
- .../mindustry/graphics/OverlayRenderer.java   |  38 ++-
- core/src/mindustry/input/DesktopInput.java    |  80 +++++-
+ .../mindustry/graphics/OverlayRenderer.java   |  37 ++-
+ core/src/mindustry/input/DesktopInput.java    |  72 +++++-
  core/src/mindustry/input/InputHandler.java    |  42 ++-
  core/src/mindustry/input/MobileInput.java     |  16 +-
  core/src/mindustry/logic/LExecutor.java       |  12 +-
@@ -120,7 +120,7 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  .../mindustry/ui/fragments/MenuFragment.java  |  52 +++-
  .../ui/fragments/PlacementFragment.java       | 164 ++++++++++--
  .../ui/fragments/PlayerListFragment.java      |  72 ++----
- 27 files changed, 1254 insertions(+), 167 deletions(-)
+ 27 files changed, 1245 insertions(+), 167 deletions(-)
 
 diff --git a/core/src/mindustry/editor/MapInfoDialog.java b/core/src/mindustry/editor/MapInfoDialog.java
 index ebc1f0b300d295e45333f1db38ea299c9658ec20..e7cba056743979206c84fc6d00472c2c44b565f6 100644
@@ -431,7 +431,7 @@ index 50051d1ffebc609cee8be5158ccbfbbacd2d8c74..5bad4061338d21001d083cd00fe67f0d
                  }
                  Draw.reset();
 diff --git a/core/src/mindustry/graphics/OverlayRenderer.java b/core/src/mindustry/graphics/OverlayRenderer.java
-index 51c1fdc2398e34635f78e14caf2d1731c8f08bbd..efcd2fb7c622b206f19a18978cd8ad44630b9938 100644
+index 51c1fdc2398e34635f78e14caf2d1731c8f08bbd..0c6141c755efab2732e79bd7f48c9948af56a044 100644
 --- a/core/src/mindustry/graphics/OverlayRenderer.java
 +++ b/core/src/mindustry/graphics/OverlayRenderer.java
 @@ -17,6 +17,7 @@ import mindustry.gen.*;
@@ -512,12 +512,11 @@ index 51c1fdc2398e34635f78e14caf2d1731c8f08bbd..efcd2fb7c622b206f19a18978cd8ad44
          }
  
          //draw selection overlay when dropping item
-@@ -259,6 +282,11 @@ public class OverlayRenderer{
+@@ -259,6 +282,10 @@ public class OverlayRenderer{
                  }
              }
          }
 +
-+        ArcRadar.drawScanner();
 +        if(player.unit() instanceof BlockUnitc unitc){
 +            unitc.tile().drawSelect();
 +        }
@@ -525,7 +524,7 @@ index 51c1fdc2398e34635f78e14caf2d1731c8f08bbd..efcd2fb7c622b206f19a18978cd8ad44
  
      public void checkApplySelection(Unit u){
 diff --git a/core/src/mindustry/input/DesktopInput.java b/core/src/mindustry/input/DesktopInput.java
-index eeca7177aaccd87f554796d95e6557ce8ad739f6..fad7e64e6668ca1905868a828d53fd40ab3d3c11 100644
+index eeca7177aaccd87f554796d95e6557ce8ad739f6..77b19179def45ac5f05534a072402ac8f65d4beb 100644
 --- a/core/src/mindustry/input/DesktopInput.java
 +++ b/core/src/mindustry/input/DesktopInput.java
 @@ -14,17 +14,25 @@ import arc.scene.ui.layout.*;
@@ -575,22 +574,7 @@ index eeca7177aaccd87f554796d95e6557ce8ad739f6..fad7e64e6668ca1905868a828d53fd40
              }).margin(6f);
          });
      }
-@@ -845,6 +860,14 @@ public class DesktopInput extends InputHandler{
-                 Core.settings.put("lasersopacity", 0);
-             }
-         }
-+        if (BindingExt.oreAdsorption.keyDown() && player.unit().tileOn() != null) {
-+            player.unit().tileOn().circle(Mathf.ceil(player.unit().type.mineRange / 8f), tile -> {
-+                Tile ptile = player.unit().mineTile;
-+                if ((ptile == null || player.dst(ptile) > player.dst(tile) || ptile.drop() == Items.sand) && canMine(tile) && tile.drop() != Items.sand) {
-+                    player.unit().mineTile = tile;
-+                }
-+            });
-+        }
-     }
- 
-     @Override
-@@ -919,7 +942,7 @@ public class DesktopInput extends InputHandler{
+@@ -919,7 +934,7 @@ public class DesktopInput extends InputHandler{
      }
  
      protected void updateMovement(Unit unit){
@@ -599,16 +583,14 @@ index eeca7177aaccd87f554796d95e6557ce8ad739f6..fad7e64e6668ca1905868a828d53fd40
  
          float speed = unit.speed();
          float xa = Core.input.axis(Binding.moveX);
-@@ -942,21 +965,64 @@ public class DesktopInput extends InputHandler{
+@@ -942,21 +957,64 @@ public class DesktopInput extends InputHandler{
              }
          }
  
 -        float mouseAngle = Angles.mouseAngle(unit.x, unit.y);
 -        boolean aimCursor = omni && player.shooting && unit.type.hasWeapons() && unit.type.faceTarget && !boosted;
 +        boolean busy = unit.mining() || unit.activelyBuilding();
- 
--        if(aimCursor){
--            unit.lookAt(mouseAngle);
++
 +        if (Core.settings.getBool("playerNeedShooting")){
 +            busy = false;
 +        }
@@ -646,7 +628,9 @@ index eeca7177aaccd87f554796d95e6557ce8ad739f6..fad7e64e6668ca1905868a828d53fd40
 +                Vec2 intercept = Predict.intercept(unit, target, unit.hasWeapons() ? type.weapons.first().bullet.speed : 0f);
 +
 +                player.shooting = !boosted;
-+
+ 
+-        if(aimCursor){
+-            unit.lookAt(mouseAngle);
 +                aimPos = intercept;
 +                lookAtAngle = unit.angleTo(intercept);
 +            }

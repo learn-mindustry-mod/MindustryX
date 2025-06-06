@@ -85,8 +85,11 @@ public class Hooks implements ApplicationListener{
 
     @Override
     public void update(){
-        updateTitle();
-        BindingExt.pollKeys();
+        if(!Vars.headless){
+            updateTitle();
+            BindingExt.pollKeys();
+            if(BindingExt.oreAdsorption.keyDown()) ArcOld.doOreAdsorption();
+        }
     }
 
     private static void registerBundle(){
