@@ -431,7 +431,7 @@ index 50051d1ffebc609cee8be5158ccbfbbacd2d8c74..5bad4061338d21001d083cd00fe67f0d
                  }
                  Draw.reset();
 diff --git a/core/src/mindustry/graphics/OverlayRenderer.java b/core/src/mindustry/graphics/OverlayRenderer.java
-index 51c1fdc2398e34635f78e14caf2d1731c8f08bbd..0c6141c755efab2732e79bd7f48c9948af56a044 100644
+index 6575e7aae19cfbabc0f5542a41972cd9ed6bd1a0..5be2a19309d8ef6bf2c3c2a090657c853d07c7eb 100644
 --- a/core/src/mindustry/graphics/OverlayRenderer.java
 +++ b/core/src/mindustry/graphics/OverlayRenderer.java
 @@ -17,6 +17,7 @@ import mindustry.gen.*;
@@ -524,7 +524,7 @@ index 51c1fdc2398e34635f78e14caf2d1731c8f08bbd..0c6141c755efab2732e79bd7f48c9948
  
      public void checkApplySelection(Unit u){
 diff --git a/core/src/mindustry/input/DesktopInput.java b/core/src/mindustry/input/DesktopInput.java
-index eeca7177aaccd87f554796d95e6557ce8ad739f6..77b19179def45ac5f05534a072402ac8f65d4beb 100644
+index 2a27fa20d51bedc643cb05b9b0956dba681f404a..1ac40bbc2da2d45a1732e0933971b4cd622b4ee9 100644
 --- a/core/src/mindustry/input/DesktopInput.java
 +++ b/core/src/mindustry/input/DesktopInput.java
 @@ -14,17 +14,25 @@ import arc.scene.ui.layout.*;

@@ -4,13 +4,23 @@ Date: Fri, 2 Aug 2024 23:36:02 +0800
 Subject: [PATCH] FR(RenderExt) deadOverlay
 
 ---
- core/src/mindustry/graphics/OverlayRenderer.java | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ core/src/mindustry/graphics/OverlayRenderer.java |  4 ++--
+ core/src/mindustry/input/DesktopInput.java       | 14 +++++++-------
+ 2 files changed, 9 insertions(+), 9 deletions(-)
 
 diff --git a/core/src/mindustry/graphics/OverlayRenderer.java b/core/src/mindustry/graphics/OverlayRenderer.java
-index 9e98c067fd3cb8746ade5c9b31377a0e0855f9dc..51c1fdc2398e34635f78e14caf2d1731c8f08bbd 100644
+index 9e98c067fd3cb8746ade5c9b31377a0e0855f9dc..6575e7aae19cfbabc0f5542a41972cd9ed6bd1a0 100644
 --- a/core/src/mindustry/graphics/OverlayRenderer.java
 +++ b/core/src/mindustry/graphics/OverlayRenderer.java
+@@ -71,7 +71,7 @@ public class OverlayRenderer{
+     public void drawBottom(){
+         InputHandler input = control.input;
+ 
+-        if(player.dead()) return;
++        if(player.dead() && !RenderExt.deadOverlay) return;
+ 
+         if(player.isBuilder()){
+             player.unit().drawBuildPlans();
 @@ -113,7 +113,7 @@ public class OverlayRenderer{
              }
          }
@@ -20,3 +30,70 @@ index 9e98c067fd3cb8746ade5c9b31377a0e0855f9dc..51c1fdc2398e34635f78e14caf2d1731
  
          InputHandler input = control.input;
  
+diff --git a/core/src/mindustry/input/DesktopInput.java b/core/src/mindustry/input/DesktopInput.java
+index eeca7177aaccd87f554796d95e6557ce8ad739f6..2a27fa20d51bedc643cb05b9b0956dba681f404a 100644
+--- a/core/src/mindustry/input/DesktopInput.java
++++ b/core/src/mindustry/input/DesktopInput.java
+@@ -450,7 +450,7 @@ public class DesktopInput extends InputHandler{
+             }
+         }
+ 
+-        if(player.dead() || locked){
++        if(!RenderExt.deadOverlay && (player.dead() || locked)){
+             cursorType = SystemCursor.arrow;
+             if(!Core.scene.hasMouse()){
+                 Core.graphics.cursor(cursorType);
+@@ -597,7 +597,7 @@ public class DesktopInput extends InputHandler{
+         int rawCursorX = World.toTile(Core.input.mouseWorld().x), rawCursorY = World.toTile(Core.input.mouseWorld().y);
+ 
+         //automatically pause building if the current build queue is empty
+-        if(Core.settings.getBool("buildautopause") && isBuilding && !player.unit().isBuilding()){
++        if(!player.dead() && Core.settings.getBool("buildautopause") && isBuilding && !player.unit().isBuilding()){
+             isBuilding = false;
+             buildWasAutoPaused = true;
+         }
+@@ -614,7 +614,7 @@ public class DesktopInput extends InputHandler{
+             schematicY += shiftY;
+         }
+ 
+-        if(Core.input.keyTap(Binding.deselect) && !ui.minimapfrag.shown() && !isPlacing() && player.unit().plans.isEmpty() && !commandMode){
++        if(!player.dead() && Core.input.keyTap(Binding.deselect) && !ui.minimapfrag.shown() && !isPlacing() && player.unit().plans.isEmpty() && !commandMode){
+             player.unit().mineTile = null;
+         }
+ 
+@@ -701,7 +701,7 @@ public class DesktopInput extends InputHandler{
+             selectUnitsRect();
+         }
+ 
+-        if(Core.input.keyRelease(Binding.select) && !Core.scene.hasMouse()){
++        if(!player.dead() && Core.input.keyRelease(Binding.select) && !Core.scene.hasMouse()){
+             BuildPlan plan = getPlan(cursorX, cursorY);
+ 
+             if(plan != null && !movedPlan){
+@@ -742,7 +742,7 @@ public class DesktopInput extends InputHandler{
+                 commandRectY = input.mouseWorldY();
+             }else if(!checkConfigTap() && selected != null && !tryRepairDerelict(selected)){
+                 //only begin shooting if there's no cursor event
+-                if(!tryTapPlayer(Core.input.mouseWorld().x, Core.input.mouseWorld().y) && !tileTapped(selected.build) && !player.unit().activelyBuilding() && !droppingItem
++                if(!player.dead() && !tryTapPlayer(Core.input.mouseWorld().x, Core.input.mouseWorld().y) && !tileTapped(selected.build) && !player.unit().activelyBuilding() && !droppingItem
+                     && !(tryStopMine(selected) || (!settings.getBool("doubletapmine") || selected == prevSelected && Time.timeSinceMillis(selectMillis) < 500) && tryBeginMine(selected)) && !Core.scene.hasKeyboard()){
+                     player.shooting = shouldShoot;
+                 }
+@@ -767,7 +767,7 @@ public class DesktopInput extends InputHandler{
+             schemY = rawCursorY;
+         }
+ 
+-        if(Core.input.keyDown(Binding.select) && mode == none && !isPlacing() && deleting){
++        if(!player.dead() && Core.input.keyDown(Binding.select) && mode == none && !isPlacing() && deleting){
+             var plan = getPlan(cursorX, cursorY);
+             if(plan != null && plan.breaking){
+                 player.unit().plans().remove(plan);
+@@ -791,7 +791,7 @@ public class DesktopInput extends InputHandler{
+             schemY = -1;
+         }
+ 
+-        if(Core.input.keyRelease(Binding.breakBlock) || Core.input.keyRelease(Binding.select)){
++        if(!player.dead() && Core.input.keyRelease(Binding.breakBlock) || Core.input.keyRelease(Binding.select)){
+ 
+             if(mode == placing && block != null){ //touch up while placing, place everything in selection
+                 if(input.keyDown(Binding.boost)){
