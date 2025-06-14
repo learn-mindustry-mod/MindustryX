@@ -31,7 +31,7 @@ index 9e98c067fd3cb8746ade5c9b31377a0e0855f9dc..6575e7aae19cfbabc0f5542a41972cd9
          InputHandler input = control.input;
  
 diff --git a/core/src/mindustry/input/DesktopInput.java b/core/src/mindustry/input/DesktopInput.java
-index eeca7177aaccd87f554796d95e6557ce8ad739f6..2a27fa20d51bedc643cb05b9b0956dba681f404a 100644
+index eeca7177aaccd87f554796d95e6557ce8ad739f6..eed7e96d174eefdbd1a33e6fb7babd0374b32282 100644
 --- a/core/src/mindustry/input/DesktopInput.java
 +++ b/core/src/mindustry/input/DesktopInput.java
 @@ -450,7 +450,7 @@ public class DesktopInput extends InputHandler{
@@ -93,7 +93,7 @@ index eeca7177aaccd87f554796d95e6557ce8ad739f6..2a27fa20d51bedc643cb05b9b0956dba
          }
  
 -        if(Core.input.keyRelease(Binding.breakBlock) || Core.input.keyRelease(Binding.select)){
-+        if(!player.dead() && Core.input.keyRelease(Binding.breakBlock) || Core.input.keyRelease(Binding.select)){
++        if(!player.dead() && (Core.input.keyRelease(Binding.breakBlock) || Core.input.keyRelease(Binding.select))){
  
              if(mode == placing && block != null){ //touch up while placing, place everything in selection
                  if(input.keyDown(Binding.boost)){

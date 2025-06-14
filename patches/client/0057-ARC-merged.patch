@@ -524,7 +524,7 @@ index 6575e7aae19cfbabc0f5542a41972cd9ed6bd1a0..5be2a19309d8ef6bf2c3c2a090657c85
  
      public void checkApplySelection(Unit u){
 diff --git a/core/src/mindustry/input/DesktopInput.java b/core/src/mindustry/input/DesktopInput.java
-index 2a27fa20d51bedc643cb05b9b0956dba681f404a..1ac40bbc2da2d45a1732e0933971b4cd622b4ee9 100644
+index eed7e96d174eefdbd1a33e6fb7babd0374b32282..62d1bdead539e9cf4437d822e3d1af4809b20731 100644
 --- a/core/src/mindustry/input/DesktopInput.java
 +++ b/core/src/mindustry/input/DesktopInput.java
 @@ -14,17 +14,25 @@ import arc.scene.ui.layout.*;
