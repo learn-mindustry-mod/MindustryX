@@ -119,7 +119,7 @@ public class DamagePopup{
                 }else{
                     data = Popup.create();
                     healPopups.put(damaged, data);
-                    data.set(damaged, damagePopups, "", Pal.health, offsetX, offsetY, popupLifetime, -amount, 1f, scale, rotation, offsetLength).add();
+                    data.set(damaged, damagePopups, "", Pal.heal, offsetX, offsetY, popupLifetime, -amount, 1f, scale, rotation, offsetLength).add();
                 }
             }
         }else{
