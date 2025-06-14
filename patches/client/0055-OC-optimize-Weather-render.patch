@@ -8,27 +8,27 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 ---
- core/src/mindustry/type/Weather.java | 18 +++++++-----------
- 1 file changed, 7 insertions(+), 11 deletions(-)
+ core/src/mindustry/type/Weather.java | 21 +++++++--------------
+ 1 file changed, 7 insertions(+), 14 deletions(-)
 
 diff --git a/core/src/mindustry/type/Weather.java b/core/src/mindustry/type/Weather.java
-index e70e0af9af7233663453ff4d57466622cb6f4cf8..4de97a345f19bcf09c6bfa6522a5d2fd9d478b45 100644
+index e70e0af9af7233663453ff4d57466622cb6f4cf8..1d3dc6174b0e050ec318a34ce66a185a069a6ecb 100644
 --- a/core/src/mindustry/type/Weather.java
 +++ b/core/src/mindustry/type/Weather.java
-@@ -119,11 +119,10 @@ public class Weather extends UnlockableContent{
+@@ -119,11 +119,9 @@ public class Weather extends UnlockableContent{
                                float sinSclMin, float sinSclMax, float sinMagMin, float sinMagMax,
                                boolean randomParticleRotation){
          rand.setSeed(0);
 -        Tmp.r1.setCentered(Core.camera.position.x, Core.camera.position.y, Core.graphics.getWidth() / renderer.minScale(), Core.graphics.getHeight() / renderer.minScale());
-+        Tmp.r1.set(0, 0, Math.min(Core.graphics.getWidth() / renderer.minScale(), world.unitWidth()), Math.min(Core.graphics.getHeight() / renderer.minScale(), world.unitHeight()));
-         Tmp.r1.grow(sizeMax * 1.5f);
+-        Tmp.r1.grow(sizeMax * 1.5f);
++        world.getQuadBounds(Tmp.r1).grow(sizeMax * 1.5f);
          Core.camera.bounds(Tmp.r2);
          int total = (int)(Tmp.r1.area() / density * intensity);
 -        Draw.color(color, opacity);
  
          for(int i = 0; i < total; i++){
              float scl = rand.random(0.5f, 1f);
-@@ -144,7 +143,7 @@ public class Weather extends UnlockableContent{
+@@ -144,7 +142,7 @@ public class Weather extends UnlockableContent{
              y += Tmp.r1.y;
  
              if(Tmp.r3.setCentered(x, y, size).overlaps(Tmp.r2)){
@@ -37,13 +37,13 @@ index e70e0af9af7233663453ff4d57466622cb6f4cf8..4de97a345f19bcf09c6bfa6522a5d2fd
                  Draw.rect(region, x, y, size, size, rotation);
              }
          }
-@@ -156,13 +155,12 @@ public class Weather extends UnlockableContent{
+@@ -156,13 +154,11 @@ public class Weather extends UnlockableContent{
          rand.setSeed(0);
          float padding = sizeMax*0.9f;
  
 -        Tmp.r1.setCentered(Core.camera.position.x, Core.camera.position.y, Core.graphics.getWidth() / renderer.minScale(), Core.graphics.getHeight() / renderer.minScale());
-+        Tmp.r1.set(0, 0, Math.min(Core.graphics.getWidth() / renderer.minScale(), world.unitWidth()), Math.min(Core.graphics.getHeight() / renderer.minScale(), world.unitHeight()));
-         Tmp.r1.grow(padding);
+-        Tmp.r1.grow(padding);
++        world.getQuadBounds(Tmp.r1).grow(padding);
          Core.camera.bounds(Tmp.r2);
          int total = (int)(Tmp.r1.area() / density * intensity);
          Lines.stroke(stroke);
@@ -52,7 +52,7 @@ index e70e0af9af7233663453ff4d57466622cb6f4cf8..4de97a345f19bcf09c6bfa6522a5d2fd
  
          for(int i = 0; i < total; i++){
              float scl = rand.random(0.5f, 1f);
-@@ -180,14 +178,14 @@ public class Weather extends UnlockableContent{
+@@ -180,15 +176,14 @@ public class Weather extends UnlockableContent{
              y += Tmp.r1.y;
  
              if(Tmp.r3.setCentered(x, y, size).overlaps(Tmp.r2)){
@@ -65,11 +65,12 @@ index e70e0af9af7233663453ff4d57466622cb6f4cf8..4de97a345f19bcf09c6bfa6522a5d2fd
  
      public static void drawSplashes(TextureRegion[] splashes, float padding, float density, float intensity, float opacity, float timeScale, float stroke, Color color, Liquid splasher){
 -        Tmp.r1.setCentered(Core.camera.position.x, Core.camera.position.y, Core.graphics.getWidth() / renderer.minScale(), Core.graphics.getHeight() / renderer.minScale());
-+        Tmp.r1.set(0, 0, Math.min(Core.graphics.getWidth() / renderer.minScale(), world.unitWidth()), Math.min(Core.graphics.getHeight() / renderer.minScale(), world.unitHeight()));
-         Tmp.r1.grow(padding);
+-        Tmp.r1.grow(padding);
++        world.getQuadBounds(Tmp.r1).grow(padding);
          Core.camera.bounds(Tmp.r2);
          int total = (int)(Tmp.r1.area() / density * intensity) / 2;
-@@ -220,8 +218,7 @@ public class Weather extends UnlockableContent{
+         Lines.stroke(stroke);
+@@ -220,8 +215,7 @@ public class Weather extends UnlockableContent{
                      Draw.color(Tmp.c1.set(tile.floor().mapColor).mul(1.5f).a(opacity));
                      Draw.rect(splashes[(int)(life * (splashes.length - 1))], x, y);
                  }else if(tile != null && tile.floor().liquidDrop == null && !tile.floor().solid){
@@ -79,7 +80,7 @@ index e70e0af9af7233663453ff4d57466622cb6f4cf8..4de97a345f19bcf09c6bfa6522a5d2fd
  
                      float space = 45f;
                      for(int j : new int[]{-1, 1}){
-@@ -248,8 +245,7 @@ public class Weather extends UnlockableContent{
+@@ -248,8 +242,7 @@ public class Weather extends UnlockableContent{
      }
  
      public static void drawNoise(Texture noise, Color color, float noisescl, float opacity, float baseSpeed, float intensity, float vwindx, float vwindy, float offset){
