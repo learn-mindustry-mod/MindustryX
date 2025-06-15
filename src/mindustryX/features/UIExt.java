@@ -15,13 +15,16 @@ import mindustry.content.*;
 import mindustry.core.*;
 import mindustry.gen.*;
 import mindustry.ui.*;
+import mindustryX.features.SettingsV2.*;
 import mindustryX.features.ui.*;
 import mindustryX.features.ui.toolTable.*;
 
 import static mindustry.Vars.*;
 
 public class UIExt{
-    public static SettingsV2.Data<Integer> quickToolOffset = new SettingsV2.SliderPref("quickToolOffset", 0, -250, 250, 10);
+    public static final CheckPref teamsStatDisplayVisible = new CheckPref("gameUI.teamsStatDisplay");
+    public static final CheckPref quickToolVisible = new CheckPref("gameUI.quickTool", true);
+    public static SettingsV2.Data<Integer> quickToolOffset = new SettingsV2.SliderPref("gameUI.quickToolOffset", 0, -250, 250, 10);
 
     public static TeamSelectDialog teamSelect;
     public static ModsRecommendDialog modsRecommend = new ModsRecommendDialog();
@@ -33,6 +36,12 @@ public class UIExt{
     public static WaveInfoDisplay waveInfoDisplay = new WaveInfoDisplay();
     public static NewCoreItemsDisplay coreItems = new NewCoreItemsDisplay();
 
+    static{
+        teamsStatDisplayVisible.addFallbackName("showOtherTeamResource");
+        quickToolVisible.addFallbackName("showQuickToolTable");
+        quickToolOffset.addFallbackName("quickToolOffset");
+    }
+
     public static void init(){
         teamSelect = new TeamSelectDialog();
 
@@ -40,7 +49,7 @@ public class UIExt{
         ui.hudGroup.fill(t -> {
             t.name = "otherCore";
             t.left().add(teamsStatDisplay.wrapped());
-            t.visible(() -> ui.hudfrag.shown && Core.settings.getBool("showOtherTeamResource"));
+            t.visible(teamsStatDisplayVisible::get);
         });
 
         ui.hudGroup.fill(t -> {
@@ -51,7 +60,7 @@ public class UIExt{
             t.add(NewToolTable.INSTANCE.wrapped()).row();
             t.add(advanceToolTable.wrapped()).row();
             t.add(advanceBuildTool.wrapped()).row();
-            t.visible(() -> ui.hudfrag.shown && Core.settings.getBool("showQuickToolTable"));
+            t.visible(quickToolVisible::get);
         });
 
         LogicSupport.init();

@@ -13,6 +13,7 @@ import mindustry.gen.*;
 import mindustry.net.*;
 import mindustry.net.Packets.*;
 import mindustry.ui.dialogs.*;
+import mindustryX.features.SettingsV2.*;
 
 import java.io.*;
 import java.nio.*;
@@ -27,6 +28,8 @@ import static mindustry.Vars.*;
  * WayZer修改优化
  */
 public class ReplayController{
+    private static final CheckPref enable = new CheckPref("replayRecord");
+
     public static boolean recording, replaying;
 
     private static Writes writes;
@@ -76,7 +79,7 @@ public class ReplayController{
     }
 
     public static void onConnect(String ip){
-        if(!Core.settings.getBool("replayRecord") || LogicExt.contentsCompatibleMode) return;
+        if(!enable.get() || LogicExt.contentsCompatibleMode) return;
         if(replaying) return;
         var file = saveDirectory.child(new Date().getTime() + ".mrep");
         try{

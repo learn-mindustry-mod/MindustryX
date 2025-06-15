@@ -47,7 +47,6 @@ public class RenderExt{
     public static int massDriverLineInterval;
     public static boolean drawBars, drawBarsMend;
     public static float healthBarMinHealth;
-    public static boolean deadOverlay;
     public static boolean drawBlockDisabled;
     public static boolean showOtherInfo, editOtherBlock;
     public static boolean unitWeaponTargetLine, unitItemCarried;
@@ -66,6 +65,7 @@ public class RenderExt{
     public static final SettingsV2.CheckPref spawnerWaveDisplay = new CheckPref("gameUI.spawnerWaveDisplay", true);
     public static final SettingsV2.CheckPref transportScan = new CheckPref("gameUI.transportScan");
     public static final SettingsV2.CheckPref announceRtsTake = new CheckPref("gameUI.announceRtsTake", true);
+    public static final SettingsV2.CheckPref deadOverlay = new CheckPref("gameUI.deadOverlay");
 
     static{
         var internal = new PersistentProvider.Arc<Boolean>("bulletShow");
@@ -89,6 +89,8 @@ public class RenderExt{
         unitHide.setPersistentProvider(PersistentProvider.Noop.INSTANCE);
         unitHideExcludePlayers.addFallbackName("unitHideExcludePlayers");
         unitHideMinHealth.addFallbackName("unitDrawMinHealth");
+
+        deadOverlay.addFallbackName("deadOverlay");
     }
 
     private static Effect placementEffect;
@@ -123,7 +125,6 @@ public class RenderExt{
             drawBars = Core.settings.getBool("blockBars");
             drawBarsMend = Core.settings.getBool("blockBars_mend");
             healthBarMinHealth = Core.settings.getInt("blockbarminhealth");
-            deadOverlay = Core.settings.getBool("deadOverlay");
             drawBlockDisabled = Core.settings.getBool("blockdisabled");
             showOtherInfo = Core.settings.getBool("showOtherTeamState");
             editOtherBlock = Core.settings.getBool("editOtherBlock");
@@ -336,7 +337,7 @@ public class RenderExt{
                 count.increment(u.type);
             }
             StringBuilder builder = new StringBuilder();
-            builder.append("[gold][MDTX][]").append(player.name).append("\n[white]抢走了单位: ");
+            builder.append("[gold][MDTX][]").append(player.name).append("\n[white]分走了单位: ");
             for(UnitType type : count.keys()){
                 builder.append(type.emoji()).append("x").append(count.get(type)).append(" ");
             }

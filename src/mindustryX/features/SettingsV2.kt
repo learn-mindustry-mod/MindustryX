@@ -8,10 +8,7 @@ import arc.scene.event.InputEvent
 import arc.scene.event.Touchable
 import arc.scene.ui.*
 import arc.scene.ui.layout.Table
-import arc.util.Align
-import arc.util.Log
-import arc.util.Reflect
-import arc.util.Time
+import arc.util.*
 import mindustry.Vars
 import mindustry.gen.Icon
 import mindustry.graphics.Pal
@@ -79,6 +76,10 @@ object SettingsV2 {
         }
 
         fun addFallbackName(name: String) {
+            if (Core.settings == null) {
+                lateInit.add { addFallbackName(name) }
+                return
+            }
             addFallback(PersistentProvider.Arc(name))
         }
     }
@@ -86,6 +87,7 @@ object SettingsV2 {
     open class Data<T>(name: String, def: T) : DataCore<T>(name, def) {
         val category: String get() = name.substringBefore('.', "")
         val title: String get() = Core.bundle.get("settingV2.${name}.name", name)
+        val description: String? get() = Core.bundle.getOrNull("settingV2.${name}.description")
 
         open fun buildUI(table: Table) {
             table.table().fillX().padTop(3f).get().apply {
@@ -97,7 +99,7 @@ object SettingsV2 {
         }
 
         protected fun Table.addTools() {
-            val help = Core.bundle.getOrNull("settingV2.${name}.description")
+            val help = description
             button(Icon.info, Styles.clearNonei) { Vars.ui.showInfo(help) }.tooltip(help ?: "@none")
                 .fillY().padLeft(8f).disabled { help == null }
             button(Icon.undo, Styles.clearNonei) { resetDefault() }.tooltip("@settingV2.reset")
@@ -233,6 +235,12 @@ object SettingsV2 {
     }
 
     val ALL = LinkedHashMap<String, DataCore<*>>()
+    private val lateInit = mutableListOf<() -> Unit>()
+
+    fun init() {
+        lateInit.forEach { it.invoke() }
+        lateInit.clear()
+    }
 
     @JvmStatic
     @JvmOverloads

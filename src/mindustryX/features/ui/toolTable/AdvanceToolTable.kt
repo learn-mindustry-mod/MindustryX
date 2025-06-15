@@ -75,7 +75,7 @@ class AdvanceToolTable : ToolTableBase(Iconc.wrench.toString()) {
                 .checked { LogicExt.worldCreator }.wrapLabel(false)
             button("解禁", Styles.flatToggleMenut) {
                 VarsX.allUnlocked.toggle()
-            }.checked { LogicExt.allUnlocked }.tooltip("[acid]显示并允许建造所有物品").wrapLabel(false)
+            }.checked { VarsX.allUnlocked.value }.tooltip("[acid]显示并允许建造所有物品").wrapLabel(false)
             button("地形蓝图", Styles.flatToggleMenut) { Settings.toggle("terrainSchematic") }
                 .checked { LogicExt.terrainSchematic }.wrapLabel(false)
             button("瞬间完成", Styles.cleart) {

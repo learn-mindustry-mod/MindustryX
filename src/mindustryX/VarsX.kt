@@ -61,4 +61,24 @@ object VarsX {
 
     @JvmField
     val noPlayerHitBox = CheckPref("noPlayerHitBox")
+
+    @JvmField
+    val githubMirror = CheckPref("githubMirror", true)
+
+    @JvmField
+    val arcSpecificInfoTable = CheckPref("gameUI.arcSpecificTable").apply {
+        addFallbackName("arcSpecificTable")
+    }
+
+    @JvmField
+    val itemSelectionHeight = SliderPref("gameUI.itemSelectionHeight", 4, 4, 12) { "$it 行" }.apply {
+        addFallbackName("itemSelectionHeight")
+    }
+
+    @JvmField
+    val itemSelectionWidth = SliderPref("gameUI.itemSelectionWidth", 4, 4, 12) { "$it 列" }.apply {
+        addFallbackName("itemSelectionWidth")
+    }
+
+
 }

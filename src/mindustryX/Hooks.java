@@ -19,6 +19,7 @@ public class Hooks implements ApplicationListener{
         Log.infoTag("MindustryX", "Hooks.beforeInit");
         registerBundle();
         Settings.addSettings();
+        SettingsV2.INSTANCE.init();
         DebugUtil.init();//this is safe, and better at beforeInit,
         BindingExt.init();
     }
@@ -45,7 +46,7 @@ public class Hooks implements ApplicationListener{
 
     @SuppressWarnings("unused")//call before arc.util.Http$HttpRequest.block
     public static void onHttp(Http.HttpRequest req){
-        if(Core.settings.getBool("githubMirror")){
+        if(VarsX.githubMirror.get()){
             try{
                 String url = req.url;
                 String host = new URL(url).getHost();

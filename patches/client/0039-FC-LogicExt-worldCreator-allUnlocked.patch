@@ -8,16 +8,16 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 ---
- .../mindustry/ctype/UnlockableContent.java    |  5 +--
+ .../mindustry/ctype/UnlockableContent.java    |  5 ++--
  .../mindustry/ui/dialogs/DatabaseDialog.java  | 11 +++++--
- .../ui/fragments/PlacementFragment.java       | 32 ++++++++++++++++++-
+ .../ui/fragments/PlacementFragment.java       | 30 ++++++++++++++++++-
  core/src/mindustry/world/Block.java           |  4 +--
  core/src/mindustry/world/Build.java           |  6 ++++
  .../mindustry/world/blocks/ItemSelection.java |  3 +-
- 6 files changed, 53 insertions(+), 8 deletions(-)
+ 6 files changed, 51 insertions(+), 8 deletions(-)
 
 diff --git a/core/src/mindustry/ctype/UnlockableContent.java b/core/src/mindustry/ctype/UnlockableContent.java
-index f8fdc28679649f8b0612246590d272aac69ef5a1..913fd680af4cb2f9a53af24c7bbb8e8b95e28e8b 100644
+index f8fdc28679649f8b0612246590d272aac69ef5a1..324dd94a7611e06156e61dde45b28b430a362445 100644
 --- a/core/src/mindustry/ctype/UnlockableContent.java
 +++ b/core/src/mindustry/ctype/UnlockableContent.java
 @@ -17,6 +17,7 @@ import mindustry.graphics.MultiPacker.*;
@@ -33,7 +33,7 @@ index f8fdc28679649f8b0612246590d272aac69ef5a1..913fd680af4cb2f9a53af24c7bbb8e8b
  
      public boolean unlockedNowHost(){
 -        return !state.isCampaign() || unlockedHost();
-+        return LogicExt.allUnlocked || !state.isCampaign() || unlockedHost();
++        return mindustryX.VarsX.allUnlocked.get() || !state.isCampaign() || unlockedHost();
      }
  
      /** @return in multiplayer, whether this is unlocked for the host player, otherwise, whether it is unlocked for the local player (same as unlocked()) */
@@ -42,7 +42,7 @@ index f8fdc28679649f8b0612246590d272aac69ef5a1..913fd680af4cb2f9a53af24c7bbb8e8b
      /** @return whether this content is unlocked, or the player is in a custom (non-campaign) game. */
      public boolean unlockedNow(){
 -        return unlocked() || !state.isCampaign();
-+        return LogicExt.allUnlocked || unlocked() || !state.isCampaign();
++        return mindustryX.VarsX.allUnlocked.get() || unlocked() || !state.isCampaign();
      }
  
      public boolean unlocked(){
@@ -82,10 +82,10 @@ index df3b0c68e7c5d93371cc42f95a497535a9a167dd..79b774cc0640d32daa41b98cf7cebe21
      }
  }
 diff --git a/core/src/mindustry/ui/fragments/PlacementFragment.java b/core/src/mindustry/ui/fragments/PlacementFragment.java
-index 9f826ded301115dbbeed5ae05ba1b3627fc985cb..4c667d13638b16c54dfdc8c81315feb38905b22c 100644
+index 9f826ded301115dbbeed5ae05ba1b3627fc985cb..6442d78f00e1288793ce7365b886f9f4acc34529 100644
 --- a/core/src/mindustry/ui/fragments/PlacementFragment.java
 +++ b/core/src/mindustry/ui/fragments/PlacementFragment.java
-@@ -26,13 +26,16 @@ import mindustry.input.*;
+@@ -26,8 +26,10 @@ import mindustry.input.*;
  import mindustry.type.*;
  import mindustry.ui.*;
  import mindustry.world.*;
@@ -96,24 +96,18 @@ index 9f826ded301115dbbeed5ae05ba1b3627fc985cb..4c667d13638b16c54dfdc8c81315feb3
  
  import static mindustry.Vars.*;
  
- public class PlacementFragment{
-     final int rowWidth = 4;
-+    private boolean lastAllUnlocked = LogicExt.allUnlocked;
- 
-     public Category currentCategory = Category.distribution;
- 
-@@ -109,6 +112,10 @@ public class PlacementFragment{
+@@ -109,6 +111,10 @@ public class PlacementFragment{
                  if(nextFlowBuild.flowItems() != null) nextFlowBuild.flowItems().updateFlow();
                  if(nextFlowBuild.liquids != null) nextFlowBuild.liquids.updateFlow();
              }
 +
-+            if(lastAllUnlocked != LogicExt.allUnlocked){
++            if(mindustryX.VarsX.allUnlocked.changed("placement")){
 +                rebuild();
 +            }
          });
      }
  
-@@ -129,6 +136,27 @@ public class PlacementFragment{
+@@ -129,6 +135,27 @@ public class PlacementFragment{
          if(Core.input.keyTap(Binding.pick) && player.isBuilder() && !Core.scene.hasDialog()){ //mouse eyedropper select
              var build = world.buildWorld(Core.input.mouseWorld().x, Core.input.mouseWorld().y);
  
@@ -141,15 +135,7 @@ index 9f826ded301115dbbeed5ae05ba1b3627fc985cb..4c667d13638b16c54dfdc8c81315feb3
              //can't middle click buildings in fog
              if(build != null && build.inFogTo(player.team())){
                  build = null;
-@@ -264,6 +292,7 @@ public class PlacementFragment{
-     }
- 
-     public void build(Group parent){
-+        lastAllUnlocked = LogicExt.allUnlocked;
-         parent.fill(full -> {
-             toggler = full;
-             full.bottom().right().visible(() -> ui.hudfrag.shown);
-@@ -282,6 +311,7 @@ public class PlacementFragment{
+@@ -282,6 +309,7 @@ public class PlacementFragment{
  
                      for(Block block : getUnlockedByCategory(currentCategory)){
                          if(!unlocked(block)) continue;
@@ -157,17 +143,17 @@ index 9f826ded301115dbbeed5ae05ba1b3627fc985cb..4c667d13638b16c54dfdc8c81315feb3
                          if(index++ % rowWidth == 0){
                              blockTable.row();
                          }
-@@ -738,7 +768,7 @@ public class PlacementFragment{
+@@ -738,7 +766,7 @@ public class PlacementFragment{
      }
  
      boolean unlocked(Block block){
 -        return block.unlockedNowHost() && block.placeablePlayer && block.environmentBuildable() &&
-+        return LogicExt.allUnlocked || block.unlockedNowHost() && block.placeablePlayer && block.environmentBuildable() &&
++        return mindustryX.VarsX.allUnlocked.get() || block.unlockedNowHost() && block.placeablePlayer && block.environmentBuildable() &&
              block.supportsEnv(state.rules.env);
      }
  
 diff --git a/core/src/mindustry/world/Block.java b/core/src/mindustry/world/Block.java
-index dec2a2c4db241a26f7d2721eeae0efaa4dbf6b81..0876d188c8ed09a946e8b14d4bdf8769783dc5b5 100644
+index dec2a2c4db241a26f7d2721eeae0efaa4dbf6b81..c1cf1d89fe313036358bb2dadb63cfb93ac6a374 100644
 --- a/core/src/mindustry/world/Block.java
 +++ b/core/src/mindustry/world/Block.java
 @@ -934,11 +934,11 @@ public class Block extends UnlockableContent implements Senseable{
@@ -175,7 +161,7 @@ index dec2a2c4db241a26f7d2721eeae0efaa4dbf6b81..0876d188c8ed09a946e8b14d4bdf8769
  
      public boolean isVisible(){
 -        return !isHidden() && (state.rules.editor || (!state.rules.hideBannedBlocks || !state.rules.isBanned(this)));
-+        return LogicExt.allUnlocked || !isHidden() && (state.rules.editor || (!state.rules.hideBannedBlocks || !state.rules.isBanned(this)));
++        return mindustryX.VarsX.allUnlocked.get() || !isHidden() && (state.rules.editor || (!state.rules.hideBannedBlocks || !state.rules.isBanned(this)));
      }
  
      public boolean isPlaceable(){
@@ -216,7 +202,7 @@ index 8340229257797f5a7e11291957ecddd3cce52465..28209a606e074bae37789099caa6edb2
      }
  }
 diff --git a/core/src/mindustry/world/blocks/ItemSelection.java b/core/src/mindustry/world/blocks/ItemSelection.java
-index 6bbe2ba127c5f3126bd7c42badea0a1d86d15db3..87952e828ff62f146ef720cde4d2de8b7179fa0b 100644
+index 6bbe2ba127c5f3126bd7c42badea0a1d86d15db3..836dbb7aadbdae2f7666652191972cd78c63558a 100644
 --- a/core/src/mindustry/world/blocks/ItemSelection.java
 +++ b/core/src/mindustry/world/blocks/ItemSelection.java
 @@ -12,6 +12,7 @@ import mindustry.ctype.*;
@@ -232,7 +218,7 @@ index 6bbe2ba127c5f3126bd7c42badea0a1d86d15db3..87952e828ff62f146ef720cde4d2de8b
              Seq<T> list = items.select(u -> (text.isEmpty() || u.localizedName.toLowerCase().contains(text.toLowerCase())));
              for(T item : list){
 -                if(!item.unlockedNow() || !item.isOnPlanet(state.getPlanet()) || item.isHidden()) continue;
-+                if(!LogicExt.allUnlocked && (!item.unlockedNow() || !item.isOnPlanet(state.getPlanet()) || item.isHidden())) continue;
++                if(!mindustryX.VarsX.allUnlocked.get() && (!item.unlockedNow() || !item.isOnPlanet(state.getPlanet()) || item.isHidden())) continue;
  
                  ImageButton button = cont.button(Tex.whiteui, Styles.clearNoneTogglei, Mathf.clamp(item.selectionSize, 0f, 40f), () -> {
                      if(closeSelect) control.input.config.hideConfig();

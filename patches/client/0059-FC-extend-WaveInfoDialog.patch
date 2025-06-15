@@ -15,7 +15,7 @@ Content-Transfer-Encoding: 8bit
  1 file changed, 163 insertions(+), 66 deletions(-)
 
 diff --git a/core/src/mindustry/editor/WaveInfoDialog.java b/core/src/mindustry/editor/WaveInfoDialog.java
-index 55e675caa05e8b7fb43b92bc2460e19daae7840e..3eba887c2196a9976e56546aae3dbb4113020bf1 100644
+index 55e675caa05e8b7fb43b92bc2460e19daae7840e..f4467612284dc20feb6447a4953dff25274a7fa7 100644
 --- a/core/src/mindustry/editor/WaveInfoDialog.java
 +++ b/core/src/mindustry/editor/WaveInfoDialog.java
 @@ -6,6 +6,7 @@ import arc.graphics.*;
@@ -267,7 +267,7 @@ index 55e675caa05e8b7fb43b92bc2460e19daae7840e..3eba887c2196a9976e56546aae3dbb41
 +                buildGroups();
 +            });
 +        }
-+        dialog.addContents(content.units().select((type) -> !type.isHidden() || LogicExt.allUnlocked), null, (type) -> {
++        dialog.addContents(content.units().select((type) -> !type.isHidden() || mindustryX.VarsX.allUnlocked.get()), null, (type) -> {
 +            cons.get(type);
 +            dialog.hide();
 +            buildGroups();
@@ -310,7 +310,7 @@ index 55e675caa05e8b7fb43b92bc2460e19daae7840e..3eba887c2196a9976e56546aae3dbb41
 +            dialog.hide();
 +            buildGroups();
 +        });
-+        dialog.addContents(content.statusEffects().select((effect) -> (!effect.isHidden() && !effect.reactive) || LogicExt.allUnlocked), null, (type) -> {
++        dialog.addContents(content.statusEffects().select((effect) -> (!effect.isHidden() && !effect.reactive) || mindustryX.VarsX.allUnlocked.get()), null, (type) -> {
 +            group.effect = type;
 +            dialog.hide();
 +            buildGroups();

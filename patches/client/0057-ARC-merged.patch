@@ -120,7 +120,7 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  .../mindustry/ui/fragments/MenuFragment.java  |  52 +++-
  .../ui/fragments/PlacementFragment.java       | 164 ++++++++++--
  .../ui/fragments/PlayerListFragment.java      |  72 ++----
- 27 files changed, 1245 insertions(+), 167 deletions(-)
+ 27 files changed, 1244 insertions(+), 168 deletions(-)
 
 diff --git a/core/src/mindustry/editor/MapInfoDialog.java b/core/src/mindustry/editor/MapInfoDialog.java
 index ebc1f0b300d295e45333f1db38ea299c9658ec20..e7cba056743979206c84fc6d00472c2c44b565f6 100644
@@ -431,7 +431,7 @@ index 50051d1ffebc609cee8be5158ccbfbbacd2d8c74..5bad4061338d21001d083cd00fe67f0d
                  }
                  Draw.reset();
 diff --git a/core/src/mindustry/graphics/OverlayRenderer.java b/core/src/mindustry/graphics/OverlayRenderer.java
-index 6575e7aae19cfbabc0f5542a41972cd9ed6bd1a0..5be2a19309d8ef6bf2c3c2a090657c853d07c7eb 100644
+index f7c9adf4e8abd9e26596f04bc903e2c460410480..04f7f6fc9c5fd08dd93eaa42747c270b181893e5 100644
 --- a/core/src/mindustry/graphics/OverlayRenderer.java
 +++ b/core/src/mindustry/graphics/OverlayRenderer.java
 @@ -17,6 +17,7 @@ import mindustry.gen.*;
@@ -524,7 +524,7 @@ index 6575e7aae19cfbabc0f5542a41972cd9ed6bd1a0..5be2a19309d8ef6bf2c3c2a090657c85
  
      public void checkApplySelection(Unit u){
 diff --git a/core/src/mindustry/input/DesktopInput.java b/core/src/mindustry/input/DesktopInput.java
-index eed7e96d174eefdbd1a33e6fb7babd0374b32282..62d1bdead539e9cf4437d822e3d1af4809b20731 100644
+index a3467be7ed208a4399d0bde3458045122994dda6..7db0aac3314fac945e2620b64e6abc1725c31161 100644
 --- a/core/src/mindustry/input/DesktopInput.java
 +++ b/core/src/mindustry/input/DesktopInput.java
 @@ -14,17 +14,25 @@ import arc.scene.ui.layout.*;
@@ -2068,7 +2068,7 @@ index 3542163354070ac67c49b82dff6c72b374d4ca7d..23a252543293b8b9edfdeddc87ebb9af
          //special case for 'clear' command
          if(message.equals("clear")){
 diff --git a/core/src/mindustry/ui/fragments/HudFragment.java b/core/src/mindustry/ui/fragments/HudFragment.java
-index 19b779682d6375156fd8d792db79907ca57d2c6f..e1be03694cf3e5e2d70c0de2e35be39206f42947 100644
+index 19b779682d6375156fd8d792db79907ca57d2c6f..12637f553d035728b47faba5f0797d807fe23f9e 100644
 --- a/core/src/mindustry/ui/fragments/HudFragment.java
 +++ b/core/src/mindustry/ui/fragments/HudFragment.java
 @@ -29,9 +29,11 @@ import mindustry.net.Packets.*;
@@ -2087,7 +2087,7 @@ index 19b779682d6375156fd8d792db79907ca57d2c6f..e1be03694cf3e5e2d70c0de2e35be392
              wavesMain.top().left().name = "waves";
  
              wavesMain.table(s -> {
-+                if(Core.settings.getBool("arcSpecificTable")){
++                if(mindustryX.VarsX.arcSpecificInfoTable.get()){
 +                    s.add(makeStatusTableArc()).grow().name("status");
 +                    return;
 +                }
@@ -2399,7 +2399,7 @@ index 57f16a53a6910131be7d85122fcc6e5e31f0115c..09b88181603569052f95c5695b35f2c3
      }
  
 diff --git a/core/src/mindustry/ui/fragments/PlacementFragment.java b/core/src/mindustry/ui/fragments/PlacementFragment.java
-index 4c667d13638b16c54dfdc8c81315feb38905b22c..3a9a37b6417e71ecab44009030d4ece7a22bcd07 100644
+index 6442d78f00e1288793ce7365b886f9f4acc34529..4413e2ce6fa01c41a01b6d818d235233a8f863d4 100644
 --- a/core/src/mindustry/ui/fragments/PlacementFragment.java
 +++ b/core/src/mindustry/ui/fragments/PlacementFragment.java
 @@ -1,6 +1,7 @@
@@ -2410,7 +2410,7 @@ index 4c667d13638b16c54dfdc8c81315feb38905b22c..3a9a37b6417e71ecab44009030d4ece7
  import arc.graphics.*;
  import arc.input.*;
  import arc.math.geom.*;
-@@ -26,15 +27,16 @@ import mindustry.input.*;
+@@ -26,25 +27,26 @@ import mindustry.input.*;
  import mindustry.type.*;
  import mindustry.ui.*;
  import mindustry.world.*;
@@ -2425,11 +2425,9 @@ index 4c667d13638b16c54dfdc8c81315feb38905b22c..3a9a37b6417e71ecab44009030d4ece7
  
  public class PlacementFragment{
 -    final int rowWidth = 4;
-+    private int rowWidth, maxRow;
-     private boolean lastAllUnlocked = LogicExt.allUnlocked;
- 
+-
      public Category currentCategory = Category.distribution;
-@@ -42,10 +44,12 @@ public class PlacementFragment{
+ 
      Seq<Block> returnArray = new Seq<>(), returnArray2 = new Seq<>();
      Seq<Category> returnCatArray = new Seq<>();
      boolean[] categoryEmpty = new boolean[Category.all.length];
@@ -2444,25 +2442,25 @@ index 4c667d13638b16c54dfdc8c81315feb38905b22c..3a9a37b6417e71ecab44009030d4ece7
      @Nullable Building lastFlowBuild, nextFlowBuild;
      @Nullable Object lastDisplayState;
      @Nullable Team lastTeam;
-@@ -113,7 +117,7 @@ public class PlacementFragment{
+@@ -112,7 +114,7 @@ public class PlacementFragment{
                  if(nextFlowBuild.liquids != null) nextFlowBuild.liquids.updateFlow();
              }
  
--            if(lastAllUnlocked != LogicExt.allUnlocked){
-+            if(lastAllUnlocked != LogicExt.allUnlocked || rowWidth != Core.settings.getInt("itemSelectionWidth", 4) || maxRow != Core.settings.getInt("itemSelectionHeight", 4)){
+-            if(mindustryX.VarsX.allUnlocked.changed("placement")){
++            if(mindustryX.VarsX.allUnlocked.changed("placement") || mindustryX.VarsX.itemSelectionWidth.changed() || mindustryX.VarsX.itemSelectionHeight.changed()){
                  rebuild();
              }
          });
-@@ -293,6 +297,8 @@ public class PlacementFragment{
+@@ -291,6 +293,8 @@ public class PlacementFragment{
+     }
  
      public void build(Group parent){
-         lastAllUnlocked = LogicExt.allUnlocked;
-+        rowWidth = Core.settings.getInt("itemSelectionWidth", 4);
-+        maxRow = Core.settings.getInt("itemSelectionHeight", 4);
++        int rowWidth = mindustryX.VarsX.itemSelectionWidth.get();
++        int maxRow = mindustryX.VarsX.itemSelectionHeight.get();
          parent.fill(full -> {
              toggler = full;
              full.bottom().right().visible(() -> ui.hudfrag.shown);
-@@ -369,19 +375,22 @@ public class PlacementFragment{
+@@ -367,19 +371,22 @@ public class PlacementFragment{
  
                          //find current hovered thing
                          Displayable hovered = hover;
@@ -2486,7 +2484,7 @@ index 4c667d13638b16c54dfdc8c81315feb38905b22c..3a9a37b6417e71ecab44009030d4ece7
                          lastTeam = player.team();
  
                          //show details of selected block, with costs
-@@ -450,6 +459,30 @@ public class PlacementFragment{
+@@ -448,6 +455,30 @@ public class PlacementFragment{
                          }else if(hovered != null){
                              //show hovered item, whatever that may be
                              hovered.display(topTable);
@@ -2517,7 +2515,7 @@ index 4c667d13638b16c54dfdc8c81315feb38905b22c..3a9a37b6417e71ecab44009030d4ece7
                          }
                      });
                  }).colspan(3).fillX().visible(this::hasInfoBox).touchable(Touchable.enabled).row();
-@@ -509,6 +542,8 @@ public class PlacementFragment{
+@@ -507,6 +538,8 @@ public class PlacementFragment{
  
                          rebuildCommand = () -> {
                              u.clearChildren();
@@ -2526,7 +2524,7 @@ index 4c667d13638b16c54dfdc8c81315feb38905b22c..3a9a37b6417e71ecab44009030d4ece7
                              var units = control.input.selectedUnits;
                              if(units.size > 0){
                                  usedCommands.clear();
-@@ -587,7 +622,7 @@ public class PlacementFragment{
+@@ -585,7 +618,7 @@ public class PlacementFragment{
                                                  Call.setUnitCommand(player, units.mapInt(un -> un.id, un -> un.type.allowCommand(un, command)).toArray(), command);
                                              }).checked(i -> activeCommands.get(command.id)).size(50f).tooltip(command.localized(), true);
  
@@ -2535,7 +2533,7 @@ index 4c667d13638b16c54dfdc8c81315feb38905b22c..3a9a37b6417e71ecab44009030d4ece7
                                          }
  
                                      }).fillX().padTop(4f).left();
-@@ -610,13 +645,67 @@ public class PlacementFragment{
+@@ -608,13 +641,67 @@ public class PlacementFragment{
                                                  Call.setUnitStance(player, units.mapInt(un -> un.id, un -> un.type.allowStance(un, stance)).toArray(), stance);
                                              }).checked(i -> activeStances.get(stance.id)).size(50f).tooltip(stance.localized(), true);
  
@@ -2604,7 +2602,7 @@ index 4c667d13638b16c54dfdc8c81315feb38905b22c..3a9a37b6417e71ecab44009030d4ece7
                          };
  
                          u.update(() -> {
-@@ -677,7 +766,7 @@ public class PlacementFragment{
+@@ -675,7 +762,7 @@ public class PlacementFragment{
                  {
                      blockCatTable.table(Tex.pane2, blocksSelect -> {
                          blocksSelect.margin(4).marginTop(0);
@@ -2613,7 +2611,7 @@ index 4c667d13638b16c54dfdc8c81315feb38905b22c..3a9a37b6417e71ecab44009030d4ece7
                              if(pane.hasScroll()){
                                  Element result = Core.scene.getHoverElement();
                                  if(result == null || !result.isDescendantOf(pane)){
-@@ -715,6 +804,17 @@ public class PlacementFragment{
+@@ -713,6 +800,17 @@ public class PlacementFragment{
                          boolean needsAssign = categoryEmpty[currentCategory.ordinal()];
  
                          int f = 0;
@@ -2631,7 +2629,7 @@ index 4c667d13638b16c54dfdc8c81315feb38905b22c..3a9a37b6417e71ecab44009030d4ece7
                          for(Category cat : getCategories()){
                              if(f++ % 2 == 0) categories.row();
  
-@@ -773,8 +873,9 @@ public class PlacementFragment{
+@@ -771,8 +869,9 @@ public class PlacementFragment{
      }
  
      boolean hasInfoBox(){
@@ -2642,7 +2640,7 @@ index 4c667d13638b16c54dfdc8c81315feb38905b22c..3a9a37b6417e71ecab44009030d4ece7
      }
  
      /** @return the thing being hovered over. */
-@@ -782,25 +883,40 @@ public class PlacementFragment{
+@@ -780,25 +879,40 @@ public class PlacementFragment{
          //MDTX: fix flashing. Don't clear hover if the mouse just on topTable.
          if(Core.scene.hasMouse(Core.input.mouseX(), Core.input.mouseY()) && !topTable.hasMouse()) return null;
  

@@ -9,7 +9,7 @@ Subject: [PATCH] FR(RenderExt) deadOverlay
  2 files changed, 9 insertions(+), 9 deletions(-)
 
 diff --git a/core/src/mindustry/graphics/OverlayRenderer.java b/core/src/mindustry/graphics/OverlayRenderer.java
-index 9e98c067fd3cb8746ade5c9b31377a0e0855f9dc..6575e7aae19cfbabc0f5542a41972cd9ed6bd1a0 100644
+index 9e98c067fd3cb8746ade5c9b31377a0e0855f9dc..f7c9adf4e8abd9e26596f04bc903e2c460410480 100644
 --- a/core/src/mindustry/graphics/OverlayRenderer.java
 +++ b/core/src/mindustry/graphics/OverlayRenderer.java
 @@ -71,7 +71,7 @@ public class OverlayRenderer{
@@ -17,7 +17,7 @@ index 9e98c067fd3cb8746ade5c9b31377a0e0855f9dc..6575e7aae19cfbabc0f5542a41972cd9
          InputHandler input = control.input;
  
 -        if(player.dead()) return;
-+        if(player.dead() && !RenderExt.deadOverlay) return;
++        if(player.dead() && !RenderExt.deadOverlay.get()) return;
  
          if(player.isBuilder()){
              player.unit().drawBuildPlans();
@@ -26,12 +26,12 @@ index 9e98c067fd3cb8746ade5c9b31377a0e0855f9dc..6575e7aae19cfbabc0f5542a41972cd9
          }
  
 -        if(player.dead()) return; //dead players don't draw
-+        if(player.dead() && !RenderExt.deadOverlay) return; //dead players don't draw
++        if(player.dead() && !RenderExt.deadOverlay.get()) return; //dead players don't draw
  
          InputHandler input = control.input;
  
 diff --git a/core/src/mindustry/input/DesktopInput.java b/core/src/mindustry/input/DesktopInput.java
-index eeca7177aaccd87f554796d95e6557ce8ad739f6..eed7e96d174eefdbd1a33e6fb7babd0374b32282 100644
+index eeca7177aaccd87f554796d95e6557ce8ad739f6..a3467be7ed208a4399d0bde3458045122994dda6 100644
 --- a/core/src/mindustry/input/DesktopInput.java
 +++ b/core/src/mindustry/input/DesktopInput.java
 @@ -450,7 +450,7 @@ public class DesktopInput extends InputHandler{
@@ -39,7 +39,7 @@ index eeca7177aaccd87f554796d95e6557ce8ad739f6..eed7e96d174eefdbd1a33e6fb7babd03
          }
  
 -        if(player.dead() || locked){
-+        if(!RenderExt.deadOverlay && (player.dead() || locked)){
++        if(!RenderExt.deadOverlay.get() && (player.dead() || locked)){
              cursorType = SystemCursor.arrow;
              if(!Core.scene.hasMouse()){
                  Core.graphics.cursor(cursorType);

@@ -18,11 +18,13 @@ import mindustry.logic.LExecutor.*;
 import mindustry.ui.*;
 import mindustry.world.blocks.logic.LogicBlock.*;
 import mindustryX.features.*;
-import mindustryX.features.Settings;
+import mindustryX.features.SettingsV2.*;
 
 import static mindustry.Vars.*;
 
 public class LogicSupport{
+    public static final CheckPref visible = new CheckPref("gameUI.logicSupport", true);
+
     private static float refreshTime = 15f;
     private static final Table varsTable = new Table(), constTable = new Table();
     private static Table mainTable;
@@ -36,6 +38,10 @@ public class LogicSupport{
     private static Cons<String> consumer = s -> {
     };
 
+    static{
+        visible.addFallbackName("logicSupport");
+    }
+
     public static void init(){
         LogicDialog logic = ui.logic;
 
@@ -46,16 +52,14 @@ public class LogicSupport{
 
             t.visibility = () -> !Core.graphics.isPortrait();
 
-            t.button(Icon.rightOpen, Styles.clearNonei, iconMed, () -> {
-                Settings.toggle("logicSupport");
-            }).height(150f).visible(() -> !mainTable.visible);
+            t.button(Icon.rightOpen, Styles.clearNonei, iconMed, visible::toggle).height(150f).visible(() -> !mainTable.visible);
 
             t.fill(main -> {
                 mainTable = main;
 
                 main.marginLeft(16f);
                 main.left().name = "logicSupportX";
-                main.visible(() -> Core.settings.getBool("logicSupport"));
+                main.visible(visible::get);
 
                 main.table(LogicSupport::buildConfigTable).fillX().row();
                 main.table(cont -> {
@@ -147,7 +151,7 @@ public class LogicSupport{
                 String text = state.isPaused() ? "已暂停" : "已继续游戏";
                 UIExt.announce(text);
             }).checked((b) -> state.isPaused()).tooltip("暂停逻辑(游戏)运行");
-            t.button(Icon.eyeOffSmall, Styles.cleari, () -> Settings.toggle("logicSupport")).tooltip("隐藏逻辑辅助器");
+            t.button(Icon.eyeOffSmall, Styles.cleari, visible::toggle).tooltip("隐藏逻辑辅助器");
         });
     }
 
@@ -260,7 +264,7 @@ public class LogicSupport{
         }
     }
 
-    private static Label createCopiedLabel(String text, @Nullable  Element hitter, String hint){
+    private static Label createCopiedLabel(String text, @Nullable Element hitter, String hint){
         Label label = new Label(text);
         hitter = hitter == null ? label : hitter;
         hitter.touchable = Touchable.enabled;

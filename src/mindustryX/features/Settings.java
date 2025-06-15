@@ -31,19 +31,7 @@ public class Settings{
 
     public static void addSettings(){
         categories.add(new LazySettingsCategory("@settings.category.mindustryX", () -> Icon.box, (c) -> {
-            c.checkPref("githubMirror", true);
-            c.checkPref("replayRecord", false);
-
             c.addCategory("gameUI");
-            c.checkPref("menuFloatText", true);
-            c.checkPref("deadOverlay", false);
-            c.checkPref("invertMapClick", false);
-            c.checkPref("arcSpecificTable", true);
-            c.checkPref("logicSupport", true);
-            c.checkPref("showOtherTeamResource", false);
-            c.checkPref("showQuickToolTable", true);
-            c.sliderPref("itemSelectionHeight", 4, 4, 12, i -> i + "行");
-            c.sliderPref("itemSelectionWidth", 4, 4, 12, i -> i + "列");
             c.checkPref("researchViewer", false);
             c.sliderPref("maxSchematicSize", 64, 64, 257, 1, v -> {
                 maxSchematicSize = v == 257 ? Integer.MAX_VALUE : v;
