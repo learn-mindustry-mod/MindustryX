@@ -123,32 +123,34 @@ object NewToolTable : ToolTableBase("${Iconc.settings}") {
         }
     }
 
+    private class OldCustomButtonSettings : SettingsV2.PersistentProvider<List<CustomButton>> {
+        val num = SettingsV2.PersistentProvider.Arc<Int>("arcQuickMsg")
+        override fun get(): List<CustomButton>? {
+            val num = num.get() ?: return null
+            return List(num) { i ->
+                val name = Core.settings.getString("arcQuickMsgShort$i", "")
+                val isJs = Core.settings.getBool("arcQuickMsgJs$i", false)
+                val content = Core.settings.getString("arcQuickMsg$i", "")
+                CustomButton(name, if (isJs) "@js $content" else content)
+            }
+        }
+
+        override fun reset() {
+            val num = num.get() ?: return
+            for (i in 0 until num) {
+                Core.settings.remove("arcQuickMsgShort$i")
+                Core.settings.remove("arcQuickMsgJs$i")
+                Core.settings.remove("arcQuickMsg$i")
+            }
+            this.num.reset()
+        }
+    }
+
     @JvmField
     val customButtons = object : SettingsV2.Data<List<CustomButton>>("quickButtons.customButtons", emptyList()) {
         init {
             persistentProvider = SettingsV2.PersistentProvider.AsUBJson(SettingsV2.PersistentProvider.Arc(name), List::class.java, CustomButton::class.java)
-            addFallback(object : SettingsV2.PersistentProvider<List<CustomButton>> {
-                val num = SettingsV2.PersistentProvider.Arc<Int>("arcQuickMsg")
-                override fun get(): List<CustomButton>? {
-                    val num = num.get() ?: return null
-                    return List(num) { i ->
-                        val name = Core.settings.getString("arcQuickMsgShort$i", "")
-                        val isJs = Core.settings.getBool("arcQuickMsgJs$i", false)
-                        val content = Core.settings.getString("arcQuickMsg$i", "")
-                        CustomButton(name, if (isJs) "@js $content" else content)
-                    }
-                }
-
-                override fun reset() {
-                    val num = num.get() ?: return
-                    for (i in 0 until num) {
-                        Core.settings.remove("arcQuickMsgShort$i")
-                        Core.settings.remove("arcQuickMsgJs$i")
-                        Core.settings.remove("arcQuickMsg$i")
-                    }
-                    this.num.reset()
-                }
-            })
+            addFallback(OldCustomButtonSettings())
         }
 
         override fun buildUI(table: Table) {
