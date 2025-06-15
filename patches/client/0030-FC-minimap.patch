@@ -43,7 +43,7 @@ index 6dbe5beb6a52baa63e46df6a4bfdd406488b1124..1d7a4175dd2b534cd3baef91c572320f
                  Rect r = Core.camera.bounds(Tmp.r1);
                  Lines.stroke(Scl.scl(3f) * scaleFactor);
 diff --git a/core/src/mindustry/ui/Minimap.java b/core/src/mindustry/ui/Minimap.java
-index e807ad3b752c42d84f958437bbdafead698859c0..7de54d1cb916c51ea1649c50c38b216c2151a888 100644
+index e807ad3b752c42d84f958437bbdafead698859c0..54540e1084a1bdca8494b924b47b181f74e3644e 100644
 --- a/core/src/mindustry/ui/Minimap.java
 +++ b/core/src/mindustry/ui/Minimap.java
 @@ -9,21 +9,22 @@ import arc.scene.event.*;
@@ -89,7 +89,7 @@ index e807ad3b752c42d84f958437bbdafead698859c0..7de54d1cb916c51ea1649c50c38b216c
  
              @Override
              public void act(float delta){
-+                var size = SettingsV2.minimapSize.getValue();
++                int size = mindustryX.VarsX.minimapSize.get();
 +                mapCell.size(size);
 +                setSize(Scl.scl(size));
                  setPosition(Scl.scl(margin), Scl.scl(margin));

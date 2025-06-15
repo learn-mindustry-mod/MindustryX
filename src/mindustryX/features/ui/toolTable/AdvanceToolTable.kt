@@ -16,6 +16,7 @@ import mindustry.ui.Styles
 import mindustry.ui.dialogs.CustomRulesDialog
 import mindustry.world.blocks.payloads.Payload
 import mindustry.world.blocks.payloads.UnitPayload
+import mindustryX.VarsX
 import mindustryX.features.*
 import mindustryX.features.ui.UnitFactoryDialog
 import java.io.ByteArrayInputStream
@@ -73,7 +74,7 @@ class AdvanceToolTable : ToolTableBase(Iconc.wrench.toString()) {
             button("创世神", Styles.flatToggleMenut) { Settings.toggle("worldCreator") }
                 .checked { LogicExt.worldCreator }.wrapLabel(false)
             button("解禁", Styles.flatToggleMenut) {
-                SettingsV2.allUnlocked.toggle()
+                VarsX.allUnlocked.toggle()
             }.checked { LogicExt.allUnlocked }.tooltip("[acid]显示并允许建造所有物品").wrapLabel(false)
             button("地形蓝图", Styles.flatToggleMenut) { Settings.toggle("terrainSchematic") }
                 .checked { LogicExt.terrainSchematic }.wrapLabel(false)

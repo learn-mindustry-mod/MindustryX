@@ -68,7 +68,7 @@ index 38839e610819e60fe2d9780f730404979fb48976..1145b88cd87b1c860facda79cf8f05a1
  
                  if(wx < 0 || wy < 0 || wx >= width() || wy >= height()){
 diff --git a/core/src/mindustry/editor/MapEditorDialog.java b/core/src/mindustry/editor/MapEditorDialog.java
-index 93b679be7c3b2a9101c08182818ce6c83ffa6fb3..5fc635406d76165776d3bc25ee60ec78ed2c12cf 100644
+index 93b679be7c3b2a9101c08182818ce6c83ffa6fb3..427b57ad376efd5c3ad70aa5575868e21f8e6483 100644
 --- a/core/src/mindustry/editor/MapEditorDialog.java
 +++ b/core/src/mindustry/editor/MapEditorDialog.java
 @@ -30,6 +30,7 @@ import mindustry.world.*;
@@ -132,7 +132,7 @@ index 93b679be7c3b2a9101c08182818ce6c83ffa6fb3..5fc635406d76165776d3bc25ee60ec78
          });
  
          int i = 0;
-+        int preRow = SettingsV2.editorBrush.getValue();
++        int preRow = mindustryX.VarsX.editorBrush.get();
  
          for(Block block : blocksOut){
              TextureRegion region = block.uiIcon;

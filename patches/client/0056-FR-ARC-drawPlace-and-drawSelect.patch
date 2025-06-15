@@ -191,7 +191,7 @@ index d9fc8ed8732a91815f2923fcdcad622e4c7a7789..3d310f4ddc7e2445aab3a8fc350d9c08
          indexer.eachBlock(player.team(), x * tilesize + offset, y * tilesize + offset, range, other -> other.block.canOverdrive, other -> Drawf.selected(other, Tmp.c1.set(baseColor).a(Mathf.absin(4f, 1f))));
      }
 diff --git a/core/src/mindustry/world/blocks/defense/turrets/BaseTurret.java b/core/src/mindustry/world/blocks/defense/turrets/BaseTurret.java
-index a41daf317e28922adf3bf2503e248754628e23c3..4d4ac1f4fd553b431d587fb4150050b3f65caea9 100644
+index a41daf317e28922adf3bf2503e248754628e23c3..043ba19ea986b543fb6d76229e444fb53ca90974 100644
 --- a/core/src/mindustry/world/blocks/defense/turrets/BaseTurret.java
 +++ b/core/src/mindustry/world/blocks/defense/turrets/BaseTurret.java
 @@ -1,5 +1,7 @@
@@ -214,14 +214,14 @@ index a41daf317e28922adf3bf2503e248754628e23c3..4d4ac1f4fd553b431d587fb4150050b3
  
          Drawf.dashCircle(x * tilesize + offset, y * tilesize + offset, range, Pal.placing);
  
-+        if(state.rules.placeRangeCheck && mindustryX.features.SettingsV2.arcTurretShowPlaceRange.getValue()){
++        if(state.rules.placeRangeCheck && mindustryX.VarsX.arcTurretShowPlaceRange.get()){
 +            Draw.alpha(0.5f);
 +            Drawf.dashCircle(x * tilesize + offset, y * tilesize + offset, placeOverlapRange, Pal.remove);
 +        }
          if(fogRadiusMultiplier < 0.99f && state.rules.fog){
              Drawf.dashCircle(x * tilesize + offset, y * tilesize + offset, range * fogRadiusMultiplier, Pal.lightishGray);
          }
-+        if(SettingsV2.arcTurretShowAmmoRange.getValue())
++        if(mindustryX.VarsX.arcTurretShowAmmoRange.get())
 +            ArcBuilds.turretPlaceDraw(x * tilesize + offset, y * tilesize + offset, this);
      }
  

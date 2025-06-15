@@ -31,14 +31,14 @@ index 098f62c7b1b44187862cc678b3a4b1c15e6e0405..37460c00ff4a251ac8f4099520cec644
      vec4 color = texture2D(u_texture, T);
      vec2 v = u_invsize;
 diff --git a/core/src/mindustry/graphics/Shaders.java b/core/src/mindustry/graphics/Shaders.java
-index 6351b6487381250f79071ef9704344f5e70e640c..b4ceb86be328cb562a9567543ece90c4d63338b7 100644
+index 6351b6487381250f79071ef9704344f5e70e640c..3ce4dad5e5cc537fb5716b5af7e234981e0d77ce 100644
 --- a/core/src/mindustry/graphics/Shaders.java
 +++ b/core/src/mindustry/graphics/Shaders.java
 @@ -270,6 +270,7 @@ public class Shaders{
          public void apply(){
              setUniformf("u_dp", Scl.scl(1f));
              setUniformf("u_time", Time.time / Scl.scl(1f));
-+            setUniformf("u_static", mindustryX.features.SettingsV2.staticShieldsBorder.getValue() ? 1 : 0);
++            setUniformf("u_static", mindustryX.VarsX.staticShieldsBorder.get() ? 1 : 0);
              setUniformf("u_offset",
                  Core.camera.position.x - Core.camera.width / 2,
                  Core.camera.position.y - Core.camera.height / 2);

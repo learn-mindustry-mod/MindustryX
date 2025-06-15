@@ -5,6 +5,7 @@ import mindustry.*;
 import mindustry.core.*;
 import mindustry.game.EventType.*;
 import mindustry.net.Packets.*;
+import mindustryX.*;
 
 public class LogicExt{
     public static boolean limitUpdate = false;
@@ -27,7 +28,7 @@ public class LogicExt{
                 limitTimer = 10;
             }
             worldCreator = Core.settings.getBool("worldCreator");
-            allUnlocked = SettingsV2.allUnlocked.getValue();
+            allUnlocked = VarsX.allUnlocked.getValue();
             terrainSchematic = Core.settings.getBool("terrainSchematic");
             invertMapClick = Core.settings.getBool("invertMapClick");
             reliableSync = Core.settings.getBool("reliableSync");

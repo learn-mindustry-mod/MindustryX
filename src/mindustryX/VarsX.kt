@@ -1,26 +1,64 @@
-package mindustryX;
+package mindustryX
 
-import arc.*;
-import arc.Files.*;
-import arc.files.*;
-import arc.util.*;
-import arc.util.serialization.*;
-import mindustry.core.*;
+import arc.Core
+import arc.Files
+import arc.files.Fi
+import arc.util.Log
+import arc.util.OS
+import arc.util.serialization.Jval
+import mindustry.core.Version
+import mindustryX.features.SettingsV2.CheckPref
+import mindustryX.features.SettingsV2.SliderPref
 
-public class VarsX{
-    public static String version;
-    public static boolean isLoader = false, devVersion = false;
+object VarsX {
+    @JvmField
+    var version: String
 
-    static {
-        try{
-            Fi file = OS.isAndroid || OS.isIos ? Core.files.internal("mod.hjson") : new Fi("mod.hjson", FileType.internal);
-            Jval meta = Jval.read(file.readString());
-            version = meta.getString("version");
-            devVersion = version.endsWith("-dev");
-        }catch(Throwable e){
-            e.printStackTrace();
-            version = "custom build";
+    @JvmField
+    var devVersion: Boolean
+
+    @JvmField
+    var isLoader: Boolean = false
+
+
+    init {
+        val version = kotlin.runCatching {
+            val file = if (OS.isAndroid || OS.isIos) Core.files.internal("mod.hjson") else Fi("mod.hjson", Files.FileType.internal)
+            val meta = Jval.read(file.readString())
+            meta.getString("version")!!
+        }.getOrElse {
+            Log.err("Failed to read mod version from mod.hjson, using default value", it)
+            "custom build"
         }
-        Version.mdtXBuild = version;
+        this.version = version
+        devVersion = version.endsWith("-dev")
+        Version.mdtXBuild = version
     }
+
+    //此处存储所有需要在features外使用的设置项。
+    // 使用时使用全限定名，避免在patch中使用import
+
+    @JvmField
+    val blockInventoryWidth = SliderPref("blockInventoryWidth", 3, 3, 16)
+
+    @JvmField
+    val minimapSize = SliderPref("minimapSize", 140, 40, 400, 10)
+
+    @JvmField
+    val arcTurretShowPlaceRange = CheckPref("arcTurretPlaceCheck")
+
+    @JvmField
+    val arcTurretShowAmmoRange = CheckPref("arcTurretPlacementItem")
+
+    @JvmField
+    val staticShieldsBorder = CheckPref("staticShieldsBorder")
+
+    @JvmField
+    val allUnlocked = CheckPref("allUnlocked")
+
+    @JvmField
+    val editorBrush = SliderPref("editorBrush", 6, 3, 13)
+
+    @JvmField
+    val noPlayerHitBox = CheckPref("noPlayerHitBox")
 }

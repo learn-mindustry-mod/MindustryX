@@ -9,12 +9,12 @@ Content-Transfer-Encoding: 8bit
 
 ---
  .../mindustry/ctype/UnlockableContent.java    |  5 +--
- .../mindustry/ui/dialogs/DatabaseDialog.java  | 13 ++++++--
+ .../mindustry/ui/dialogs/DatabaseDialog.java  | 11 +++++--
  .../ui/fragments/PlacementFragment.java       | 32 ++++++++++++++++++-
  core/src/mindustry/world/Block.java           |  4 +--
  core/src/mindustry/world/Build.java           |  6 ++++
  .../mindustry/world/blocks/ItemSelection.java |  3 +-
- 6 files changed, 55 insertions(+), 8 deletions(-)
+ 6 files changed, 53 insertions(+), 8 deletions(-)
 
 diff --git a/core/src/mindustry/ctype/UnlockableContent.java b/core/src/mindustry/ctype/UnlockableContent.java
 index f8fdc28679649f8b0612246590d272aac69ef5a1..913fd680af4cb2f9a53af24c7bbb8e8b95e28e8b 100644
@@ -47,47 +47,38 @@ index f8fdc28679649f8b0612246590d272aac69ef5a1..913fd680af4cb2f9a53af24c7bbb8e8b
  
      public boolean unlocked(){
 diff --git a/core/src/mindustry/ui/dialogs/DatabaseDialog.java b/core/src/mindustry/ui/dialogs/DatabaseDialog.java
-index df3b0c68e7c5d93371cc42f95a497535a9a167dd..98a50593b20ee5bb45769183f1d575a96cd87e31 100644
+index df3b0c68e7c5d93371cc42f95a497535a9a167dd..79b774cc0640d32daa41b98cf7cebe21450204de 100644
 --- a/core/src/mindustry/ui/dialogs/DatabaseDialog.java
 +++ b/core/src/mindustry/ui/dialogs/DatabaseDialog.java
-@@ -18,6 +18,8 @@ import mindustry.graphics.*;
- import mindustry.type.*;
- import mindustry.ui.*;
- import mindustry.world.*;
-+import mindustryX.features.*;
-+import mindustryX.features.Settings;
- 
- import static arc.Core.*;
- import static mindustry.Vars.*;
-@@ -47,6 +49,11 @@ public class DatabaseDialog extends BaseDialog{
+@@ -47,6 +47,11 @@ public class DatabaseDialog extends BaseDialog{
          });
          onResize(this::rebuild);
  
 +        buttons.button("解禁", Styles.togglet, () -> {
-+            SettingsV2.allUnlocked.toggle();
++            mindustryX.VarsX.allUnlocked.toggle();
 +            rebuild();
-+        }).checked((b) -> SettingsV2.allUnlocked.get());
++        }).checked((b) -> mindustryX.VarsX.allUnlocked.get());
 +
          all.margin(20).marginTop(0f).marginRight(30f);
  
          cont.top();
-@@ -101,7 +108,9 @@ public class DatabaseDialog extends BaseDialog{
+@@ -101,7 +106,9 @@ public class DatabaseDialog extends BaseDialog{
              ContentType type = ContentType.all[j];
  
              Seq<UnlockableContent> array = allContent[j]
 -                .select(c -> c instanceof UnlockableContent u && !u.isHidden() && !u.hideDatabase && (tab == Planets.sun || u.allDatabaseTabs || u.databaseTabs.contains(tab)) &&
 +                .select(c -> c instanceof UnlockableContent u &&
-+                    (SettingsV2.allUnlocked.getValue() || !u.isHidden() && !u.hideDatabase) &&
++                    (mindustryX.VarsX.allUnlocked.getValue() || !u.isHidden() && !u.hideDatabase) &&
 +                    (tab == Planets.sun || u.allDatabaseTabs || u.databaseTabs.contains(tab)) &&
                      (text.isEmpty() || u.localizedName.toLowerCase().contains(text))).as();
  
              if(array.size == 0) continue;
-@@ -164,6 +173,6 @@ public class DatabaseDialog extends BaseDialog{
+@@ -164,6 +171,6 @@ public class DatabaseDialog extends BaseDialog{
      }
  
      boolean unlocked(UnlockableContent content){
 -        return (!Vars.state.isCampaign() && !Vars.state.isMenu()) || content.unlocked();
-+        return SettingsV2.allUnlocked.getValue() || (!Vars.state.isCampaign() && !Vars.state.isMenu()) || content.unlocked();
++        return mindustryX.VarsX.allUnlocked.get() || (!Vars.state.isCampaign() && !Vars.state.isMenu()) || content.unlocked();
      }
  }
 diff --git a/core/src/mindustry/ui/fragments/PlacementFragment.java b/core/src/mindustry/ui/fragments/PlacementFragment.java

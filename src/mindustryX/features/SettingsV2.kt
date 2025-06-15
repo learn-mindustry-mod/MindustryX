@@ -308,30 +308,4 @@ object SettingsV2 {
         })
         button.addListener(button.clickListener)
     }
-
-    //零散的设置，放在下方
-
-    @JvmField
-    val blockInventoryWidth = SliderPref("blockInventoryWidth", 3, 3, 16)
-
-    @JvmField
-    val minimapSize = SliderPref("minimapSize", 140, 40, 400, 10)
-
-    @JvmField
-    val arcTurretShowPlaceRange = CheckPref("arcTurretPlaceCheck")
-
-    @JvmField
-    val arcTurretShowAmmoRange = CheckPref("arcTurretPlacementItem")
-
-    @JvmField
-    val staticShieldsBorder = CheckPref("staticShieldsBorder")
-
-    @JvmField
-    val allUnlocked = CheckPref("allUnlocked")
-
-    @JvmField
-    val editorBrush = SliderPref("editorBrush", 6, 3, 13)
-
-    @JvmField
-    val noPlayerHitBox = CheckPref("noPlayerHitBox")
 }

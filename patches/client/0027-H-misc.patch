@@ -338,7 +338,7 @@ index 9fa6ca36f077ba1d4262863c7ff84a618667d944..1c4e5285e8cde6b14237c12c3cc2fed1
                  Core.settings.put("minzoomingamemultiplier", (float)s / 100.0f);
              }
 diff --git a/core/src/mindustry/ui/fragments/BlockInventoryFragment.java b/core/src/mindustry/ui/fragments/BlockInventoryFragment.java
-index 54a36cde6eee102c9c8f3bfd5e4c76a2f4d0f1e1..f06641d677746d1f70880bea7c972ab1f65970fa 100644
+index 54a36cde6eee102c9c8f3bfd5e4c76a2f4d0f1e1..aec055c4c4325560d922e19c196a73ae29fc28fc 100644
 --- a/core/src/mindustry/ui/fragments/BlockInventoryFragment.java
 +++ b/core/src/mindustry/ui/fragments/BlockInventoryFragment.java
 @@ -138,7 +138,7 @@ public class BlockInventoryFragment{
@@ -346,7 +346,7 @@ index 54a36cde6eee102c9c8f3bfd5e4c76a2f4d0f1e1..f06641d677746d1f70880bea7c972ab1
          });
  
 -        int cols = 3;
-+        int cols = mindustryX.features.SettingsV2.blockInventoryWidth.getValue();
++        int cols = mindustryX.VarsX.blockInventoryWidth.get();
          int row = 0;
  
          table.margin(4f);
