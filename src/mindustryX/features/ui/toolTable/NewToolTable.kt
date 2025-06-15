@@ -22,7 +22,7 @@ import mindustry.ui.dialogs.EffectsDialog
 import mindustry.world.Block
 import mindustry.world.blocks.environment.Floor
 import mindustryX.features.*
-import mindustryX.features.ui.GridTable
+import mindustryX.features.ui.comp.GridTable
 
 object NewToolTable : ToolTableBase("${Iconc.settings}") {
     val gridTable = GridTable()

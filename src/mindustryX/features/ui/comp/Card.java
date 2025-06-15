@@ -1,4 +1,4 @@
-package mindustryX.features.ui;
+package mindustryX.features.ui.comp;
 
 import arc.func.*;
 import arc.graphics.*;

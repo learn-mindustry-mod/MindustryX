@@ -21,6 +21,7 @@ import mindustry.io.*;
 import mindustry.mod.*;
 import mindustry.ui.*;
 import mindustry.ui.dialogs.*;
+import mindustryX.features.ui.comp.*;
 
 import java.text.*;
 import java.util.*;

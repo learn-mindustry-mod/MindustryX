@@ -29,6 +29,7 @@ import mindustry.world.*;
 import mindustry.world.blocks.payloads.*;
 import mindustryX.features.*;
 import mindustryX.features.func.*;
+import mindustryX.features.ui.comp.*;
 
 import static mindustry.Vars.*;
 

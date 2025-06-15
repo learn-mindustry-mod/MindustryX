@@ -12,6 +12,7 @@ import mindustry.graphics.*;
 import mindustry.input.*;
 import mindustry.ui.*;
 import mindustry.ui.dialogs.*;
+import mindustryX.features.ui.comp.*;
 
 /**
  * @author minri2
