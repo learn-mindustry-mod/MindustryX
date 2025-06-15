@@ -2068,7 +2068,7 @@ index 3542163354070ac67c49b82dff6c72b374d4ca7d..23a252543293b8b9edfdeddc87ebb9af
          //special case for 'clear' command
          if(message.equals("clear")){
 diff --git a/core/src/mindustry/ui/fragments/HudFragment.java b/core/src/mindustry/ui/fragments/HudFragment.java
-index 19b779682d6375156fd8d792db79907ca57d2c6f..12637f553d035728b47faba5f0797d807fe23f9e 100644
+index 51b16ee07ceac1ebd4fe03e6f71cae61c68b03c8..1f47235c5ac1abd8a67072616c4505e7c9161eb3 100644
 --- a/core/src/mindustry/ui/fragments/HudFragment.java
 +++ b/core/src/mindustry/ui/fragments/HudFragment.java
 @@ -29,9 +29,11 @@ import mindustry.net.Packets.*;
@@ -2103,7 +2103,7 @@ index 19b779682d6375156fd8d792db79907ca57d2c6f..12637f553d035728b47faba5f0797d80
                      teams.button(Icon.downOpen, Styles.emptyi, () -> Core.settings.put("editor-blocks-shown", !Core.settings.getBool("editor-blocks-shown")))
                      .size(45f).update(m -> m.getStyle().imageUp = (Core.settings.getBool("editor-blocks-shown") ? Icon.upOpen : Icon.downOpen));
                  }).top().left().row();
-@@ -983,6 +989,164 @@ public class HudFragment{
+@@ -980,6 +986,164 @@ public class HudFragment{
          return table;
      }
  
@@ -2268,7 +2268,7 @@ index 19b779682d6375156fd8d792db79907ca57d2c6f..12637f553d035728b47faba5f0797d80
      private void addInfoTable(Table table){
          table.name = "infotable";
          table.left();
-@@ -1027,7 +1191,7 @@ public class HudFragment{
+@@ -1024,7 +1188,7 @@ public class HudFragment{
      }
  
      private boolean canSkipWave(){

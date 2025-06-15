@@ -22,6 +22,7 @@ enum class BindingExt(val default: KeybindValue = KeyCode.unset, val category: S
     toggle_block_render(KeyCode.unset, onTap = { Settings.cycle("blockRenderLevel", 3) }),
     focusLogicController(KeyCode.unset, onTap = { mindustryX.features.func.focusLogicController() }),
     placeRouterReplacement(KeyCode.shiftLeft),
+    openDebugDialog(KeyCode.f12, onTap = { DebugUtil.openDialog() })
     ;
 
     private val bind: KeyBind = KeyBind.add(name, default, category)
