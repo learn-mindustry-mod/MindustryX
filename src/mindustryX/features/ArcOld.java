@@ -135,7 +135,6 @@ public class ArcOld{
 
             c.addCategory("arcWeakCheat");
             c.checkPref("save_more_map", false);
-            c.checkPref("forceIgnoreAttack", false);
             c.checkPref("overrideSkipWave", false);
             c.checkPref("playerNeedShooting", false);
         }));
