@@ -81,15 +81,12 @@ public class ArcOld{
 
             c.addCategory("arcAddUnitInfo");
             c.checkPref("unitHealthBar", false);
-
-
             c.sliderPref("unitWeaponRange", settings.getInt("unitAlertRange", 0), 0, 30, 1, s -> switch(s){
                 case 0 -> "关闭";
                 case 30 -> "一直开启";
                 default -> s + "格";
             });
             c.sliderPref("unitWeaponRangeAlpha", settings.getInt("unitweapon_range", 0), 0, 100, 1, i -> i > 0 ? i + "%" : "关闭");
-
             c.checkPref("unitWeaponTargetLine", false);
             c.checkPref("unitItemCarried", true);
             c.checkPref("unitLogicMoveLine", false);
@@ -128,10 +125,6 @@ public class ArcOld{
                 default -> s + "";
             });
             c.sliderPref("playerEffectCurStroke", 0, 1, 30, 1, i -> (float)i / 10f + "Pixel(s)");
-
-
-            c.addCategory("arcShareinfo");
-            c.checkPref("arcAlwaysTeamColor", false);
 
             c.addCategory("arcWeakCheat");
             c.checkPref("save_more_map", false);
