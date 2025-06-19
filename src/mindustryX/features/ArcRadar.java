@@ -47,18 +47,20 @@ public class ArcRadar{
     private static Table t;
 
     private static final SettingsV2.Data<Integer>
-    mode = new SliderPref("radar.mode", 1, 1, 30, 1, s -> switch(s){
+    mode = new SliderPref("arcExtra.radarMode", 1, 1, 30, 1, s -> switch(s){
         case 0 -> "关闭";
         case 30 -> "瞬间完成";
         default -> "[lightgray]x[white]" + Strings.autoFixed(s * 0.2f, 1) + "倍搜索速度";
     }),
-    size = new SliderPref("radar.size", 0, 0, 50, 1, s -> {
+    size = new SliderPref("arcExtra.radarSize", 0, 0, 50, 1, s -> {
         if(s == 0) return "固定大小";
         return "[lightgray]x[white]" + Strings.autoFixed(s * 0.1f, 1) + "倍";
     });
     public static List<SettingsV2.Data<?>> settings = CollectionsKt.listOf(mode, size);
 
     static{
+        mode.addFallbackName("radar.mode");
+        size.addFallbackName("radar.size");
         mode.addFallbackName("radarMode");
         size.addFallbackName("radarSize");
     }
