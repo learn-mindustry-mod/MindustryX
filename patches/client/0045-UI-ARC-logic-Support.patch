@@ -34,8 +34,8 @@ MinRi2 <2275045670@qq.com> on 2025/5/3
  core/src/mindustry/logic/LStatements.java     | 27 ++++++
  core/src/mindustry/logic/LogicDialog.java     | 30 +++++--
  .../world/blocks/logic/LogicBlock.java        | 90 ++++++++++++++++---
- .../world/blocks/logic/MemoryBlock.java       | 73 ++++++++++++++-
- 6 files changed, 261 insertions(+), 21 deletions(-)
+ .../world/blocks/logic/MemoryBlock.java       | 26 +++++-
+ 6 files changed, 214 insertions(+), 21 deletions(-)
 
 diff --git a/core/src/mindustry/logic/LCanvas.java b/core/src/mindustry/logic/LCanvas.java
 index 2bfd96ac4b9685bde38edee0d80be66380fdf6f2..b8a3902830d14b2c5bd77c3e1160263574f9ed5a 100644
@@ -474,21 +474,16 @@ index 24465dba760b6204352aaa767287175307264e48..92bbb5b8d68b89c6d7ffad48bbe59ee8
  
          public void showEditDialog(){
 diff --git a/core/src/mindustry/world/blocks/logic/MemoryBlock.java b/core/src/mindustry/world/blocks/logic/MemoryBlock.java
-index d384e23a42ae43ee612f5ecd20774dee281f2c03..224872d67a3e16c4fcbcdb11a141b5df4c701904 100644
+index d384e23a42ae43ee612f5ecd20774dee281f2c03..9ecfbbf5aad52b1ae01865562896e85a8a71830b 100644
 --- a/core/src/mindustry/world/blocks/logic/MemoryBlock.java
 +++ b/core/src/mindustry/world/blocks/logic/MemoryBlock.java
-@@ -1,12 +1,20 @@
+@@ -1,12 +1,15 @@
  package mindustry.world.blocks.logic;
  
-+import arc.*;
-+import arc.graphics.*;
-+import arc.scene.event.*;
 +import arc.scene.ui.layout.*;
-+import arc.util.*;
  import arc.util.io.*;
  import mindustry.gen.*;
  import mindustry.logic.*;
-+import mindustry.ui.*;
  import mindustry.world.*;
  import mindustry.world.meta.*;
 +import mindustryX.features.*;
@@ -499,7 +494,7 @@ index d384e23a42ae43ee612f5ecd20774dee281f2c03..224872d67a3e16c4fcbcdb11a141b5df
  
  public class MemoryBlock extends Block{
      public int memoryCapacity = 32;
-@@ -19,6 +27,7 @@ public class MemoryBlock extends Block{
+@@ -19,6 +22,7 @@ public class MemoryBlock extends Block{
          drawDisabled = false;
          envEnabled = Env.any;
          canOverdrive = false;
@@ -507,16 +502,7 @@ index d384e23a42ae43ee612f5ecd20774dee281f2c03..224872d67a3e16c4fcbcdb11a141b5df
      }
  
      @Override
-@@ -39,6 +48,8 @@ public class MemoryBlock extends Block{
- 
-     public class MemoryBuild extends Building{
-         public double[] memory = new double[memoryCapacity];
-+        private static int numPerRow = 10;
-+        private static final Format format = new Format(0, true);
- 
-         //massive byte size means picking up causes sync issues
-         @Override
-@@ -80,6 +91,66 @@ public class MemoryBlock extends Block{
+@@ -80,6 +84,26 @@ public class MemoryBlock extends Block{
              }
          }
  
@@ -537,47 +523,7 @@ index d384e23a42ae43ee612f5ecd20774dee281f2c03..224872d67a3e16c4fcbcdb11a141b5df
 +                return;
 +            }
 +
-+            Table vars = new Table();
-+            table.background(Styles.black3);
-+            table.table(t -> {
-+                t.label(() -> "每行 " + numPerRow);
-+                t.slider(2, 15, 1, numPerRow, res -> numPerRow = (int)res);
-+
-+                t.label(() -> "保留小数: " + format.getDecimal());
-+                t.slider(0, 8, 1, format.getDecimal(), res -> format.setDecimal((int)res));
-+
-+                t.button(Icon.refresh, Styles.clearNonei, () -> {
-+                    vars.clearChildren();
-+                    buildVarsPane(vars);
-+                });
-+            }).row();
-+            buildVarsPane(vars);
-+            table.pane(Styles.noBarPane, vars).maxHeight(500f).pad(4).get().setScrollingDisabledX(true);
-+            vars.update(() -> {
-+                vars.getCells().each(cell -> {
-+                    if(cell.prefWidth() > cell.maxWidth()){
-+                        cell.width(cell.prefWidth());
-+                        vars.invalidateHierarchy();
-+                    }
-+                });
-+                if(vars.needsLayout()) table.pack();
-+            });
-+        }
-+
-+        public void buildVarsPane(Table t){
-+            for(int i = 0; i < memory.length; i++){
-+                int finalI = i;
-+                t.add("[" + i + "]").color(Color.lightGray).align(Align.left);
-+                t.add().width(8);
-+                t.label(() -> format.format((float)memory[finalI])).align(Align.right).labelAlign(Align.right)
-+                .touchable(Touchable.enabled).get().tapped(() -> {
-+                    Core.app.setClipboardText(memory[finalI] + "");
-+                    UIExt.announce("[cyan]复制内存[white]\n " + memory[finalI]);
-+                });
-+                if((i + 1) % numPerRow == 0) t.row();
-+                else t.add("|").color(((i % numPerRow) % 2 == 0) ? Color.cyan : Color.acid)
-+                .padLeft(12).padRight(12);
-+            }
++            LogicSupport.buildMemoryTools(table, this);
 +        }
 +
          @Override

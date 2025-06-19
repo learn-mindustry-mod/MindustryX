@@ -156,7 +156,7 @@ index ebc1f0b300d295e45333f1db38ea299c9658ec20..e7cba056743979206c84fc6d00472c2c
                      hide();
                  }).marginLeft(10f);
 diff --git a/core/src/mindustry/entities/comp/BuildingComp.java b/core/src/mindustry/entities/comp/BuildingComp.java
-index dc1a5ac9e6946f7f820083987de784c0028c2173..7bd56ead8b8d11f559908eb4cef41b84087db142 100644
+index dc1a5ac9e6946f7f820083987de784c0028c2173..6010b9eeb1b8b6d65237f882cf7cb9be19bb32dc 100644
 --- a/core/src/mindustry/entities/comp/BuildingComp.java
 +++ b/core/src/mindustry/entities/comp/BuildingComp.java
 @@ -40,6 +40,7 @@ import mindustry.world.blocks.power.*;
@@ -189,7 +189,7 @@ index dc1a5ac9e6946f7f820083987de784c0028c2173..7bd56ead8b8d11f559908eb4cef41b84
          return team == Team.derelict ?
              block.localizedName + "\n" + Core.bundle.get("block.derelict") :
 -            block.localizedName + (team == player.team() || team.emoji.isEmpty() ? "" : " " + team.emoji);
-+                "[#" + team.color + "]" + (Core.settings.getBool("colorizedContent") && block.localizedName.length() > 11 ? block.localizedName.substring(11) : block.localizedName) + (team == player.team() || team.emoji.isEmpty() ? "" : " " + team.emoji
++                "[#" + team.color + "]" + Strings.stripColors(block.localizedName) + (team == player.team() || team.emoji.isEmpty() ? "" : " " + team.emoji
 +                + (team.id > 5 ? "[" + team.id + "]" : ""));
      }
  

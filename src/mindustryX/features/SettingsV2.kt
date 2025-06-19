@@ -3,12 +3,17 @@ package mindustryX.features
 import arc.Core
 import arc.graphics.Color
 import arc.input.KeyCode
+import arc.scene.Element
 import arc.scene.event.ClickListener
 import arc.scene.event.InputEvent
 import arc.scene.event.Touchable
 import arc.scene.ui.*
+import arc.scene.ui.layout.Stack
 import arc.scene.ui.layout.Table
-import arc.util.*
+import arc.util.Align
+import arc.util.Log
+import arc.util.Reflect
+import arc.util.Time
 import mindustry.Vars
 import mindustry.gen.Icon
 import mindustry.graphics.Pal
@@ -157,13 +162,17 @@ object SettingsV2 {
             set(!value)
         }
 
-        override fun buildUI(table: Table) {
+        fun uiElement(): Element {
             val box = CheckBox(title)
             box.changed { set(box.isChecked) }
             box.update { box.isChecked = value }
 
+            return box
+        }
+
+        override fun buildUI(table: Table) {
             table.table().fillX().get().apply {
-                add(box).left().expandX().padTop(3f)
+                add(uiElement()).left().expandX().padTop(3f)
                 addTools()
             }
             table.row()
@@ -175,7 +184,7 @@ object SettingsV2 {
             super.set(value.coerceIn(min, max))
         }
 
-        override fun buildUI(table: Table) {
+        fun uiElement(): Element {
             val elem = Slider(min.toFloat(), max.toFloat(), step.toFloat(), false)
             elem.changed { set(elem.value.toInt()) }
             elem.update { elem.value = value.toFloat() }
@@ -185,8 +194,13 @@ object SettingsV2 {
                 add(title, Styles.outlineLabel).left().growX().wrap()
                 label { labelMap(value) }.style(Styles.outlineLabel).padLeft(10f).right().get()
             }
+
+            return Stack(elem, content)
+        }
+
+        override fun buildUI(table: Table) {
             table.table().fillX().padTop(4f).get().apply {
-                stack(elem, content).minWidth(220f).growX()
+                add(uiElement()).minWidth(220f).growX()
                 addTools()
             }
             table.row()

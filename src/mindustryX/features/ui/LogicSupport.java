@@ -17,20 +17,24 @@ import mindustry.logic.*;
 import mindustry.logic.LExecutor.*;
 import mindustry.ui.*;
 import mindustry.world.blocks.logic.LogicBlock.*;
-import mindustryX.features.*;
+import mindustry.world.blocks.logic.MemoryBlock.*;
 import mindustryX.features.SettingsV2.*;
+import mindustryX.features.*;
 
 import static mindustry.Vars.*;
 
 public class LogicSupport{
-    public static final CheckPref visible = new CheckPref("gameUI.logicSupport", true);
+    public static final CheckPref visible = new CheckPref("logicSupport.visible", true);
+    public static final CheckPref changeSplash = new CheckPref("logicSupport.changeSplash", true);
+    public static final SliderPref memoryColumns = new SliderPref("logicSupport.memoryColumns", 10, 2, 15);
+    public static final SliderPref memoryDecimal = new SliderPref("logicSupport.memoryDecimal", 0, 0, 8);
 
     private static float refreshTime = 15f;
     private static final Table varsTable = new Table(), constTable = new Table();
     private static Table mainTable;
 
     private static boolean refresh;
-    private static boolean changeSplash = true, autoRefresh = true;
+    private static boolean autoRefresh = true;
 
     // work dialog
     private static LCanvas canvas;
@@ -39,13 +43,13 @@ public class LogicSupport{
     };
 
     static{
+        visible.addFallbackName("gameUI.logicSupport");
         visible.addFallbackName("logicSupport");
+        changeSplash.addFallbackName("logicSupportChangeSplash");
     }
 
     public static void init(){
         LogicDialog logic = ui.logic;
-
-        changeSplash = Core.settings.getBool("logicSupportChangeSplash");
 
         logic.fill(t -> {
             t.left().name = "logicSupportX";
@@ -135,11 +139,10 @@ public class LogicSupport{
                 UIExt.announce("[orange]已更新编辑的逻辑！");
             }).tooltip("更新编辑的逻辑");
             t.button(Icon.eyeSmall, Styles.clearTogglei, () -> {
-                changeSplash ^= true;
-                String text = "[orange]已" + (changeSplash ? "开启" : "关闭") + "变动闪烁";
+                changeSplash.toggle();
+                String text = "[orange]已" + (changeSplash.get() ? "开启" : "关闭") + "变动闪烁";
                 UIExt.announce(text);
-                Core.settings.put("logicSupportChangeSplash", changeSplash);
-            }).checked((b) -> changeSplash).tooltip("变量变动闪烁");
+            }).checked((b) -> changeSplash.get()).tooltip("变量变动闪烁");
             t.button(Icon.refreshSmall, Styles.clearTogglei, () -> {
                 autoRefresh = !autoRefresh;
                 String text = "[orange]已" + (autoRefresh ? "开启" : "关闭") + "变量自动更新";
@@ -181,7 +184,7 @@ public class LogicSupport{
                         }
                     }
 
-                    if(changeSplash){
+                    if(changeSplash.get()){
                         heat[0] = Mathf.lerpDelta(heat[0], 0, 0.1f);
                         table.color.set(Tmp.c1.set(typeColor).lerp(Color.white, heat[0]));
                     }else{
@@ -209,7 +212,7 @@ public class LogicSupport{
                     }
                 }
 
-                if(changeSplash){
+                if(changeSplash.get()){
                     heat[0] = Mathf.lerpDelta(heat[0], 0, 0.1f);
                     table.color.set(Tmp.c1.set(color).lerp(Color.white, heat[0]));
                 }else{
@@ -284,5 +287,47 @@ public class LogicSupport{
         if(s.constant && s.name.startsWith("@")) return Color.goldenrod;
         else if(s.constant) return Color.valueOf("00cc7e");
         else return LogicDialog.typeColor(s, new Color());
+    }
+
+    public static void buildMemoryTools(Table table, MemoryBuild build){
+        Table vars = new Table();
+
+        table.background(Styles.black3);
+        table.table(t -> {
+            t.add(LogicSupport.memoryColumns.uiElement()).minWidth(200f).padLeft(4f);
+            t.add(LogicSupport.memoryDecimal.uiElement()).minWidth(200f).padLeft(4f);
+            t.button(Icon.refresh, Styles.clearNonei, () -> {
+                vars.clearChildren();
+                buildMemoryPane(vars, build.memory);
+            });
+        }).row();
+        buildMemoryPane(vars, build.memory);
+        table.pane(Styles.noBarPane, vars).maxHeight(500f).fillX().pad(4).get().setScrollingDisabledX(true);
+        vars.update(() -> {
+            vars.getCells().each(cell -> {
+                if(cell.prefWidth() > cell.maxWidth()){
+                    cell.width(cell.prefWidth());
+                    vars.invalidateHierarchy();
+                }
+            });
+            if(vars.needsLayout()) table.pack();
+        });
+    }
+
+    public static void buildMemoryPane(Table t, double[] memory){
+        Format format = new Format(LogicSupport.memoryColumns.get(), true);
+        for(int i = 0; i < memory.length; i++){
+            int finalI = i;
+            t.add("[" + i + "]").color(Color.lightGray).align(Align.left);
+            t.add().width(8);
+            t.label(() -> format.format((float)memory[finalI])).growX().align(Align.right).labelAlign(Align.right)
+            .touchable(Touchable.enabled).get().tapped(() -> {
+                Core.app.setClipboardText(memory[finalI] + "");
+                UIExt.announce("[cyan]复制内存[white]\n " + memory[finalI]);
+            });
+            if((i + 1) % LogicSupport.memoryColumns.get() == 0) t.row();
+            else t.add("|").color(((i % LogicSupport.memoryColumns.get()) % 2 == 0) ? Color.cyan : Color.acid)
+            .padLeft(12).padRight(12);
+        }
     }
 }
