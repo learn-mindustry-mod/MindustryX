@@ -13,6 +13,7 @@ import mindustry.gen.*;
 import mindustry.graphics.*;
 import mindustry.type.*;
 import mindustry.world.blocks.defense.turrets.*;
+import mindustry.world.blocks.defense.turrets.Turret.*;
 import mindustryX.features.draw.*;
 
 import static mindustry.Vars.*;
@@ -23,7 +24,8 @@ public class ArcBuilds{
     private static boolean turretForceShowRange = false;
     private static int turretShowRange = 0, turretAlertRange;
     private static boolean showTurretAmmo = false, showTurretAmmoAmount = false;
-    private static boolean blockWeaponTargetLine = false, blockWeaponTargetLineWhenIdle = false;
+    public static boolean blockWeaponTargetLine = false;
+    private static boolean blockWeaponTargetLineWhenIdle = false;
 
     static{
         // 减少性能开销
@@ -120,7 +122,7 @@ public class ArcBuilds{
         }
     }
 
-    public static void turretPlaceDraw(float x, float y, BaseTurret block){
+    public static void turretPlaceDraw(float x, float y, Turret block){
         float iconSize = 6f + 2f * block.size, range = block.range;
         ObjectMap<? extends UnlockableContent, BulletType> ammoTypes;
         if(block instanceof ContinuousLiquidTurret t){
@@ -146,6 +148,27 @@ public class ArcBuilds{
             if(bulletType.rangeChange > 0) Drawf.dashCircle(x, y, range + bulletType.rangeChange, Pal.placing);
             turretBulletDraw(x, y, item.fullIcon, iconSize, range + bulletType.rangeChange, (float)drawIndex / ammoTypes.size);
         }
+    }
+
+    public static void turretSelectDraw(TurretBuild build){
+        TextureRegion currentAmmo = null;
+        if(build.block instanceof ContinuousLiquidTurret || build.block instanceof LiquidTurret){
+            if(build.liquids.currentAmount() > 0){
+                currentAmmo = build.liquids.current().fullIcon;
+            }
+        }else if(build.block instanceof ItemTurret){
+            if(build.hasAmmo()){
+                currentAmmo = ((ItemTurret.ItemEntry)build.ammo.peek()).item.fullIcon;
+            }
+        }else if(build.block instanceof PowerTurret){
+            currentAmmo = Icon.power.getRegion();
+        }else return;
+        if(currentAmmo == null){
+            turretPlaceDraw(build.x, build.y, (Turret)build.block);
+            return;
+        }
+        float iconSize = 6f + 2f * build.block.size;
+        turretBulletDraw(build.x, build.y, currentAmmo, iconSize, build.range(), 0);
     }
 
     private static void turretBulletDraw(float x, float y, TextureRegion icon, float iconSize, float range, float rotOffset){
