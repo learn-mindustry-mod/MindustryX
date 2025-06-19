@@ -117,10 +117,10 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  .../mindustry/ui/fragments/ChatFragment.java  |   9 +-
  .../ui/fragments/ConsoleFragment.java         |   3 +
  .../mindustry/ui/fragments/HudFragment.java   | 168 +++++++++++-
- .../mindustry/ui/fragments/MenuFragment.java  |  52 +++-
+ .../mindustry/ui/fragments/MenuFragment.java  |  24 +-
  .../ui/fragments/PlacementFragment.java       | 164 ++++++++++--
  .../ui/fragments/PlayerListFragment.java      |  72 ++----
- 27 files changed, 1242 insertions(+), 168 deletions(-)
+ 27 files changed, 1214 insertions(+), 168 deletions(-)
 
 diff --git a/core/src/mindustry/editor/MapInfoDialog.java b/core/src/mindustry/editor/MapInfoDialog.java
 index ebc1f0b300d295e45333f1db38ea299c9658ec20..e7cba056743979206c84fc6d00472c2c44b565f6 100644
@@ -655,7 +655,7 @@ index a3467be7ed208a4399d0bde3458045122994dda6..7db0aac3314fac945e2620b64e6abc17
          player.mouseY = unit.aimY();
  
 diff --git a/core/src/mindustry/input/InputHandler.java b/core/src/mindustry/input/InputHandler.java
-index fbe2616fe4fa11027b823d22c78d9eb9e072866e..e25abe822a5f804169212d539407822e9d3d7772 100644
+index fbe2616fe4fa11027b823d22c78d9eb9e072866e..5f4d0f4cd68d1351c2862ae0f92bfcbb437941ed 100644
 --- a/core/src/mindustry/input/InputHandler.java
 +++ b/core/src/mindustry/input/InputHandler.java
 @@ -38,6 +38,7 @@ import mindustry.world.*;
@@ -718,7 +718,7 @@ index fbe2616fe4fa11027b823d22c78d9eb9e072866e..e25abe822a5f804169212d539407822e
              plan.y = World.toTile(wy - plan.block.offset) + oy;
              plan.rotation = plan.block.planRotation(Mathf.mod(plan.rotation + direction, 4));
 +
-+            if(Core.settings.getBool("rotateCanvas") && plan.block instanceof CanvasBlock cb){
++            if(LogicExt.rotateCanvas.get() && plan.block instanceof CanvasBlock cb){
 +                CanvasBlock.CanvasBuild temp = cb.new CanvasBuild();
 +                Pixmap pix = cb.makePixmap((byte[])plan.config), pix2 = new Pixmap(cb.canvasSize, cb.canvasSize);
 +                pix.each((px, py) -> pix2.setRaw(
@@ -738,7 +738,7 @@ index fbe2616fe4fa11027b823d22c78d9eb9e072866e..e25abe822a5f804169212d539407822e
              //flip rotation
              plan.block.flipRotation(plan, x);
 +
-+            if(Core.settings.getBool("rotateCanvas") && plan.block instanceof CanvasBlock cb){
++            if(LogicExt.rotateCanvas.get() && plan.block instanceof CanvasBlock cb){
 +                CanvasBlock.CanvasBuild temp = cb.new CanvasBuild();
 +                Pixmap pix = cb.makePixmap((byte[])plan.config);
 +                plan.config = temp.packPixmap(x ? pix.flipX() : pix.flipY());
@@ -1601,7 +1601,7 @@ index 8937bd5567640331ea6b093d6339c66cbb0ef041..10ef30252a310a6a7829281ec1d0a607
          /** Look around for existing sectors. Can only deploy. */
          look,
 diff --git a/core/src/mindustry/ui/dialogs/SchematicsDialog.java b/core/src/mindustry/ui/dialogs/SchematicsDialog.java
-index 1819d3cabac2aeadbb57bf74cf6962f829c7dded..a24c659a8ee848c12921e5bc3afae83972b3d2a7 100644
+index 1819d3cabac2aeadbb57bf74cf6962f829c7dded..a217936e691d4cf30cf020697303bb3040a2db07 100644
 --- a/core/src/mindustry/ui/dialogs/SchematicsDialog.java
 +++ b/core/src/mindustry/ui/dialogs/SchematicsDialog.java
 @@ -15,6 +15,8 @@ import arc.scene.ui.layout.*;
@@ -1668,9 +1668,9 @@ index 1819d3cabac2aeadbb57bf74cf6962f829c7dded..a24c659a8ee848c12921e5bc3afae839
 +            in.add("蓝图包含：").padLeft(20f).padRight(4);
 +            in.button(control.input.block == null ? "[red]\uE815" : control.input.block.emoji(), Styles.togglet, () -> {
 +                if(control.input.block == null) return;
-+                Core.settings.put("autoSelSchematic", !Core.settings.getBool("autoSelSchematic"));
++                mindustryX.VarsX.autoSelectSchematic.toggle();
 +                rebuildPane.run();
-+            }).size(tagh).pad(2).tooltip("蓝图需包含此建筑").checked(t -> control.input.block != null && Core.settings.getBool("autoSelSchematic"));
++            }).size(tagh).pad(2).tooltip("蓝图需包含此建筑").checked(t -> control.input.block != null && mindustryX.VarsX.autoSelectSchematic.get());
 +        }).height(tagh).fillX();
 +
          cont.row();
@@ -1682,7 +1682,7 @@ index 1819d3cabac2aeadbb57bf74cf6962f829c7dded..a24c659a8ee848c12921e5bc3afae839
                      if(!search.isEmpty() && !ignoreSymbols.matcher(s.name().toLowerCase()).replaceAll("").contains(searchString)) continue;
 +
 +                    if(selectedPlanet != null && !s.tiles.allMatch((it) -> it.block.isOnPlanet(selectedPlanet))) continue;
-+                    if(Core.settings.getBool("autoSelSchematic") && control.input.block != null && !s.containsBlock(control.input.block)) continue;
++                    if(mindustryX.VarsX.autoSelectSchematic.get() && control.input.block != null && !s.containsBlock(control.input.block)) continue;
 +                    if(Core.settings.getBool("arcSchematicCanBuild") && !arcSchematicCanBuild(s)) continue;
                      if(firstSchematic == null) firstSchematic = s;
  
@@ -1692,7 +1692,7 @@ index 1819d3cabac2aeadbb57bf74cf6962f829c7dded..a24c659a8ee848c12921e5bc3afae839
              rebuildPane.run();
          }).grow().scrollX(false);
 +
-+        if(Core.settings.getBool("autoSelSchematic") && control.input.block!=null){
++        if(mindustryX.VarsX.autoSelectSchematic.get() && control.input.block!=null){
 +            String text = "[orange]蓝图筛选模式[white]:蓝图必须包含 "+control.input.block.emoji();
 +            UIExt.announce(text, 5f);
 +        }
@@ -2266,88 +2266,39 @@ index 51b16ee07ceac1ebd4fe03e6f71cae61c68b03c8..1f47235c5ac1abd8a67072616c4505e7
  
  }
 diff --git a/core/src/mindustry/ui/fragments/MenuFragment.java b/core/src/mindustry/ui/fragments/MenuFragment.java
-index 57f16a53a6910131be7d85122fcc6e5e31f0115c..09b88181603569052f95c5695b35f2c346602bbb 100644
+index 57f16a53a6910131be7d85122fcc6e5e31f0115c..d3cd081c0bcf10bf85b4f22e0697a8150c7e49bb 100644
 --- a/core/src/mindustry/ui/fragments/MenuFragment.java
 +++ b/core/src/mindustry/ui/fragments/MenuFragment.java
-@@ -1,6 +1,7 @@
- package mindustry.ui.fragments;
- 
- import arc.*;
-+import arc.files.*;
- import arc.graphics.*;
- import arc.graphics.g2d.*;
- import arc.math.*;
-@@ -34,6 +35,14 @@ public class MenuFragment{
- 
-     MenuFloatLabel floatLabel;
- 
-+    Fi arcBackground;
-+    String arcBackgroundPath = Core.settings.getString("arcBackgroundPath");
-+    Seq<Fi> arcBGList;
-+
-+    Image img = new Image();
-+
-+    int arcBackgroundIndex = 0;
-+
-     public void build(Group parent){
-         renderer = new MenuRenderer();
- 
-@@ -45,7 +54,18 @@ public class MenuFragment{
+@@ -45,7 +45,15 @@ public class MenuFragment{
          parent.addChild(floatLabel = new MenuFloatLabel());
          parent = group;
  
 -        parent.fill((x, y, w, h) -> renderer.render());
-+        if(arcBackgroundPath != null && Core.files.absolute(arcBackgroundPath).exists() && Core.files.absolute(arcBackgroundPath).list().length >= 1){
-+            arcBackgroundIndex = (int)(Math.random() * Core.files.absolute(arcBackgroundPath).list().length);
-+            nextBackGroundImg();
-+            if(arcBGList.size == 0){
-+                parent.fill((x, y, w, h) -> renderer.render());
-+            }else{
-+                group.addChild(img);
-+                img.setFillParent(true);
-+            }
-+        }else{
-+            parent.fill((x, y, w, h) -> renderer.render());
-+        }
++        //MDTX: custom backgrounds (ARC)
++        Image img = new Image();
++        group.addChild(img);
++        img.setFillParent(true);
++        ArcOld.nextBackground(img);
++
++        parent.fill((x, y, w, h) -> {
++            if(img.getDrawable() == null) renderer.render();
++        });
  
          parent.fill(c -> {
              c.pane(Styles.noBarPane, cont -> {
-@@ -84,6 +104,11 @@ public class MenuFragment{
+@@ -84,6 +92,11 @@ public class MenuFragment{
              });
          }
  
 +        parent.fill(c -> c.bottom().left().table(t -> {
 +            t.background(Tex.buttonEdge3);
-+            t.button("\uE83D", Styles.cleart, this::nextBackGroundImg).width(50f);
-+        }).visible(() -> Core.settings.getString("arcBackgroundPath", "").length() != 0).left().width(100));
++            t.button("\uE83D", Styles.cleart, ()->ArcOld.nextBackground(img)).width(50f);
++        }).visible(() -> !ArcOld.backgroundPath.get().isEmpty()).left().width(100));
 +
          String versionText = ((Version.build == -1) ? "[#fc8140aa]" : "[#ffffffba]") + Version.combined();
          parent.fill((x, y, w, h) -> {
              TextureRegion logo = Core.atlas.find("logo");
-@@ -109,6 +134,22 @@ public class MenuFragment{
-         }).touchable = Touchable.disabled;
-     }
- 
-+    private void nextBackGroundImg(){
-+        arcBGList = Core.files.absolute(arcBackgroundPath).findAll(f -> !f.isDirectory() && (f.extEquals("png") || f.extEquals("jpg") || f.extEquals("jpeg")));
-+        if(arcBGList.size == 0) return;
-+        arcBackgroundPath = Core.settings.getString("arcBackgroundPath");
-+        arcBackgroundIndex += 1;
-+        arcBackgroundIndex = arcBackgroundIndex % arcBGList.size;
-+        new Thread(() -> {
-+            try{
-+                arcBackground = arcBGList.get(arcBackgroundIndex);
-+                Core.app.post(() -> img.setDrawable(new TextureRegion(new Texture(arcBackground))));
-+            }catch(Exception e){
-+                Core.app.post(() -> ui.showException("背景图片无效:" + arcBGList.get(arcBackgroundIndex).path(), e));
-+            }
-+        }).start();
-+    }
-+
-     private void buildMobile(){
-         container.clear();
-         container.name = "buttons";
-@@ -126,7 +167,7 @@ public class MenuFragment{
+@@ -126,7 +139,7 @@ public class MenuFragment{
              tools = new MobileButton(Icon.settings, "@settings", ui.settings::show),
              mods = new MobileButton(Icon.book, "@mods", ui.mods::show),
              exit = new MobileButton(Icon.exit, "@quit", () -> Core.app.exit()),
@@ -2356,7 +2307,7 @@ index 57f16a53a6910131be7d85122fcc6e5e31f0115c..09b88181603569052f95c5695b35f2c3
  
          Seq<MobileButton> customs = customButtons.map(b -> new MobileButton(b.icon, b.text, b.runnable == null ? () -> {} : b.runnable));
  
-@@ -145,11 +186,12 @@ public class MenuFragment{
+@@ -145,11 +158,12 @@ public class MenuFragment{
              container.add(editor);
              container.add(tools);
              container.add(mods);
@@ -2370,7 +2321,7 @@ index 57f16a53a6910131be7d85122fcc6e5e31f0115c..09b88181603569052f95c5695b35f2c3
          }else{
              container.marginTop(0f);
              container.add(play);
-@@ -162,12 +204,14 @@ public class MenuFragment{
+@@ -162,12 +176,14 @@ public class MenuFragment{
              container.add(tools);
              container.row();
              container.add(mods);
@@ -2387,7 +2338,7 @@ index 57f16a53a6910131be7d85122fcc6e5e31f0115c..09b88181603569052f95c5695b35f2c3
      }
  
 diff --git a/core/src/mindustry/ui/fragments/PlacementFragment.java b/core/src/mindustry/ui/fragments/PlacementFragment.java
-index 6442d78f00e1288793ce7365b886f9f4acc34529..4413e2ce6fa01c41a01b6d818d235233a8f863d4 100644
+index 6442d78f00e1288793ce7365b886f9f4acc34529..c08135b1568938039bf5c8ed7fe5eefb0626931c 100644
 --- a/core/src/mindustry/ui/fragments/PlacementFragment.java
 +++ b/core/src/mindustry/ui/fragments/PlacementFragment.java
 @@ -1,6 +1,7 @@
@@ -2508,7 +2459,7 @@ index 6442d78f00e1288793ce7365b886f9f4acc34529..4413e2ce6fa01c41a01b6d818d235233
                          rebuildCommand = () -> {
                              u.clearChildren();
 +
-+                            boolean arcExtra = Core.settings.getBool("arcCommandTable");
++                            boolean arcExtra = mindustryX.VarsX.extendedCommandTable.get();
                              var units = control.input.selectedUnits;
                              if(units.size > 0){
                                  usedCommands.clear();

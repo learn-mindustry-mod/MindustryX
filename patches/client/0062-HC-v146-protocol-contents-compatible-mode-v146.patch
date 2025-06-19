@@ -110,7 +110,7 @@ index c93d0921230fcbaacdd8cd673cf12fd4c313e823..bf922b62c173997e6d4d4e14b7533aad
              boolean writePlan = !headless || !net.server();
              write.b(writePlan ? 1 : 0); //always has config
 diff --git a/core/src/mindustry/net/Net.java b/core/src/mindustry/net/Net.java
-index 48c4d6749bd6f0776547fd633d7ac18c76af2452..d12c1a1d70f082fbdb54cb26ea8be0c5613dcdde 100644
+index 2046c94122cd77093358cafde68941f7d679faac..a0cea1d85a51a0f64224e11c1ec5e43687d4630a 100644
 --- a/core/src/mindustry/net/Net.java
 +++ b/core/src/mindustry/net/Net.java
 @@ -1,6 +1,7 @@

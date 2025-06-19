@@ -19,7 +19,7 @@ enum class BindingExt(val default: KeybindValue = KeyCode.unset, val category: S
     toggle_unit(KeyCode.unset, "mindustryX", onTap = { RenderExt.unitHide.toggle() }),
     point(KeyCode.j, onTap = MarkerType::showPanUI),
     lockonLastMark(KeyCode.unset, onTap = MarkerType::lockOnLastMark),
-    toggle_block_render(KeyCode.unset, onTap = { Settings.cycle("blockRenderLevel", 3) }),
+    toggle_block_render(KeyCode.unset, onTap = { RenderExt.blockRenderLevel0.cycle() }),
     focusLogicController(KeyCode.unset, onTap = { mindustryX.features.func.focusLogicController() }),
     placeRouterReplacement(KeyCode.shiftLeft),
     openDebugDialog(KeyCode.f12, onTap = { DebugUtil.openDialog() })

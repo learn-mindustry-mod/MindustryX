@@ -90,6 +90,7 @@ public class Hooks implements ApplicationListener{
             updateTitle();
             BindingExt.pollKeys();
             if(BindingExt.oreAdsorption.keyDown()) ArcOld.doOreAdsorption();
+            Vars.maxSchematicSize = VarsX.maxSchematicSize.get() > 256 ? Integer.MAX_VALUE : VarsX.maxSchematicSize.get();
         }
     }
 

@@ -6,6 +6,7 @@ import arc.files.Fi
 import arc.util.Log
 import arc.util.OS
 import arc.util.serialization.Jval
+import mindustry.Vars
 import mindustry.core.Version
 import mindustryX.features.SettingsV2.CheckPref
 import mindustryX.features.SettingsV2.SliderPref
@@ -80,5 +81,24 @@ object VarsX {
         addFallbackName("itemSelectionWidth")
     }
 
+    @JvmField
+    val researchViewer = CheckPref("gameUI.researchViewer").apply {
+        addFallbackName("researchViewer")
+    }
 
+    @JvmField
+    val maxSchematicSize = SliderPref("maxSchematicSize", Vars.maxSchematicSize, 64, 257) {
+        if (it == 257) return@SliderPref "无限制"
+        "${it}x${it}"
+    }
+
+    @JvmField
+    val autoSelectSchematic = CheckPref("autoSelectSchematic").apply {
+        addFallbackName("autoSelSchematic")
+    }
+
+    @JvmField
+    val extendedCommandTable = CheckPref("gameUI.extendedCommandTable", true).apply {
+        addFallbackName("arcCommandTable")
+    }
 }

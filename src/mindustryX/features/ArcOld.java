@@ -1,9 +1,13 @@
 package mindustryX.features;
 
 import arc.*;
+import arc.files.*;
 import arc.func.*;
 import arc.graphics.*;
+import arc.graphics.g2d.*;
 import arc.math.*;
+import arc.scene.style.*;
+import arc.scene.ui.*;
 import arc.struct.*;
 import mindustry.content.*;
 import mindustry.ctype.*;
@@ -11,11 +15,44 @@ import mindustry.gen.*;
 import mindustry.graphics.*;
 import mindustry.world.*;
 import mindustryX.features.Settings.*;
+import mindustryX.features.SettingsV2.*;
 
 import static arc.Core.settings;
 import static mindustry.Vars.*;
 
 public class ArcOld{
+    public static final CheckPref colorizedContent = new CheckPref("arcExtra.colorizedContent");
+    public static final TextPref backgroundPath = new TextPref("arcExtra.backgroundPath");
+    public static final CheckPref showPlacementEffect = new CheckPref("block.arcPlacementEffect");
+
+    static{
+        colorizedContent.addFallbackName("colorizedContent");
+        backgroundPath.addFallbackName("arcBackgroundPath");
+        showPlacementEffect.addFallbackName("arcPlacementEffect");
+    }
+
+    private static Seq<Fi> backgrounds = Seq.with();
+
+    public static void nextBackground(Image image){
+        if(backgroundPath.changed()){
+            backgrounds = Core.files.absolute(backgroundPath.get()).findAll(f -> !f.isDirectory() && (f.extEquals("png") || f.extEquals("jpg") || f.extEquals("jpeg")));
+        }
+        image.setDrawable((Drawable)null);
+        if(backgrounds.size == 0) return;
+        Fi file = backgrounds.random();
+        mainExecutor.submit(() -> {
+            try{
+                var texture = new TextureRegion(new Texture(file));
+                Core.app.post(() -> {
+                    if(image.getDrawable() != null) ((TextureRegion)image.getDrawable()).texture.dispose();
+                    image.setDrawable(texture);
+                });
+            }catch(Exception e){
+                Core.app.post(() -> ui.showException("背景图片无效:" + file.path(), e));
+            }
+        });
+    }
+
     public static void doOreAdsorption(){
         Unit unit = player.unit();
         if(Core.scene.hasMouse() || unit == null) return;
@@ -44,11 +81,8 @@ public class ArcOld{
             c.sliderPref("mend_zone", 0, 0, 100, 2, i -> i > 0 ? i + "%" : "关闭");
             c.checkPref("blockdisabled", false);
             c.checkPref("blockBars", false);
-            c.sliderPref("blockbarminhealth", 0, 0, 4000, 50, i -> i + "[red]HP");
             c.checkPref("blockBars_mend", false);
             c.checkPref("arcdrillmode", false);
-            c.checkPref("arcchoiceuiIcon", false);
-            c.checkPref("arcPlacementEffect", false);
 
             c.checkPref("mass_driver_line", true);
             c.sliderPref("mass_driver_line_interval", 40, 8, 400, 4, i -> i / 8f + "格");
@@ -93,7 +127,6 @@ public class ArcOld{
             c.checkPref("unitLogicTimerBars", false);
             c.checkPref("arcBuildInfo", false);
             c.checkPref("unitbuildplan", false);
-            c.checkPref("arcCommandTable", true);
             c.checkPref("alwaysShowUnitRTSAi", false);
             c.sliderPref("rtsWoundUnit", 0, 0, 100, 2, s -> s + "%");
 
@@ -134,7 +167,7 @@ public class ArcOld{
     }
 
     public static void colorizeContent(){
-        if(!settings.getBool("colorizedContent")) return;
+        if(!colorizedContent.get()) return;
         content.items().each(c -> colorizeContent(c, c.color));
         content.liquids().each(c -> colorizeContent(c, c.color));
         content.statusEffects().each(c -> colorizeContent(c, c.color));

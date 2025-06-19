@@ -8,6 +8,7 @@ import arc.math.*;
 import arc.math.geom.*;
 import arc.struct.*;
 import arc.util.*;
+import kotlin.collections.*;
 import mindustry.*;
 import mindustry.entities.*;
 import mindustry.game.EventType.*;
@@ -24,6 +25,7 @@ import mindustry.world.blocks.logic.MessageBlock.*;
 import mindustry.world.blocks.production.Drill.*;
 import mindustry.world.blocks.storage.*;
 import mindustry.world.blocks.units.*;
+import mindustryX.*;
 import mindustryX.features.SettingsV2.*;
 import mindustryX.features.draw.*;
 import mindustryX.features.func.*;
@@ -36,9 +38,7 @@ public class RenderExt{
     public static boolean displayAllMessage;
     public static boolean arcChoiceUiIcon;
     public static boolean researchViewer;
-    public static boolean showPlacementEffect;
     public static int hiddenItemTransparency;
-    public static int blockBarMinHealth;
     public static float overdriveZoneTransparency, mendZoneTransparency;
     public static boolean logicDisplayNoBorder, arcDrillMode;
     public static int blockRenderLevel;
@@ -46,7 +46,6 @@ public class RenderExt{
     public static boolean massDriverLine;
     public static int massDriverLineInterval;
     public static boolean drawBars, drawBarsMend;
-    public static float healthBarMinHealth;
     public static boolean drawBlockDisabled;
     public static boolean showOtherInfo, editOtherBlock;
     public static boolean unitWeaponTargetLine, unitItemCarried;
@@ -66,6 +65,18 @@ public class RenderExt{
     public static final SettingsV2.CheckPref transportScan = new CheckPref("gameUI.transportScan");
     public static final SettingsV2.CheckPref announceRtsTake = new CheckPref("gameUI.announceRtsTake", true);
     public static final SettingsV2.CheckPref deadOverlay = new CheckPref("gameUI.deadOverlay");
+
+    public static final SettingsV2.CheckPref renderSort0 = new CheckPref("debug.renderSort");
+    public static final SettingsV2.CheckPref arcChoiceUiIcon0 = new CheckPref("block.arcChoiceUiIcon");
+    public static final SliderPref hiddenItemTransparency0 = new SliderPref("block.hiddenItemTransparency", 0, 0, 100, 2, v -> v > 0 ? v + "%" : "关闭");
+    public static final SliderPref overdriveZoneTransparency0 = new SliderPref("block.overdriveZoneTransparency", 0, 0, 100, 2, v -> v > 0 ? v + "%" : "关闭");
+    public static final SliderPref mendZoneTransparency0 = new SliderPref("block.mendZoneTransparency", 0, 0, 100, 2, v -> v > 0 ? v + "%" : "关闭");
+    public static final SliderPref healthBarMinHealth = new SliderPref("block.healthBarMinHealth", 0, 0, 4000, 50, v -> v > 0 ? v + "[red]HP" : "全部显示");
+    public static final ChoosePref blockRenderLevel0 = new ChoosePref("block.renderLevel", CollectionsKt.listOf("隐藏全部建筑", "只显示建筑状态", "全部显示"), 2);
+    public static final SettingsV2.CheckPref showOtherTeamState = new CheckPref("block.showOtherTeamState");
+    public static final SettingsV2.CheckPref editOtherBlock0 = new CheckPref("block.editOtherBlock");
+    public static final SettingsV2.CheckPref logicDisplayNoBorder0 = new CheckPref("block.logicDisplayNoBorder");
+
 
     static{
         var internal = new PersistentProvider.Arc<Boolean>("bulletShow");
@@ -91,6 +102,15 @@ public class RenderExt{
         unitHideMinHealth.addFallbackName("unitDrawMinHealth");
 
         deadOverlay.addFallbackName("deadOverlay");
+        arcChoiceUiIcon0.addFallbackName("arcchoiceuiIcon");
+        hiddenItemTransparency0.addFallbackName("HiddleItemTransparency");
+        overdriveZoneTransparency0.addFallbackName("overdrive_zone");
+        mendZoneTransparency0.addFallbackName("mend_zone");
+        healthBarMinHealth.addFallbackName("blockbarminhealth");
+        blockRenderLevel0.addFallbackName("blockRenderLevel");
+        showOtherTeamState.addFallbackName("showOtherTeamState");
+        editOtherBlock0.addFallbackName("editOtherBlock");
+        logicDisplayNoBorder0.addFallbackName("logicDisplayNoBorder");
     }
 
     private static Effect placementEffect;
@@ -109,25 +129,22 @@ public class RenderExt{
 
         Events.run(Trigger.update, () -> {
             displayAllMessage = Core.settings.getBool("displayallmessage");
-            arcChoiceUiIcon = Core.settings.getBool("arcchoiceuiIcon");
-            researchViewer = Core.settings.getBool("researchViewer");
-            showPlacementEffect = Core.settings.getBool("arcPlacementEffect");
-            hiddenItemTransparency = Core.settings.getInt("HiddleItemTransparency");
-            blockBarMinHealth = Core.settings.getInt("blockbarminhealth");
-            overdriveZoneTransparency = Core.settings.getInt("overdrive_zone") / 100f;
-            mendZoneTransparency = Core.settings.getInt("mend_zone") / 100f;
-            logicDisplayNoBorder = Core.settings.getBool("logicDisplayNoBorder");
+            arcChoiceUiIcon = arcChoiceUiIcon0.get();
+            researchViewer = VarsX.researchViewer.get();
+            hiddenItemTransparency = hiddenItemTransparency0.get();
+            overdriveZoneTransparency = overdriveZoneTransparency0.get() / 100f;
+            mendZoneTransparency = mendZoneTransparency0.get() / 100f;
+            logicDisplayNoBorder = logicDisplayNoBorder0.get();
             arcDrillMode = Core.settings.getBool("arcdrillmode");
-            blockRenderLevel = Core.settings.getInt("blockRenderLevel");
-            renderSort = Core.settings.getBool("renderSort");
+            blockRenderLevel = blockRenderLevel0.get();
+            renderSort = renderSort0.get();
             massDriverLine = Core.settings.getBool("mass_driver_line");
             massDriverLineInterval = Core.settings.getInt("mass_driver_line_interval");
             drawBars = Core.settings.getBool("blockBars");
             drawBarsMend = Core.settings.getBool("blockBars_mend");
-            healthBarMinHealth = Core.settings.getInt("blockbarminhealth");
             drawBlockDisabled = Core.settings.getBool("blockdisabled");
-            showOtherInfo = Core.settings.getBool("showOtherTeamState");
-            editOtherBlock = Core.settings.getBool("editOtherBlock");
+            showOtherInfo = showOtherTeamState.get();
+            editOtherBlock = editOtherBlock0.get();
             editOtherBlock &= !net.client();
 
             unitWeaponTargetLine = Core.settings.getBool("unitWeaponTargetLine");
@@ -218,8 +235,8 @@ public class RenderExt{
 
     public static void onSetBlock(TileChangeEvent event){
         Building build = event.tile.build;
-        if(build != null && showPlacementEffect){
-            if(build.block instanceof BaseTurret t && build.health > blockBarMinHealth)
+        if(build != null && ArcOld.showPlacementEffect.get()){
+            if(build.block instanceof BaseTurret t)
                 placementEffect(build.x, build.y, 120f, t.range, build.team.color);
             else if(build.block instanceof Radar t)
                 placementEffect(build.x, build.y, 120f, t.fogRadius * tilesize, build.team.color);
@@ -270,7 +287,7 @@ public class RenderExt{
     }
 
     private static void drawBars(Building build){
-        if(build.health / build.maxHealth < 0.9f && build.maxHealth > healthBarMinHealth)
+        if(build.health / build.maxHealth < 0.9f && build.maxHealth > healthBarMinHealth.get())
             drawBar(build, build.team.color, Pal.health, build.health / build.maxHealth);
         if(drawBarsMend){
             if(build instanceof MendProjector.MendBuild b){
@@ -323,7 +340,7 @@ public class RenderExt{
     static ObjectMap<String, HashSet<Unit>> removePool = new ObjectMap<>();
 
     public static void onRtsRemoveUnit(Player player, Unit unit){
-        if(!announceRtsTake.get())return;
+        if(!announceRtsTake.get()) return;
         if(removePool.containsKey(player.name)){
             removePool.get(player.name).add(unit);
             return;

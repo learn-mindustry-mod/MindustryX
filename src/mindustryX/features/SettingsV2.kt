@@ -194,7 +194,7 @@ object SettingsV2 {
     }
 
     class ChoosePref @JvmOverloads constructor(name: String, val values: List<String>, def: Int = 0) : SliderPref(name, def, 0, values.size - 1, labelMap = { values[it] }) {
-        fun circle() {
+        fun cycle() {
             set((value + 1) % values.size)
         }
     }

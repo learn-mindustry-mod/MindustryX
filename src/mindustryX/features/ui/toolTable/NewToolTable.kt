@@ -44,7 +44,7 @@ object NewToolTable : ToolTableBase("${Iconc.settings}") {
             Vars.ui.showConfirm("受不了，直接投降？") { Call.sendChatMessage("/vote gameover") }
         }
 
-        toggle("[cyan]块", "建筑显示", { RenderExt.blockRenderLevel > 0 }) { Settings.cycle("blockRenderLevel", 3) }
+        toggle("[cyan]块", "建筑显示", { RenderExt.blockRenderLevel > 0 }) { RenderExt.blockRenderLevel0.cycle() }
         toggle("[cyan]兵", "兵种显示", { !RenderExt.unitHide.value }) { RenderExt.unitHide.toggle() }
         toggle("[cyan]弹", "子弹显示", { !RenderExt.noBulletShow.value }) { RenderExt.noBulletShow.toggle() }
         toggle("[cyan]效", "特效显示", { Vars.renderer.enableEffects }) { Settings.toggle("effects") }

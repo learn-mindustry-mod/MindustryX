@@ -8,14 +8,14 @@ Subject: [PATCH] FC: reliableSync
  1 file changed, 1 insertion(+)
 
 diff --git a/core/src/mindustry/net/Net.java b/core/src/mindustry/net/Net.java
-index 8929ef9d867729c779f809f08bb4bd075e7b9593..7188c779a5a626e4ff1f1e54de89b6df2af8a5ea 100644
+index 8929ef9d867729c779f809f08bb4bd075e7b9593..2aa96d4b4cf08cf8520e9c7cf21f28cbe78ce168 100644
 --- a/core/src/mindustry/net/Net.java
 +++ b/core/src/mindustry/net/Net.java
 @@ -235,6 +235,7 @@ public class Net{
                  con.send(object, reliable);
              }
          }else{
-+            reliable |= LogicExt.reliableSync;
++            reliable |= LogicExt.reliableSync.get();
              provider.sendClient(object, reliable);
          }
      }
