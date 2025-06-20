@@ -315,7 +315,7 @@ public class LogicSupport{
     }
 
     public static void buildMemoryPane(Table t, double[] memory){
-        Format format = new Format(LogicSupport.memoryColumns.get(), true);
+        Format format = new Format(LogicSupport.memoryDecimal.get(), true);
         for(int i = 0; i < memory.length; i++){
             int finalI = i;
             t.add("[" + i + "]").color(Color.lightGray).align(Align.left);
