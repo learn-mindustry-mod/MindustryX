@@ -65,7 +65,7 @@ public class ArcTransportScanMode{
         if(build instanceof MassDriver.MassDriverBuild){
             //暂时搞不定
         }//桥
-        else if(build instanceof ItemBridge.ItemBridgeBuild bridge && !(build instanceof LiquidBridge.LiquidBridgeBuild)){
+        else if(build instanceof ItemBridge.ItemBridgeBuild bridge){
             bridge.incoming.each(pos -> previous.add(new Point(world.tile(pos).build, point)));
         }//导管桥
         else if(build instanceof DirectionBridge.DirectionBridgeBuild bridge){
@@ -97,7 +97,7 @@ public class ArcTransportScanMode{
                 next.add(new Point(world.build(massDriverBuild.link), point));
             }
         }//桥
-        else if(build instanceof ItemBridge.ItemBridgeBuild itemBridgeBuild && !(build instanceof LiquidBridge.LiquidBridgeBuild)){
+        else if(build instanceof ItemBridge.ItemBridgeBuild itemBridgeBuild){
             if(itemBridgeBuild.arcLinkValid()){
                 next.add(new Point(world.build(itemBridgeBuild.link), point));
             }
@@ -155,6 +155,7 @@ public class ArcTransportScanMode{
             return from == build.back();
         }//桥
         else if(build instanceof ItemBridge.ItemBridgeBuild itemBridgeBuild){
+            if(build.block instanceof LiquidBridge && !from.block.hasLiquids) return false;
             return itemBridgeBuild.arcCheckAccept(from);
         }//导管桥
         else if(build instanceof DirectionBridge.DirectionBridgeBuild directionBridgeBuild){
@@ -206,6 +207,7 @@ public class ArcTransportScanMode{
             return to != build.back();
         }//桥
         else if(build instanceof ItemBridge.ItemBridgeBuild bridge){
+            if(build.block instanceof LiquidBridge && !to.block.hasLiquids) return false;
             return bridge.arcCheckDump(to);
         }//导管桥
         else if(build instanceof DirectionBridge.DirectionBridgeBuild directionBridgeBuild){

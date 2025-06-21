@@ -4,10 +4,10 @@ Date: Sun, 19 May 2024 19:40:31 +0800
 Subject: [PATCH] HC: ARC arcScanMode
 
 ---
- .../world/blocks/distribution/DirectionBridge.java   |  7 +++++++
- .../world/blocks/distribution/ItemBridge.java        | 12 ++++++++++++
- .../world/blocks/distribution/MassDriver.java        |  3 +++
- 3 files changed, 22 insertions(+)
+ .../world/blocks/distribution/DirectionBridge.java |  7 +++++++
+ .../world/blocks/distribution/ItemBridge.java      | 14 +++++++++++++-
+ .../world/blocks/distribution/MassDriver.java      |  3 +++
+ 3 files changed, 23 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/world/blocks/distribution/DirectionBridge.java b/core/src/mindustry/world/blocks/distribution/DirectionBridge.java
 index 2c0077cc99557c80f49d0cf496c92309b31e482e..341b81c8ec8cae795b3e5c3872e253f9317975bc 100644
@@ -27,9 +27,18 @@ index 2c0077cc99557c80f49d0cf496c92309b31e482e..341b81c8ec8cae795b3e5c3872e253f9
      }
  }
 diff --git a/core/src/mindustry/world/blocks/distribution/ItemBridge.java b/core/src/mindustry/world/blocks/distribution/ItemBridge.java
-index 97c69dd2cfe25d81b94b7031fbd5919672f0b8cf..4d2332b508b174c001969b741d5ad5edfa81c6dc 100644
+index 97c69dd2cfe25d81b94b7031fbd5919672f0b8cf..082ce9f9b4d540b42ba76901f4f6d4f4c61fcbe9 100644
 --- a/core/src/mindustry/world/blocks/distribution/ItemBridge.java
 +++ b/core/src/mindustry/world/blocks/distribution/ItemBridge.java
+@@ -494,7 +494,7 @@ public class ItemBridge extends Block{
+             int rel = relativeTo(other.x, other.y);
+             int rel2 = relativeTo(to.tileX(), to.tileY());
+ 
+-            return rel != rel2;
++            return rel == rel2;
+         }
+ 
+         @Override
 @@ -540,5 +540,17 @@ public class ItemBridge extends Block{
                  wasMoved = moved = read.bool();
              }
