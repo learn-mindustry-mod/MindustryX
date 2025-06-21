@@ -30,7 +30,7 @@ object AutoUpdate {
         data class Asset(val name: String, val url: String)
 
         fun matchCurrent(): Boolean {
-            if (repo == AutoUpdate.repo) return currentBranch == null
+            if (repo == VarsX.repo) return currentBranch == null
             return tag == "$currentBranch-build" || json.getString("body", "").contains("REPLACE $currentBranch")
         }
 
@@ -50,7 +50,6 @@ object AutoUpdate {
 
     val active get() = !VarsX.devVersion
 
-    const val repo = "TinyLake/MindustryX"
     const val devRepo = "TinyLake/MindustryX-work"
     var versions = emptyList<Release>()
     val currentBranch get() = VarsX.version.split('-', limit = 2).getOrNull(1)
@@ -64,13 +63,15 @@ object AutoUpdate {
     init {
         Events.on(EventType.ClientLoadEvent::class.java) {
             Vars.ui.menuGroup.fill { c ->
-                c.bottom().right().button("@be.check", Icon.refresh) { showDialog() }.size(200f, 60f)
-                    .update {
-                        it.label.color.apply {
-                            set(Color.white)
-                            if (newVersion != null) lerp(Pal.accent, Mathf.absin(5f, 1f))
-                        }
+                c.bottom().right().defaults().size(200f, 60f)
+                c.button("@mdtx.report", Icon.github) { UIExt.openURI("https://github.com/${VarsX.repo}") }.row()
+                c.button("@mdtx.qqLink", Icon.units) { UIExt.openURI(VarsX.qqLink) }.row()
+                c.button("@be.check", Icon.refresh) { showDialog() }.update {
+                    it.label.color.apply {
+                        set(Color.white)
+                        if (newVersion != null) lerp(Pal.accent, Mathf.absin(5f, 1f))
                     }
+                }
             }
         }
     }
@@ -90,7 +91,7 @@ object AutoUpdate {
 
     fun checkUpdate() {
         if (versions.isNotEmpty()) return
-        getReleases(repo) { versions0 ->
+        getReleases(VarsX.repo) { versions0 ->
             val versions = versions0.filter { it.tag == "v${it.version}" }//filter old release
             getReleases(devRepo) { devVersions ->
                 this.versions = versions + devVersions
@@ -146,7 +147,7 @@ object AutoUpdate {
 
             image().fillX().height(2f).row()
             add("正式版").row()
-            buildVersionList(versions.filter { it.repo == repo })
+            buildVersionList(versions.filter { it.repo == VarsX.repo })
 
             image().fillX().height(2f).row()
             add("测试版本(更新更快,BUG修复更及时)").row()
