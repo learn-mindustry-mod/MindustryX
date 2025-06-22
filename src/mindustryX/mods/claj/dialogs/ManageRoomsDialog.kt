@@ -45,7 +45,7 @@ class ManageRoomsDialog : BaseDialog("管理claj房间") {
                             return@mapNotNull null
                         }
                     }
-                    Core.app.post { show() }
+                    if(isShown) Core.app.post { show() }
                 }
             } else {
                 servers.forEach {
