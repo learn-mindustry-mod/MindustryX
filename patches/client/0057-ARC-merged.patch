@@ -524,7 +524,7 @@ index f7c9adf4e8abd9e26596f04bc903e2c460410480..04f7f6fc9c5fd08dd93eaa42747c270b
  
      public void checkApplySelection(Unit u){
 diff --git a/core/src/mindustry/input/DesktopInput.java b/core/src/mindustry/input/DesktopInput.java
-index a3467be7ed208a4399d0bde3458045122994dda6..7db0aac3314fac945e2620b64e6abc1725c31161 100644
+index d1bf787e961ddfbd71b48ccd20fd5887952f07d1..e0ab71dbf581d4f794a1d03452421394c1681348 100644
 --- a/core/src/mindustry/input/DesktopInput.java
 +++ b/core/src/mindustry/input/DesktopInput.java
 @@ -14,17 +14,25 @@ import arc.scene.ui.layout.*;
@@ -655,7 +655,7 @@ index a3467be7ed208a4399d0bde3458045122994dda6..7db0aac3314fac945e2620b64e6abc17
          player.mouseY = unit.aimY();
  
 diff --git a/core/src/mindustry/input/InputHandler.java b/core/src/mindustry/input/InputHandler.java
-index fbe2616fe4fa11027b823d22c78d9eb9e072866e..5f4d0f4cd68d1351c2862ae0f92bfcbb437941ed 100644
+index aa8a20f104e617b9b707d666f926eec933b32687..49c7cbb16a5e1b98082cc1c764207f62637ee0ad 100644
 --- a/core/src/mindustry/input/InputHandler.java
 +++ b/core/src/mindustry/input/InputHandler.java
 @@ -38,6 +38,7 @@ import mindustry.world.*;
