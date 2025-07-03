@@ -4,29 +4,15 @@ Date: Sun, 18 Feb 2024 15:57:51 +0800
 Subject: [PATCH] FR: ARC drawPlace and drawSelect
 
 ---
- core/src/mindustry/game/Universe.java         |  2 +-
  .../world/blocks/ConstructBlock.java          | 42 ++++++++++++++++++-
  .../world/blocks/defense/ForceProjector.java  |  2 +
  .../world/blocks/defense/MendProjector.java   |  5 ++-
  .../blocks/defense/OverdriveProjector.java    |  6 ++-
  .../world/blocks/defense/turrets/Turret.java  | 19 +++++++++
  .../world/blocks/production/Drill.java        | 22 ++++++----
- .../world/blocks/storage/CoreBlock.java       |  9 ++++
- 8 files changed, 95 insertions(+), 12 deletions(-)
+ .../world/blocks/storage/CoreBlock.java       |  1 +
+ 7 files changed, 86 insertions(+), 11 deletions(-)
 
-diff --git a/core/src/mindustry/game/Universe.java b/core/src/mindustry/game/Universe.java
-index e82224d6e517acf0933747720fe1d68d403ff9d0..2417e905fbd7e59506ec031a8e46847878d74323 100644
---- a/core/src/mindustry/game/Universe.java
-+++ b/core/src/mindustry/game/Universe.java
-@@ -21,7 +21,7 @@ public class Universe{
-     private int netSeconds;
-     private float secondCounter;
-     private int turn;
--    private float turnCounter;
-+    public static float turnCounter;
- 
-     private @Nullable Schematic lastLoadout;
-     private ItemSeq lastLaunchResources = new ItemSeq();
 diff --git a/core/src/mindustry/world/blocks/ConstructBlock.java b/core/src/mindustry/world/blocks/ConstructBlock.java
 index 4a5078513c6db7d970de8e35b76cd50f8f2f5e2f..fbad02fa4b948c714cefc54c096812d7bb0f9870 100644
 --- a/core/src/mindustry/world/blocks/ConstructBlock.java
@@ -281,7 +267,7 @@ index f6454de7e47676d8372db35f75c5b835321ab289..f1587b033da7a916e42e06b8ab931a5e
          returnItem = null;
          returnCount = 0;
 diff --git a/core/src/mindustry/world/blocks/storage/CoreBlock.java b/core/src/mindustry/world/blocks/storage/CoreBlock.java
-index 5bfab32686d87a3b65427594ecf326a33668da1c..18079e53cf5e8e65c4a23cb05729c5e9b82bcaa0 100644
+index 5bfab32686d87a3b65427594ecf326a33668da1c..e2322fa2f0bde3b8ad57f572e49e5b6518517304 100644
 --- a/core/src/mindustry/world/blocks/storage/CoreBlock.java
 +++ b/core/src/mindustry/world/blocks/storage/CoreBlock.java
 @@ -89,6 +89,7 @@ public class CoreBlock extends StorageBlock{
@@ -292,18 +278,3 @@ index 5bfab32686d87a3b65427594ecf326a33668da1c..18079e53cf5e8e65c4a23cb05729c5e9
              Unit unit = spawnType.create(tile.team());
              //reset reload so that the player can't shoot immediately
              for(var mount : unit.mounts){
-@@ -725,6 +726,14 @@ public class CoreBlock extends StorageBlock{
-                 outline.get(core);
-                 core.proximity.each(storage -> storage.items == items, outline);
-             });
-+            if(state.isCampaign()){
-+                Draw.z(Layer.blockOver);
-+                float t = turnDuration - Universe.turnCounter;
-+                String min = Strings.fixed(Mathf.floor(t / 60f / 60f), 0);
-+                float s = Mathf.floor(t / 60f % 60f);
-+                String sec = (s < 10f ? "0" : "") + Strings.fixed(s, 0);
-+                drawPlaceText(("资源接收  "+ min+":"+sec), tileX(), tileY(), true);
-+            }
-             Draw.reset();
-         }
- 
