@@ -293,19 +293,6 @@ object SettingsV2 {
     }
 
     @JvmStatic
-    fun showFloatSettingsPanel(x: Float, y: Float, settings: Iterable<Data<*>>) {
-        val table = Table().apply {
-            background(Styles.black8).margin(8f)
-            settings.forEach { it.buildUI(this) }
-            button("@close") { this.remove() }.fillX()
-        }
-        Core.scene.add(table)
-        table.pack()
-        table.setPosition(x, y, Align.center)
-        table.keepInStage()
-    }
-
-    @JvmStatic
     fun bindQuickSettings(button: Button, settings: Iterable<Data<*>>) {
         button.removeListener(button.clickListener)
         Reflect.set(Button::class.java, button, "clickListener", object : ClickListener() {
@@ -320,7 +307,9 @@ object SettingsV2 {
 
             override fun clicked(event: InputEvent, x: Float, y: Float) {
                 if (Core.input.keyDown(KeyCode.shiftLeft) || Time.timeSinceMillis(startTime) > 500) {
-                    showFloatSettingsPanel(event.stageX, event.stageY, settings)
+                    UIExtKt.showFloatSettingsPanel{
+                        settings.forEach { it.buildUI(this) }
+                    }
                 } else {
                     if (button.isDisabled) return
                     button.setProgrammaticChangeEvents(true)

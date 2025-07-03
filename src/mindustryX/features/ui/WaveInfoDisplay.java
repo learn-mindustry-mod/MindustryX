@@ -3,6 +3,7 @@ package mindustryX.features.ui;
 import arc.*;
 import arc.scene.*;
 import arc.scene.event.*;
+import arc.scene.style.*;
 import arc.scene.ui.*;
 import arc.scene.ui.layout.*;
 import arc.util.*;
@@ -25,7 +26,7 @@ public class WaveInfoDisplay extends Table{
     private final WaveInfoDialog waveInfoDialog = new WaveInfoDialog();
     private final Table waveInfo;
 
-    static {
+    static{
         enable.addFallbackName("newWaveInfoDisplay");
     }
 
@@ -56,19 +57,19 @@ public class WaveInfoDisplay extends Table{
                 setWaveOffset(0);
             })).tooltip("强制跳波").disabled((b) -> net.client());
 
-            buttons.button(Icon.settingsSmall, Styles.clearNonei, iconMed, () -> {
-            }).tooltip("配置资源显示").get().addListener(new ClickListener(){
-                @Override
-                public void clicked(InputEvent event, float x, float y){
-                    SettingsV2.showFloatSettingsPanel(event.stageX, event.stageY, UIExt.coreItems.settings);
+            buttons.button(Icon.settingsSmall, Styles.clearNonei, iconMed, () -> UIExtKt.showFloatSettingsPanel(table -> {
+                for(var it : UIExt.coreItems.settings){
+                    it.buildUI(table);
                 }
-            });
+            })).tooltip("配置资源显示");
             buttons.button(Icon.eyeOffSmall, Styles.clearNonei, iconMed, () -> enable.set(false)).tooltip("隐藏波次显示");
 
             buttons.add().growX();
             buttons.add("♐>");
             buttons.button(Icon.wavesSmall, Styles.clearNonei, iconMed, () -> shareWaveInfo(state.wave + waveOffset)).tooltip("分享波次信息");
             buttons.button(Icon.powerSmall, Styles.clearNonei, iconMed, () -> UIExt.coreItems.sharePowerInfo()).tooltip("分享电力情况");
+            buttons.button(new TextureRegionDrawable(Items.copper.uiIcon), Styles.clearNonei, iconSmall, () -> UIExt.coreItems.shareItemInfo()).tooltip("分享库存情况");
+            buttons.button(Icon.unitsSmall, Styles.clearNonei, iconMed, () -> UIExt.coreItems.shareUnitInfo()).tooltip("分享单位数量");
         }).fillX().row();
 
         waveInfo = new Table().left().top();

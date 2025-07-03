@@ -235,6 +235,7 @@ object NewToolTable : ToolTableBase("${Iconc.settings}") {
 
 
     private fun uiTableDialog() = BaseDialog("UI图标大全").apply {
+        cont.defaults().maxWidth(800f)
         val sField = cont.field("") { }.fillX().get()
         cont.row()
         Table().apply {
@@ -251,7 +252,7 @@ object NewToolTable : ToolTableBase("${Iconc.settings}") {
                         sField.appendText("[#$value]")
                     }.tooltip(key)
                 }
-            }.also { add(it).fillX().row() }
+            }.also { add(it).growX().row() }
 
             add("物品").color(Pal.accent).center().row()
             image().color(Pal.accent).fillX().row()
@@ -264,7 +265,7 @@ object NewToolTable : ToolTableBase("${Iconc.settings}") {
                         sField.appendText(icon)
                     }.tooltip(it.key)
                 }
-            }.also { add(it).fillX().row() }
+            }.also { add(it).growX().row() }
 
             add("图标").color(Pal.accent).center().row()
             image().color(Pal.accent).fillX().row()
@@ -277,8 +278,8 @@ object NewToolTable : ToolTableBase("${Iconc.settings}") {
                         sField.appendText(icon)
                     }.tooltip(it.key)
                 }
-            }.also { add(it).fillX().row() }
-        }.also { cont.pane(it).apply { get().isScrollingDisabledX = true }.maxWidth(800f).row() }
+            }.also { add(it).growX().row() }
+        }.also { cont.pane(it).apply { get().isScrollingDisabledX = true }.growX().row() }
         addCloseButton()
     }
 }

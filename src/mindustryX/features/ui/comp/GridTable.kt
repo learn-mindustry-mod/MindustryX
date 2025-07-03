@@ -16,8 +16,11 @@ class GridTable : Table() {
 
     override fun act(delta: Float) {
         super.act(delta)
-        if (!hasChildren()) return
+        computeColumns()
+    }
 
+    private fun computeColumns() {
+        if (!hasChildren()) return
         val children = this.children.asIterable()
         val cellWidth = cell.minWidth().takeIf { it > 0 } ?: children.firstOrNull { it.visible }?.minWidth ?: Float.MAX_VALUE
         val newColumns = Mathf.floor(width / cellWidth).coerceAtLeast(1)
@@ -39,7 +42,17 @@ class GridTable : Table() {
         elementsTmp.clear()
     }
 
+    override fun layout() {
+        computeColumns()
+        super.layout()
+    }
+
     fun firstElement(): Element? {
         return cells.firstOrNull()?.get()
+    }
+
+    override fun getPrefWidth(): Float {
+        // prefer maxWidth
+        return super.getMaxWidth()
     }
 }
