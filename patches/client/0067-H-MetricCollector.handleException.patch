@@ -1,0 +1,30 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: way-zer <himc.wicp@gmail.com>
+Date: Thu, 3 Jul 2025 22:45:51 +0800
+Subject: [PATCH] H MetricCollector.handleException
+
+---
+ core/src/mindustry/net/CrashHandler.java | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/core/src/mindustry/net/CrashHandler.java b/core/src/mindustry/net/CrashHandler.java
+index 2ac952c3e6a904e1e5ae9de5c3395c84184ed603..984ea281f27638c8fbceb6bb134390d76ffd71ed 100644
+--- a/core/src/mindustry/net/CrashHandler.java
++++ b/core/src/mindustry/net/CrashHandler.java
+@@ -9,6 +9,7 @@ import arc.util.io.*;
+ import mindustry.*;
+ import mindustry.core.*;
+ import mindustry.mod.Mods.*;
++import mindustryX.features.*;
+ 
+ import java.io.*;
+ import java.text.*;
+@@ -20,6 +21,8 @@ import static mindustry.Vars.*;
+ public class CrashHandler{
+ 
+     public static String createReport(Throwable exception){
++        MetricCollector.INSTANCE.handleException(exception);
++
+         String error = writeException(exception);
+         LoadedMod cause = getModCause(exception);
+ 

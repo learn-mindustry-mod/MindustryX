@@ -4,6 +4,7 @@ import arc.*;
 import arc.files.*;
 import arc.util.*;
 import mindustry.*;
+import mindustry.game.EventType.*;
 import mindustry.gen.*;
 import mindustry.mod.*;
 import mindustryX.features.*;
@@ -22,6 +23,7 @@ public class Hooks implements ApplicationListener{
         SettingsV2.INSTANCE.init();
         DebugUtil.init();//this is safe, and better at beforeInit,
         BindingExt.init();
+        Events.on(ClientLoadEvent.class, (e) -> MetricCollector.INSTANCE.onLaunch());
     }
 
     /** invoke after loading, just before `Mod::init` */
