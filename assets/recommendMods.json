@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2024/4/12 21:00",
+  "lastUpdated": "2025/7/4 9:20",
   "modRecommend": [
     {
       "repo": "eb-wilson/toomanyitems",
@@ -12,6 +12,18 @@
     {
       "repo": "way-zer/contentstweaker",
       "reason": "ContentsTweaker(CT)允许地图调整内容、添加UI等"
+    },
+    {
+      "repo": "blackdeluxecat/mapfilterext",
+      "reason": "MapFilterExt(MFE)允许在地图编辑器中渲染自定义数学图形\n提供时间轴式波次编辑器\n添加一些链式变换的地形筛选器"
+    },
+    {
+      "repo": "blackdeluxecat/schematicparse",
+      "reason": "SchematicParse(SP)，提供计算工厂比例的蓝图算盘\n允许在蓝图详情页查看信息板、复制逻辑代码"
+    },
+    {
+      "repo": "blackdeluxecat/mi2-utilities-java",
+      "reason": "MI2-Utilities-Java(MI2U)，提供视觉和操作上的辅助\n懂的都懂"
     }
   ]
 }
