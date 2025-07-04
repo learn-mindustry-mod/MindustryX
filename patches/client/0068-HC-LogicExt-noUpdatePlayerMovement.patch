@@ -1,0 +1,53 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: way-zer <himc.wicp@gmail.com>
+Date: Sat, 5 Jul 2025 00:08:35 +0800
+Subject: [PATCH] HC(LogicExt) noUpdatePlayerMovement
+
+---
+ core/src/mindustry/input/DesktopInput.java | 4 ++--
+ core/src/mindustry/input/MobileInput.java  | 3 ++-
+ 2 files changed, 4 insertions(+), 3 deletions(-)
+
+diff --git a/core/src/mindustry/input/DesktopInput.java b/core/src/mindustry/input/DesktopInput.java
+index c8c8c8677325b1e082773aecceb923097f5a28e1..de20726814932f93cc964f0317029ea3b983e73a 100644
+--- a/core/src/mindustry/input/DesktopInput.java
++++ b/core/src/mindustry/input/DesktopInput.java
+@@ -430,7 +430,7 @@ public class DesktopInput extends InputHandler{
+         }
+ 
+         if(!player.dead() && !state.isPaused() && !scene.hasField() && !locked){
+-            updateMovement(player.unit());
++            if(!LogicExt.noUpdatePlayerMovement) updateMovement(player.unit()); //MDTX: allow disabling movement updates
+ 
+             if(Core.input.keyTap(Binding.respawn)){
+                 controlledType = null;
+@@ -439,7 +439,7 @@ public class DesktopInput extends InputHandler{
+             }
+         }
+ 
+-        if(Core.input.keyRelease(Binding.select)){
++        if(Core.input.keyRelease(Binding.select) && !LogicExt.noUpdatePlayerMovement){
+             player.shooting = false;
+         }
+ 
+diff --git a/core/src/mindustry/input/MobileInput.java b/core/src/mindustry/input/MobileInput.java
+index 7c8f4970edadca4bd4e205852d25af47e6e9b629..db5c0a9abc3f30f11b31ac5ecc309394959ba25e 100644
+--- a/core/src/mindustry/input/MobileInput.java
++++ b/core/src/mindustry/input/MobileInput.java
+@@ -24,6 +24,7 @@ import mindustry.type.*;
+ import mindustry.ui.*;
+ import mindustry.world.*;
+ import mindustry.world.blocks.*;
++import mindustryX.features.*;
+ 
+ import static arc.Core.*;
+ import static mindustry.Vars.*;
+@@ -796,7 +797,7 @@ public class MobileInput extends InputHandler implements GestureListener{
+         }
+ 
+         if(!player.dead() && !state.isPaused() && !locked){
+-            updateMovement(player.unit());
++            if(!LogicExt.noUpdatePlayerMovement) updateMovement(player.unit()); //MDTX: allow disabling movement updates
+         }
+ 
+         //reset state when not placing

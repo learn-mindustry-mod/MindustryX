@@ -13,6 +13,7 @@ public class LogicExt{
     public static boolean placeShiftReplacement = false;
     public static boolean v146Mode = false;
     public static boolean contentsCompatibleMode = false;
+    public static boolean noUpdatePlayerMovement = false;
 
     private static final CheckPref invertMapClick0 = new CheckPref("gameUI.invertMapClick");
     public static final CheckPref reliableSync = new CheckPref("debug.reliableSync");
