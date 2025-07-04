@@ -17,6 +17,7 @@ import mindustryX.mods.claj.ClajIntegration
 class ManageRoomsDialog : BaseDialog("管理claj房间") {
     private val api = "https://api.mindustry.top/servers/claj"
     private var servers: List<ClajServer> = emptyList()
+    private var loaded: Boolean = false
     private val list: Table
 
     init {
@@ -32,7 +33,7 @@ class ManageRoomsDialog : BaseDialog("管理claj房间") {
 
         shown {
             list.clearChildren()
-            if (servers.isEmpty()) {
+            if (!loaded) {
                 list.add("获取可用服务器中，请稍后...")
                 Http.get(api) { res: Http.HttpResponse ->
                     servers += Jval.read(res.resultAsString).asArray().asIterable().mapNotNull {
@@ -45,9 +46,12 @@ class ManageRoomsDialog : BaseDialog("管理claj房间") {
                             return@mapNotNull null
                         }
                     }
-                    if(isShown) Core.app.post { show() }
+                    loaded = true
+                    if (isShown) Core.app.post { show() }
                 }
             } else {
+                if (servers.isEmpty())
+                    list.add("没有可用的Claj服务器，请手动添加").color(Color.lightGray).row()
                 servers.forEach {
                     list.add(it).row()
                     if (!it.hasChildren()) it.rebuild()
