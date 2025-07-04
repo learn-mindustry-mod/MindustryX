@@ -5,7 +5,6 @@ import arc.graphics.g2d.*;
 import arc.scene.style.*;
 import arc.scene.ui.*;
 import arc.scene.ui.layout.*;
-import arc.util.*;
 import mindustry.ai.types.*;
 import mindustry.content.*;
 import mindustry.entities.units.*;
@@ -29,8 +28,12 @@ public class AuxiliaryTools extends ToolTableBase{
         rebuild();
         Events.run(EventType.Trigger.update, () -> {
             if(selectAI != null && !player.dead()){
+                if(selectAI instanceof BuilderAI builder){
+                    builder.rebuildPeriod = 10f;
+                }
                 selectAI.unit(player.unit());
                 selectAI.updateUnit();
+                player.boosting = player.unit().isShooting;
             }
         });
     }
@@ -38,8 +41,8 @@ public class AuxiliaryTools extends ToolTableBase{
     protected void rebuild(){
         defaults().size(40);
         aiButton(new ArcMinerAI(), UnitTypes.mono.region, "矿机AI");
-        aiButton(new ArcBuilderAI(), UnitTypes.poly.region, "重建AI");
-        aiButton(new ArcRepairAI(), UnitTypes.mega.region, "修复AI");
+        aiButton(new BuilderAI(), UnitTypes.poly.region, "重建AI");
+        aiButton(new RepairAI(), UnitTypes.mega.region, "修复AI");
         aiButton(new DefenderAI(), UnitTypes.oct.region, "保护AI");
         button(Icon.settingsSmall, Styles.clearNonei, iconMed, this::showAiSettingDialog);
 
@@ -115,20 +118,6 @@ public class AuxiliaryTools extends ToolTableBase{
                 }
             }).growX();
         }).growX().row();
-
-        dialog.cont.table(t -> {
-            t.add("builderAI").color(Pal.accent).pad(cols / 2f).center().row();
-            t.image().color(Pal.accent).fillX().row();
-
-            t.table(tt -> {
-                tt.add("重建冷却时间: ");
-                TextField sField = tt.field(ArcBuilderAI.rebuildTime + "", text -> ArcBuilderAI.rebuildTime = Math.max(5f, Float.parseFloat(text))).valid(Strings::canParsePositiveFloat).width(200f).get();
-                tt.slider(5, 200, 5, i -> {
-                    ArcBuilderAI.rebuildTime = i;
-                    sField.setText(ArcBuilderAI.rebuildTime + "");
-                }).width(200f);
-            }).growX();
-        }).growX();
 
         dialog.addCloseButton();
         dialog.show();
