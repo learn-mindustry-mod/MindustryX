@@ -9,9 +9,9 @@ Subject: [PATCH] FR: ARC drawPlace and drawSelect
  .../world/blocks/defense/MendProjector.java   |  5 ++-
  .../blocks/defense/OverdriveProjector.java    |  6 ++-
  .../world/blocks/defense/turrets/Turret.java  | 19 +++++++++
- .../world/blocks/production/Drill.java        | 22 ++++++----
+ .../world/blocks/production/Drill.java        | 23 ++++++----
  .../world/blocks/storage/CoreBlock.java       |  1 +
- 7 files changed, 86 insertions(+), 11 deletions(-)
+ 7 files changed, 87 insertions(+), 11 deletions(-)
 
 diff --git a/core/src/mindustry/world/blocks/ConstructBlock.java b/core/src/mindustry/world/blocks/ConstructBlock.java
 index 4a5078513c6db7d970de8e35b76cd50f8f2f5e2f..fbad02fa4b948c714cefc54c096812d7bb0f9870 100644
@@ -220,10 +220,10 @@ index 497fd29e612ea915d894211b1020e83346be9e23..2ace1b5e1cea191b9914428968f51147
  
          @Override
 diff --git a/core/src/mindustry/world/blocks/production/Drill.java b/core/src/mindustry/world/blocks/production/Drill.java
-index f6454de7e47676d8372db35f75c5b835321ab289..f1587b033da7a916e42e06b8ab931a5eed8d26f4 100644
+index f6454de7e47676d8372db35f75c5b835321ab289..457760c517a58835814c5d42f15fbfb57a8b8001 100644
 --- a/core/src/mindustry/world/blocks/production/Drill.java
 +++ b/core/src/mindustry/world/blocks/production/Drill.java
-@@ -148,12 +148,12 @@ public class Drill extends Block{
+@@ -148,12 +148,13 @@ public class Drill extends Block{
          countOre(tile);
  
          if(returnItem != null){
@@ -235,14 +235,15 @@ index f6454de7e47676d8372db35f75c5b835321ab289..f1587b033da7a916e42e06b8ab931a5e
 -            Draw.rect(returnItem.fullIcon, dx, dy, s, s);
 +            //MDTX ARC: 改变挖掘速度显示, 增加冷却加成速度.
 +            float speed = 60f / getDrillTime(returnItem) * returnCount;
++            float boostIntensity = !(this instanceof BurstDrill) ? liquidBoostIntensity * liquidBoostIntensity : liquidBoostIntensity;
 +            String msg = liquidBoostIntensity > 1
-+            ? Strings.format("@ [white]@@[] @[white]([cyan]@[])", Iconc.production, returnItem.emoji(), returnItem.localizedName, Strings.autoFixed(speed, 2), Strings.autoFixed(speed * liquidBoostIntensity * liquidBoostIntensity, 2))
++            ? Strings.format("@ [white]@@[] @[white]([cyan]@[])", Iconc.production, returnItem.emoji(), returnItem.localizedName, Strings.autoFixed(speed, 2), Strings.autoFixed(speed * boostIntensity, 2))
 +            : Strings.format("@ [white]@@[] @", Iconc.production, returnItem.emoji(), returnItem.localizedName, Strings.autoFixed(speed, 2));
 +            drawPlaceText(msg, x, y, valid);
  
              if(drawMineItem){
                  Draw.color(returnItem.color);
-@@ -164,7 +164,10 @@ public class Drill extends Block{
+@@ -164,7 +165,10 @@ public class Drill extends Block{
              Tile to = tile.getLinkedTilesAs(this, tempTiles).find(t -> t.drop() != null && (t.drop().hardness > tier || (blockedItems != null && blockedItems.contains(t.drop()))));
              Item item = to == null ? null : to.drop();
              if(item != null){
@@ -254,7 +255,7 @@ index f6454de7e47676d8372db35f75c5b835321ab289..f1587b033da7a916e42e06b8ab931a5e
              }
          }
      }
-@@ -197,6 +200,11 @@ public class Drill extends Block{
+@@ -197,6 +201,11 @@ public class Drill extends Block{
          return new TextureRegion[]{region, rotatorRegion, topRegion};
      }
  
