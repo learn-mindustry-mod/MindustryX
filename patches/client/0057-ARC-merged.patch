@@ -100,9 +100,9 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  core/src/mindustry/game/Schematic.java        | 104 ++++++++
  .../src/mindustry/graphics/BlockRenderer.java |  17 +-
  .../mindustry/graphics/OverlayRenderer.java   |  37 ++-
- core/src/mindustry/input/DesktopInput.java    |  72 +++++-
+ core/src/mindustry/input/DesktopInput.java    |  12 +-
  core/src/mindustry/input/InputHandler.java    |  42 ++-
- core/src/mindustry/input/MobileInput.java     |  16 +-
+ core/src/mindustry/input/MobileInput.java     |   6 +-
  core/src/mindustry/logic/LExecutor.java       |  12 +-
  core/src/mindustry/type/UnitType.java         |  91 ++++++-
  core/src/mindustry/type/Weapon.java           |  19 ++
@@ -120,7 +120,7 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  .../mindustry/ui/fragments/MenuFragment.java  |  24 +-
  .../ui/fragments/PlacementFragment.java       | 164 ++++++++++--
  .../ui/fragments/PlayerListFragment.java      |  72 ++----
- 27 files changed, 1184 insertions(+), 161 deletions(-)
+ 27 files changed, 1124 insertions(+), 151 deletions(-)
 
 diff --git a/core/src/mindustry/editor/MapInfoDialog.java b/core/src/mindustry/editor/MapInfoDialog.java
 index ebc1f0b300d295e45333f1db38ea299c9658ec20..e7cba056743979206c84fc6d00472c2c44b565f6 100644
@@ -524,27 +524,13 @@ index f7c9adf4e8abd9e26596f04bc903e2c460410480..04f7f6fc9c5fd08dd93eaa42747c270b
  
      public void checkApplySelection(Unit u){
 diff --git a/core/src/mindustry/input/DesktopInput.java b/core/src/mindustry/input/DesktopInput.java
-index 9d3becfc00004a110163a319ebb7ab6484884058..c8c8c8677325b1e082773aecceb923097f5a28e1 100644
+index 9d3becfc00004a110163a319ebb7ab6484884058..d0df68276aaee12cec1f3485cf4513790ebd01eb 100644
 --- a/core/src/mindustry/input/DesktopInput.java
 +++ b/core/src/mindustry/input/DesktopInput.java
-@@ -14,17 +14,25 @@ import arc.scene.ui.layout.*;
- import arc.struct.*;
- import arc.util.*;
- import mindustry.*;
-+import mindustry.content.Items;
-+import mindustry.content.UnitTypes;
- import mindustry.core.*;
-+import mindustry.entities.Predict;
-+import mindustry.entities.Units;
- import mindustry.entities.units.*;
- import mindustry.game.EventType.*;
- import mindustry.game.*;
- import mindustry.gen.*;
+@@ -22,9 +22,11 @@ import mindustry.gen.*;
  import mindustry.graphics.*;
-+import mindustry.type.UnitType;
  import mindustry.ui.*;
  import mindustry.world.*;
-+import mindustry.world.blocks.ControlBlock;
 +import mindustryX.features.*;
  
  import static arc.Core.camera;
@@ -553,7 +539,7 @@ index 9d3becfc00004a110163a319ebb7ab6484884058..c8c8c8677325b1e082773aecceb92309
  import static mindustry.Vars.*;
  import static mindustry.input.PlaceMode.*;
  
-@@ -58,6 +66,9 @@ public class DesktopInput extends InputHandler{
+@@ -58,6 +60,9 @@ public class DesktopInput extends InputHandler{
  
      private float buildPlanMouseOffsetX, buildPlanMouseOffsetY;
  
@@ -563,7 +549,7 @@ index 9d3becfc00004a110163a319ebb7ab6484884058..c8c8c8677325b1e082773aecceb92309
      boolean showHint(){
          return ui.hudfrag.shown && Core.settings.getBool("hints") && selectPlans.isEmpty() && !player.dead() &&
              (!isBuilding && !Core.settings.getBool("buildautopause") || player.unit().isBuilding() || !player.dead() && !player.unit().spawnedByCore());
-@@ -104,6 +115,10 @@ public class DesktopInput extends InputHandler{
+@@ -104,6 +109,10 @@ public class DesktopInput extends InputHandler{
                  b.table(a -> {
                      a.button("@schematic.add", Icon.save, this::showSchematicSave).colspan(2).size(250f, 50f).disabled(f -> lastSchematic == null || lastSchematic.file != null);
                  });
@@ -574,86 +560,19 @@ index 9d3becfc00004a110163a319ebb7ab6484884058..c8c8c8677325b1e082773aecceb92309
              }).margin(6f);
          });
      }
-@@ -919,7 +934,7 @@ public class DesktopInput extends InputHandler{
-     }
- 
-     protected void updateMovement(Unit unit){
--        boolean omni = unit.type.omniMovement;
-+        UnitType type = unit.type;
- 
-         float speed = unit.speed();
-         float xa = Core.input.axis(Binding.moveX);
-@@ -942,21 +957,64 @@ public class DesktopInput extends InputHandler{
+@@ -942,11 +951,10 @@ public class DesktopInput extends InputHandler{
              }
          }
  
 -        float mouseAngle = Angles.mouseAngle(unit.x, unit.y);
--        boolean aimCursor = omni && player.shooting && unit.type.hasWeapons() && unit.type.faceTarget && !boosted;
-+        boolean busy = unit.mining() || unit.activelyBuilding();
-+
-+        if (Core.settings.getBool("playerNeedShooting")){
-+            busy = false;
-+        }
-+
-+        boolean manualShoot = Core.input.keyDown(Binding.select) && shouldShoot && !busy && (type.hasWeapons() || UnitTypes.block.equals(type)) && !boosted;
-+
-+        Vec2 aimPos = Core.input.mouseWorld();
-+
-+        float lookAtAngle = Angles.mouseAngle(unit.x, unit.y);
-+
-+        if(target != null) {
-+            boolean validHealTarget = type.canHeal && target instanceof Building b && b.isValid() && target.team() == unit.team && b.damaged() && target.within(unit, type.range);
-+            if ((Units.invalidateTarget(target, unit, type.range) && !validHealTarget) || state.isEditor()) {
-+                target = null;
-+            }
-+        }
-+
-+        if (!manualShoot && Core.settings.getBool("autotarget") && !busy) {
-+            if (target == null) {
-+                float range = unit.hasWeapons() ? unit.range() : 0f;
-+                player.shooting = false;
-+                if(!(player.unit() instanceof BlockUnitUnit u && u.tile() instanceof ControlBlock c && !c.shouldAutoTarget())){
-+                    boolean targetBuilding = type.targetGround && type.hasWeapons() && type.weapons.first().bullet.buildingDamageMultiplier > 0.05f;
-+                    target = Units.closestTarget(unit.team, unit.x, unit.y, range, u -> u.checkTarget(type.targetAir, type.targetGround), u -> targetBuilding);
-+
-+                    if(type.canHeal && target == null){
-+                        target = Geometry.findClosest(unit.x, unit.y, indexer.getDamaged(unit.team));
-+                        if(target != null && !unit.within(target, range)){
-+                            target = null;
-+                        }
-+                    }
-+                }
-+            }
-+            else {
-+                Vec2 intercept = Predict.intercept(unit, target, unit.hasWeapons() ? type.weapons.first().bullet.speed : 0f);
-+
-+                player.shooting = !boosted;
+         boolean aimCursor = omni && player.shooting && unit.type.hasWeapons() && unit.type.faceTarget && !boosted;
  
--        if(aimCursor){
+         if(aimCursor){
 -            unit.lookAt(mouseAngle);
-+                aimPos = intercept;
-+                lookAtAngle = unit.angleTo(intercept);
-+            }
-+        }else{
-+            target = null;
-+        }
-+        if(type.omniMovement && type.faceTarget && unit.isShooting) {
-+            unit.lookAt(lookAtAngle);
++            unit.lookAt(unit.angleTo(unit.aimX, unit.aimY));
          }else{
              unit.lookAt(unit.prefRotation());
          }
- 
-         unit.movePref(movement);
- 
--        unit.aim(Core.input.mouseWorld());
-+        unit.aim(aimPos);
-         unit.controlWeapons(true, player.shooting && !boosted);
- 
--        player.boosting = Core.input.keyDown(Binding.boost);
-+        player.boosting = Core.input.keyDown(Binding.boost) || Core.settings.getBool("forceBoost");
-         player.mouseX = unit.aimX();
-         player.mouseY = unit.aimY();
- 
 diff --git a/core/src/mindustry/input/InputHandler.java b/core/src/mindustry/input/InputHandler.java
 index aa8a20f104e617b9b707d666f926eec933b32687..49c7cbb16a5e1b98082cc1c764207f62637ee0ad 100644
 --- a/core/src/mindustry/input/InputHandler.java
@@ -778,7 +697,7 @@ index aa8a20f104e617b9b707d666f926eec933b32687..49c7cbb16a5e1b98082cc1c764207f62
          !(player.unit() instanceof Mechc && player.unit().isFlying()) && !player.unit().mining() && !commandMode;
      }
 diff --git a/core/src/mindustry/input/MobileInput.java b/core/src/mindustry/input/MobileInput.java
-index 5981c4395cd97d988109f1325dd0fd67f4f38fa1..7c8f4970edadca4bd4e205852d25af47e6e9b629 100644
+index 5981c4395cd97d988109f1325dd0fd67f4f38fa1..4fffc2dbbf50ea92b5f702956b5b88e51ec69899 100644
 --- a/core/src/mindustry/input/MobileInput.java
 +++ b/core/src/mindustry/input/MobileInput.java
 @@ -334,7 +334,7 @@ public class MobileInput extends InputHandler implements GestureListener{
@@ -790,33 +709,16 @@ index 5981c4395cd97d988109f1325dd0fd67f4f38fa1..7c8f4970edadca4bd4e205852d25af47
              }).margin(4f);
          });
      }
-@@ -1030,18 +1030,22 @@ public class MobileInput extends InputHandler implements GestureListener{
-             payloadTarget = null;
+@@ -1038,6 +1038,10 @@ public class MobileInput extends InputHandler implements GestureListener{
+             unit.vel.approachDelta(Vec2.ZERO, unit.speed() * type.accel / 2f);
          }
  
--        movement.set(targetPos).sub(player).limit(speed);
--        movement.setAngle(Mathf.slerp(movement.angle(), unit.vel.angle(), 0.05f));
-+        if(!Core.settings.getBool("detach-camera")){
-+            movement.set(targetPos).sub(player).limit(speed);
-+            movement.setAngle(Mathf.slerp(movement.angle(), unit.vel.angle(), 0.05f));
- 
--        if(player.within(targetPos, attractDst)){
-+            if(player.within(targetPos, attractDst)){
-+                movement.setZero();
-+                unit.vel.approachDelta(Vec2.ZERO, unit.speed() * type.accel / 2f);
-+            }
-+        }else{
-             movement.setZero();
--            unit.vel.approachDelta(Vec2.ZERO, unit.speed() * type.accel / 2f);
-         }
- 
++        if(Core.settings.getBool("detach-camera")){
++            movement.setZero();
++        }
++
          unit.hitbox(rect);
          rect.grow(4f);
- 
--        player.boosting = collisions.overlapsTile(rect, EntityCollisions::solid) || !unit.within(targetPos, 85f);
-+        player.boosting = collisions.overlapsTile(rect, EntityCollisions::solid) || !unit.within(targetPos, 85f) || Core.settings.getBool("forceBoost");
- 
-         unit.movePref(movement);
  
 diff --git a/core/src/mindustry/logic/LExecutor.java b/core/src/mindustry/logic/LExecutor.java
 index c7a5fbefd8e4880b99f07f7dba50cd287d53c1eb..7945014bbe38ab1f5c84257a421753500724793e 100644

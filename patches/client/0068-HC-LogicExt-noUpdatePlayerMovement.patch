@@ -9,10 +9,10 @@ Subject: [PATCH] HC(LogicExt) noUpdatePlayerMovement
  2 files changed, 4 insertions(+), 3 deletions(-)
 
 diff --git a/core/src/mindustry/input/DesktopInput.java b/core/src/mindustry/input/DesktopInput.java
-index c8c8c8677325b1e082773aecceb923097f5a28e1..de20726814932f93cc964f0317029ea3b983e73a 100644
+index d0df68276aaee12cec1f3485cf4513790ebd01eb..2fb9fa584238b47611021e85e0a55bc3d3f8a510 100644
 --- a/core/src/mindustry/input/DesktopInput.java
 +++ b/core/src/mindustry/input/DesktopInput.java
-@@ -430,7 +430,7 @@ public class DesktopInput extends InputHandler{
+@@ -424,7 +424,7 @@ public class DesktopInput extends InputHandler{
          }
  
          if(!player.dead() && !state.isPaused() && !scene.hasField() && !locked){
@@ -21,7 +21,7 @@ index c8c8c8677325b1e082773aecceb923097f5a28e1..de20726814932f93cc964f0317029ea3
  
              if(Core.input.keyTap(Binding.respawn)){
                  controlledType = null;
-@@ -439,7 +439,7 @@ public class DesktopInput extends InputHandler{
+@@ -433,7 +433,7 @@ public class DesktopInput extends InputHandler{
              }
          }
  
@@ -31,7 +31,7 @@ index c8c8c8677325b1e082773aecceb923097f5a28e1..de20726814932f93cc964f0317029ea3
          }
  
 diff --git a/core/src/mindustry/input/MobileInput.java b/core/src/mindustry/input/MobileInput.java
-index 7c8f4970edadca4bd4e205852d25af47e6e9b629..db5c0a9abc3f30f11b31ac5ecc309394959ba25e 100644
+index 4fffc2dbbf50ea92b5f702956b5b88e51ec69899..0f3fba4d970ef0ab97496dee9da2526b441c6e5b 100644
 --- a/core/src/mindustry/input/MobileInput.java
 +++ b/core/src/mindustry/input/MobileInput.java
 @@ -24,6 +24,7 @@ import mindustry.type.*;

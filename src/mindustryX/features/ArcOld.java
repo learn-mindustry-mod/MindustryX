@@ -6,14 +6,20 @@ import arc.func.*;
 import arc.graphics.*;
 import arc.graphics.g2d.*;
 import arc.math.*;
+import arc.math.geom.*;
 import arc.scene.style.*;
 import arc.scene.ui.*;
 import arc.struct.*;
+import arc.util.*;
 import mindustry.content.*;
 import mindustry.ctype.*;
+import mindustry.entities.*;
 import mindustry.gen.*;
 import mindustry.graphics.*;
+import mindustry.input.*;
+import mindustry.type.*;
 import mindustry.world.*;
+import mindustry.world.blocks.*;
 import mindustryX.features.Settings.*;
 import mindustryX.features.SettingsV2.*;
 
@@ -180,5 +186,52 @@ public class ArcOld{
 
     private static void colorizeContent(UnlockableContent c, Color color){
         c.localizedName = "[#" + color + "]" + c.localizedName + "[]";
+    }
+
+    private static @Nullable Teamc autoTarget = null;
+
+    public static void updatePlayer(){
+        Unit unit = player.unit();
+        if(unit == null) return;
+        if(Core.settings.getBool("forceBoost")){
+            player.boosting = true;
+        }
+
+        //Add Auto Targeting for Desktop
+        if(control.input instanceof DesktopInput && !Core.input.keyDown(Binding.select) && Core.settings.getBool("autotarget")){
+            UnitType type = unit.type;
+            //validate
+            if(autoTarget != null){
+                boolean validHealTarget = type.canHeal && autoTarget instanceof Building b && b.isValid() && autoTarget.team() == unit.team && b.damaged() && autoTarget.within(unit, type.range);
+                if((Units.invalidateTarget(autoTarget, unit, type.range) && !validHealTarget) || state.isEditor()){
+                    autoTarget = null;
+                }
+            }
+            //retarget
+            if(autoTarget == null){
+                float range = unit.hasWeapons() ? unit.range() : 0f;
+                player.shooting = false;
+                if(!(player.unit() instanceof BlockUnitUnit u && u.tile() instanceof ControlBlock c && !c.shouldAutoTarget())){
+                    boolean targetBuilding = type.targetGround && type.hasWeapons() && type.weapons.first().bullet.buildingDamageMultiplier > 0.05f;
+                    autoTarget = Units.closestTarget(unit.team, unit.x, unit.y, range, u -> u.checkTarget(type.targetAir, type.targetGround), u -> targetBuilding);
+
+                    if(type.canHeal && autoTarget == null){
+                        autoTarget = Geometry.findClosest(unit.x, unit.y, indexer.getDamaged(unit.team));
+                        if(autoTarget != null && !unit.within(autoTarget, range)){
+                            autoTarget = null;
+                        }
+                    }
+                }
+            }
+            //aim
+            if(autoTarget != null){
+                Vec2 intercept = Predict.intercept(unit, autoTarget, unit.hasWeapons() ? type.weapons.first().bullet.speed : 0f);
+
+                player.shooting = true;
+                unit.aim(intercept);
+            }
+        }else{
+            autoTarget = null;
+        }
     }
 }
