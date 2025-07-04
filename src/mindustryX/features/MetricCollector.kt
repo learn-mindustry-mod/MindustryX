@@ -8,20 +8,25 @@ import mindustry.core.Version
 import mindustry.net.CrashHandler
 import mindustryX.VarsX
 import java.security.MessageDigest
+import kotlin.concurrent.thread
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
 object MetricCollector {
     private val enable = SettingsV2.CheckPref("collectMetrics", true)
+    private var task: Thread? = null
 
     private fun postLog(data: Jval) {
-        Http.post("https://s1367486.eu-nbg-2.betterstackdata.com/")
+        val req = Http.post("https://s1367486.eu-nbg-2.betterstackdata.com/")
             .header("Authorization", "Bearer cM5m9huGdtcFTiXcfdPK17zL")
             .header("Content-Type", "application/json")
             .content(data.toString())
-            .submit {
+            .timeout(3000)
+        task = thread(start = true) {
+            req.block {
                 Log.info("Posted metrics successfully: ${it.status} ${it.resultAsString}")
             }
+        }
     }
 
     @OptIn(ExperimentalUuidApi::class)
@@ -108,6 +113,11 @@ object MetricCollector {
         }
         Log.err("MetricCollector: Posting exception data: $e")
         postLog(data)
+    }
+
+    fun waitPost(){
+        task?.join()
+        task = null
     }
 
     fun onLaunch() {
