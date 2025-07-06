@@ -8,10 +8,10 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 ---
- core/src/mindustry/entities/Units.java        |  25 +-
- .../mindustry/entities/bullet/BulletType.java |  11 +-
- .../src/mindustry/graphics/LightRenderer.java | 214 +++++++++++-------
- 3 files changed, 165 insertions(+), 85 deletions(-)
+ core/src/mindustry/entities/Units.java        | 25 ++++--
+ .../mindustry/entities/bullet/BulletType.java | 11 ++-
+ .../src/mindustry/graphics/LightRenderer.java | 88 ++++++++++++++++---
+ 3 files changed, 104 insertions(+), 20 deletions(-)
 
 diff --git a/core/src/mindustry/entities/Units.java b/core/src/mindustry/entities/Units.java
 index 8a4d5b458679db124b0535b401ab2b1f8aaa4dde..13877e9b23cb4aa6b7934e10014f630076810a28 100644
@@ -107,7 +107,7 @@ index 86719ed541cd8dedea96c998535f6247d36004fc..8eeb068c5548405867f7b4c3498ac197
              if(target != null){
                  b.vel.setAngle(Angles.moveToward(b.rotation(), b.angleTo(target), homingPower * Time.delta * 50f));
 diff --git a/core/src/mindustry/graphics/LightRenderer.java b/core/src/mindustry/graphics/LightRenderer.java
-index c20e841ab3869ca8d6240bf844cc87ef12eee47f..bdf39f9d5f55baffe6a5cb1a2ba249b51019985f 100644
+index c20e841ab3869ca8d6240bf844cc87ef12eee47f..a5305f8c84d926e210fb8702a95e5aec41593cb4 100644
 --- a/core/src/mindustry/graphics/LightRenderer.java
 +++ b/core/src/mindustry/graphics/LightRenderer.java
 @@ -8,6 +8,7 @@ import arc.math.*;
@@ -118,7 +118,7 @@ index c20e841ab3869ca8d6240bf844cc87ef12eee47f..bdf39f9d5f55baffe6a5cb1a2ba249b5
  import mindustry.*;
  
  import static mindustry.Vars.*;
-@@ -16,12 +17,8 @@ import static mindustry.Vars.*;
+@@ -16,10 +17,9 @@ import static mindustry.Vars.*;
  public class LightRenderer{
      private static final int scaling = 4;
  
@@ -126,106 +126,27 @@ index c20e841ab3869ca8d6240bf844cc87ef12eee47f..bdf39f9d5f55baffe6a5cb1a2ba249b5
 -    private FrameBuffer buffer = new FrameBuffer();
 -    private Seq<Runnable> lights = new Seq<>();
 -    private Seq<CircleLight> circles = new Seq<>(CircleLight.class);
--    private int circleIndex = 0;
--    private TextureRegion circleRegion;
 +    private final FrameBuffer buffer = new FrameBuffer();
 +    private final Seq<Runnable> lights = new Seq<>();
++    private final Seq<CircleLight> circles = new Seq<>(CircleLight.class);
+     private int circleIndex = 0;
+     private TextureRegion circleRegion;
  
-     public void add(Runnable run){
-         if(!enabled()) return;
-@@ -35,16 +32,9 @@ public class LightRenderer{
-         //TODO: clipping.
+@@ -44,7 +44,7 @@ public class LightRenderer{
  
-         float res = Color.toFloatBits(color.r, color.g, color.b, opacity);
--
--        if(circles.size <= circleIndex) circles.add(new CircleLight());
--
--        //pool circles to prevent runaway GC usage from lambda capturing
--        var light = circles.items[circleIndex];
--        light.set(x, y, res, radius);
--
--        circleIndex ++;
-+        lights.add(CircleLight.pool.obtain().set(x, y, res, radius));
+         circleIndex ++;
      }
 -    
 +
      public void add(float x, float y, TextureRegion region, Color color, float opacity){
          add(x, y, region, 0f, color, opacity);
      }
-@@ -54,24 +44,150 @@ public class LightRenderer{
+@@ -54,24 +54,88 @@ public class LightRenderer{
  
          float res = color.toFloatBits();
          float xscl = Draw.xscl, yscl = Draw.yscl;
 -        add(() -> {
 +        add(RegionData.pool.obtain().set(res, opacity, xscl, yscl, region, x, y, rotation));
-+    }
-+
-+    public void line(float x, float y, float x2, float y2, float stroke, Color tint, float alpha){
-+        if(!enabled()) return;
-+
-+        add(LineData.pool.obtain().set(tint, alpha, x2, x, y2, y, stroke));
-+    }
-+
-+    public boolean enabled(){
-+        return state.rules.lighting && state.rules.ambientLight.a > 0.0001f && renderer.drawLight;
-+    }
-+
-+    @SuppressWarnings("unchecked")
-+    public void draw(){
-+        if(!Vars.enableLight){
-+            if(lights.isEmpty())return;
-+            Pools.freeAll(lights);
-+            lights.clear();
-+            return;
-+        }
-+
-+        buffer.resize(Core.graphics.getWidth()/scaling, Core.graphics.getHeight()/scaling);
-+
-+        Draw.color();
-+        buffer.begin(Color.clear);
-+        Draw.sort(false);
-+        Gl.blendEquationSeparate(Gl.funcAdd, Gl.max);
-+        //apparently necessary
-+        Blending.normal.apply();
-+
-+        for(Runnable run : lights){
-+            run.run();
-+        }
-+        Draw.reset();
-+        Draw.sort(true);
-+        buffer.end();
-+        Gl.blendEquationSeparate(Gl.funcAdd, Gl.funcAdd);
-+
-+        Draw.color();
-+        Shaders.light.ambient.set(state.rules.ambientLight);
-+        buffer.blit(Shaders.light);
-+
-+        Pools.freeAll(lights);
-+        lights.clear();
-+    }
-+
-+    static class CircleLight implements Runnable, Pool.Poolable{
-+        static Pool<CircleLight> pool = Pools.get(CircleLight.class,CircleLight::new);
-+        private static TextureRegion circleRegion;
-+        float x, y, color, radius;
-+
-+        @Override
-+        public void reset(){}
-+
-+        public CircleLight set(float x, float y, float color, float radius){
-+            if(circleRegion == null) circleRegion = Core.atlas.find("circle-shadow");
-+            this.x = x;
-+            this.y = y;
-+            this.color = color;
-+            this.radius = radius;
-+            return this;
-+        }
-+
-+        @Override
-+        public void run(){
-+            Draw.color(color);
-+            Draw.rect(circleRegion, x, y, radius * 2, radius * 2);
-+        }
 +    }
 +
 +    private static class RegionData implements Runnable, Pool.Poolable{
@@ -267,8 +188,13 @@ index c20e841ab3869ca8d6240bf844cc87ef12eee47f..bdf39f9d5f55baffe6a5cb1a2ba249b5
 +        }
      }
  
--    public void line(float x, float y, float x2, float y2, float stroke, Color tint, float alpha){
--        if(!enabled()) return;
+     public void line(float x, float y, float x2, float y2, float stroke, Color tint, float alpha){
+         if(!enabled()) return;
+ 
+-        add(() -> {
++        add(LineData.pool.obtain().set(tint, alpha, x2, x, y2, y, stroke));
++    }
++
 +    private static class LineData implements Runnable, Pool.Poolable{
 +        static Pool<LineData> pool = Pools.get(LineData.class,LineData::new);
 +        private static final float[] vertices = new float[24];
@@ -285,10 +211,6 @@ index c20e841ab3869ca8d6240bf844cc87ef12eee47f..bdf39f9d5f55baffe6a5cb1a2ba249b5
 +        public void reset(){}
 +
 +        public LineData set(Color tint, float alpha, float x2, float x, float y2, float y, float stroke){
-+            if(ledge == null){
-+                ledge = Core.atlas.find("circle-end");
-+                lmid = Core.atlas.find("circle-mid");
-+            }
 +            this.tint = tint;
 +            this.alpha = alpha;
 +            this.x2 = x2;
@@ -298,8 +220,7 @@ index c20e841ab3869ca8d6240bf844cc87ef12eee47f..bdf39f9d5f55baffe6a5cb1a2ba249b5
 +            this.stroke = stroke;
 +            return this;
 +        }
- 
--        add(() -> {
++
 +        @Override
 +        public void run(){
              Draw.color(tint, alpha);
@@ -307,67 +228,35 @@ index c20e841ab3869ca8d6240bf844cc87ef12eee47f..bdf39f9d5f55baffe6a5cb1a2ba249b5
              float rot = Mathf.angleExact(x2 - x, y2 - y);
 -            TextureRegion ledge = Core.atlas.find("circle-end"), lmid = Core.atlas.find("circle-mid");
 -
++            if(ledge == null){
++                ledge = Core.atlas.find("circle-end");
++                lmid = Core.atlas.find("circle-mid");
++            }
              float color = Draw.getColorPacked();
              float u = lmid.u;
              float v = lmid.v2;
-@@ -180,60 +296,6 @@ public class LightRenderer{
+@@ -180,7 +244,7 @@ public class LightRenderer{
              vertices[23] = 0;
  
              Draw.vert(ledge.texture, vertices, 0, vertices.length);
 -        });
--    }
--
--    public boolean enabled(){
--        return state.rules.lighting && state.rules.ambientLight.a > 0.0001f && renderer.drawLight;
--    }
--
--    public void draw(){
--        if(!Vars.enableLight){
--            lights.clear();
--            circleIndex = 0;
--            return;
--        }
--
--        if(circleRegion == null) circleRegion = Core.atlas.find("circle-shadow");
--
--        buffer.resize(Core.graphics.getWidth()/scaling, Core.graphics.getHeight()/scaling);
--
--        Draw.color();
--        buffer.begin(Color.clear);
--        Draw.sort(false);
--        Gl.blendEquationSeparate(Gl.funcAdd, Gl.max);
--        //apparently necessary
--        Blending.normal.apply();
--
--        for(Runnable run : lights){
--            run.run();
--        }
--        for(int i = 0; i < circleIndex; i++){
--            var cir = circles.items[i];
--            Draw.color(cir.color);
--            Draw.rect(circleRegion, cir.x, cir.y, cir.radius * 2, cir.radius * 2);
--        }
--        Draw.reset();
--        Draw.sort(true);
--        buffer.end();
--        Gl.blendEquationSeparate(Gl.funcAdd, Gl.funcAdd);
--
--        Draw.color();
--        Shaders.light.ambient.set(state.rules.ambientLight);
--        buffer.blit(Shaders.light);
--
--        lights.clear();
--        circleIndex = 0;
--    }
--
--    static class CircleLight{
--        float x, y, color, radius;
--
--        public void set(float x, float y, float color, float radius){
--            this.x = x;
--            this.y = y;
--            this.color = color;
--            this.radius = radius;
-         }
++        }
      }
- }
+ 
+     public boolean enabled(){
+@@ -189,6 +253,7 @@ public class LightRenderer{
+ 
+     public void draw(){
+         if(!Vars.enableLight){
++            Pools.freeAll(lights);
+             lights.clear();
+             circleIndex = 0;
+             return;
+@@ -222,6 +287,7 @@ public class LightRenderer{
+         Shaders.light.ambient.set(state.rules.ambientLight);
+         buffer.blit(Shaders.light);
+ 
++        Pools.freeAll(lights);
+         lights.clear();
+         circleIndex = 0;
+     }

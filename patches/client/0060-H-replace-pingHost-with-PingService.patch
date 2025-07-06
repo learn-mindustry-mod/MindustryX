@@ -1,7 +1,7 @@
 From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
 From: way-zer <himc.wicp@gmail.com>
 Date: Sat, 23 Nov 2024 19:43:57 +0800
-Subject: [PATCH] HC: replace pingHost with PingService
+Subject: [PATCH] H: replace pingHost with PingService
 
 ---
  core/src/mindustry/net/Net.java | 6 +-----
