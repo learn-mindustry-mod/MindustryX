@@ -13,7 +13,6 @@ import mindustry.graphics.*;
 import mindustry.world.blocks.payloads.*;
 import mindustryX.features.*;
 
-import static arc.graphics.g2d.Draw.color;
 import static arc.graphics.g2d.Lines.*;
 import static mindustry.Vars.*;
 
@@ -274,32 +273,36 @@ public class ArcUnits{
     }
 
     private static void drawBuildRange(Unit unit){
+        Draw.z(Layer.effect - 2f);
         if(control.input.droppingItem){
             Color color = player.within(Core.input.mouseWorld(control.input.getMouseX(), control.input.getMouseY()), itemTransferRange) ? Color.gold : Color.red;
-            drawNSideRegion(unit.x, unit.y, 3, unit.type.buildRange, unit.rotation, color, 0.25f, unit.stack.item.fullIcon, false);
+            Draw.color(color);
+            drawNSideRegionArc(unit.x, unit.y, 3, unit.type.buildRange, 90, 0.25f);
+            Draw.color();
+            drawNSideRegionIcon(unit.x, unit.y, 3, unit.type.buildRange, 90, 0.25f, unit.stack.item.fullIcon);
         }else if(control.input.isBuilding || control.input.selectedBlock() || !unit.plans().isEmpty()){
-            drawNSideRegion(unit.x, unit.y, 3, unit.type.buildRange, unit.rotation, Pal.heal, 0.25f, Icon.wrench.getRegion(), true);
+            Draw.color(Pal.heal);
+            drawNSideRegionArc(unit.x, unit.y, 3, unit.type.buildRange, 90, 0.25f);
+            drawNSideRegionIcon(unit.x, unit.y, 3, unit.type.buildRange, 90, 0.25f, Icon.wrench.getRegion());
+            Draw.color();
         }
     }
 
-    public static void drawNSideRegion(float x, float y, int n, float range, float rotation, Color color, float fraction, TextureRegion region, boolean regionColor){
-        Draw.z(Layer.effect - 2f);
-        color(color);
-
+    public static void drawNSideRegionArc(float x, float y, int n, float range, float rotation, float fraction){
         stroke(2f);
-
         for(int i = 0; i < n; i++){
             float frac = 360f * (1 - fraction * n) / n / 2;
             float rot = rotation + i * 360f / n + frac;
-            if(!regionColor){
-                color(color);
-                arc(x, y, range, 0.25f, rot, (int)(50 + range / 10));
-                color();
-            }else{
-                arc(x, y, range, 0.25f, rot, (int)(50 + range / 10));
-            }
+            arc(x, y, range, 0.25f, rot, (int)(50 + range / 10));
+        }
+        stroke(1f);
+    }
+
+    public static void drawNSideRegionIcon(float x, float y, int n, float range, float rotation, float fraction, TextureRegion region){
+        for(int i = 0; i < n; i++){
+            float frac = 360f * (1 - fraction * n) / n / 2;
+            float rot = rotation + i * 360f / n + frac;
             Draw.rect(region, x + range * Mathf.cos((float)Math.toRadians(rot - frac)), y + range * Mathf.sin((float)Math.toRadians(rot - frac)), 12f, 12f);
         }
-        Draw.reset();
     }
 }

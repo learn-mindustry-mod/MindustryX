@@ -77,14 +77,9 @@ public class ArcOld{
         categories.add(new LazySettingsCategory("@settings.arc", () -> Icon.star, (c) -> {
             c.addCategory("arcCgameview");
             c.checkPref("hoveredTileInfo", false);
-            c.checkPref("showFlyerSpawn", false);
-            c.checkPref("showFlyerSpawnLine", false);
             c.checkPref("arcAlwaysTeamColor", false);
 
             c.addCategory("arcCDisplayBlock");
-            c.checkPref("forceEnableDarkness", true, (b) -> enableDarkness = b);
-            enableDarkness = settings.getBool("forceEnableDarkness");
-            c.sliderPref("mend_zone", 0, 0, 100, 2, i -> i > 0 ? i + "%" : "关闭");
             c.checkPref("blockdisabled", false);
             c.checkPref("blockBars", false);
             c.checkPref("blockBars_mend", false);

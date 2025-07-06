@@ -35,28 +35,6 @@ public class ArcWaveSpawner{
         arcWaveCache.clear();
     }
 
-    public static void drawFlyerSpawner(){
-        if(hasFlyer && Core.settings.getBool("showFlyerSpawn") && spawner.countSpawns() < 20){
-            for(Tile tile : spawner.getSpawns()){
-                float angle = Angles.angle(world.width() / 2f, world.height() / 2f, tile.x, tile.y);
-                float trns = Math.max(world.width(), world.height()) * Mathf.sqrt2 * tilesize;
-                float spawnX = Mathf.clamp(world.width() * tilesize / 2f + Angles.trnsx(angle, trns), 0, world.width() * tilesize);
-                float spawnY = Mathf.clamp(world.height() * tilesize / 2f + Angles.trnsy(angle, trns), 0, world.height() * tilesize);
-                if(Core.settings.getBool("showFlyerSpawnLine")){
-                    Draw.color(Color.red, 0.5f);
-                    Lines.line(tile.worldx(), tile.worldy(), spawnX, spawnY);
-                }
-                Draw.color(Color.gray, Color.lightGray, Mathf.absin(Time.time, 8f, 1f));
-                Draw.alpha(0.8f);
-                arcDashCircling(spawnX, spawnY, flyerSpawnerRadius, 0.1f);
-
-                Draw.color();
-                Draw.alpha(0.5f);
-                Draw.rect(UnitTypes.zenith.fullIcon, spawnX, spawnY);
-            }
-        }
-    }
-
     public static WaveInfo getOrInit(int wave){
         wave = Math.min(wave, calWinWaveClamped());
         while(arcWaveCache.size <= wave) arcWaveCache.add(new WaveInfo(arcWaveCache.size));
