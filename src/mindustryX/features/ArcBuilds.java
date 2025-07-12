@@ -145,7 +145,7 @@ public class ArcBuilds{
             var bulletType = e.value;
             drawIndex += 1;
             if(!item.unlockedNow()) return;
-            if(bulletType.rangeChange > 0) Drawf.dashCircle(x, y, range + bulletType.rangeChange, Pal.placing);
+            Drawf.dashCircle(x, y, range + bulletType.rangeChange, Pal.placing);
             turretBulletDraw(x, y, item.fullIcon, iconSize, range + bulletType.rangeChange, (float)drawIndex / ammoTypes.size);
         }
     }
@@ -173,7 +173,7 @@ public class ArcBuilds{
 
     private static void turretBulletDraw(float x, float y, TextureRegion icon, float iconSize, float range, float rotOffset){
         for(int i = 0; i < 4; i++){
-            float rot = (i + rotOffset) * 90f + Time.time * 0.5f;
+            float rot = (i + rotOffset) * 90f + Time.time * 0.3f;
             Draw.rect(icon,
             x + (Mathf.sin((float)Math.toRadians(rot)) * (range)),
             y + (Mathf.cos((float)Math.toRadians(rot)) * (range)),
