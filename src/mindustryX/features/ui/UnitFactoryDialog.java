@@ -27,6 +27,7 @@ import mindustry.ui.*;
 import mindustry.ui.dialogs.*;
 import mindustry.world.*;
 import mindustry.world.blocks.payloads.*;
+import mindustry.world.meta.*;
 import mindustryX.features.*;
 import mindustryX.features.func.*;
 import mindustryX.features.ui.comp.*;
@@ -160,11 +161,7 @@ public class UnitFactoryDialog extends BaseDialog{
 
         rightTable.table(bottomTable -> {
             bottomTable.left();
-            bottomTable.defaults().grow().uniformY();
-
-            if(Core.graphics.isPortrait()){
-                bottomTable.defaults().height(350f);
-            }
+            bottomTable.defaults().height(350f).grow();
 
             bottomTable.add(effectTable).row();
 
@@ -528,7 +525,7 @@ public class UnitFactoryDialog extends BaseDialog{
                     }
                 }
             }).pad(8f).fill().right();
-        });
+        }).growY();
 
         effectTable.pane(Styles.noBarPane, settingTable).grow();
 
@@ -654,7 +651,9 @@ public class UnitFactoryDialog extends BaseDialog{
                 buttons.defaults().height(48f).pad(4f).growX();
 
                 buttons.button("装载建筑", new TextureRegionDrawable(Blocks.siliconSmelter.uiIcon), Styles.flatt, 32,
-                () -> ContentSelectDialog.once(content.blocks().select(block -> !block.isFloor()),null, block -> {
+                () -> ContentSelectDialog.once(content.blocks().select(block -> !block.isFloor() && block.buildVisibility != BuildVisibility.hidden),
+                null,
+                block -> {
                     BuildPayload payload = new BuildPayload(block, payloadUnit.team);
                     payloads.add(payload);
                     rebuildPayloadSettingTable(payloads, settingTable);
