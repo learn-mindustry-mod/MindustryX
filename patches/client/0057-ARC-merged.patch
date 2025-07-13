@@ -101,7 +101,7 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  .../src/mindustry/graphics/BlockRenderer.java |  17 +-
  .../mindustry/graphics/OverlayRenderer.java   |  36 ++-
  core/src/mindustry/input/DesktopInput.java    |  12 +-
- core/src/mindustry/input/InputHandler.java    |  42 ++-
+ core/src/mindustry/input/InputHandler.java    |  42 +++-
  core/src/mindustry/input/MobileInput.java     |   6 +-
  core/src/mindustry/logic/LExecutor.java       |  12 +-
  core/src/mindustry/type/UnitType.java         |  91 ++++++-
@@ -112,15 +112,15 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  .../mindustry/ui/dialogs/DatabaseDialog.java  |   3 +-
  .../mindustry/ui/dialogs/PausedDialog.java    |  12 +-
  .../mindustry/ui/dialogs/PlanetDialog.java    |  29 ++-
- .../ui/dialogs/SchematicsDialog.java          | 243 +++++++++++++++++-
- .../ui/dialogs/SettingsMenuDialog.java        |  28 +-
+ .../ui/dialogs/SchematicsDialog.java          | 237 +++++++++++++++++-
+ .../ui/dialogs/SettingsMenuDialog.java        |  28 +--
  .../mindustry/ui/fragments/ChatFragment.java  |   9 +-
  .../ui/fragments/ConsoleFragment.java         |   3 +
- .../mindustry/ui/fragments/HudFragment.java   | 168 +++++++++++-
+ .../mindustry/ui/fragments/HudFragment.java   | 168 ++++++++++++-
  .../mindustry/ui/fragments/MenuFragment.java  |  24 +-
  .../ui/fragments/PlacementFragment.java       | 164 ++++++++++--
  .../ui/fragments/PlayerListFragment.java      |  72 ++----
- 27 files changed, 1123 insertions(+), 151 deletions(-)
+ 27 files changed, 1117 insertions(+), 151 deletions(-)
 
 diff --git a/core/src/mindustry/editor/MapInfoDialog.java b/core/src/mindustry/editor/MapInfoDialog.java
 index ebc1f0b300d295e45333f1db38ea299c9658ec20..e7cba056743979206c84fc6d00472c2c44b565f6 100644
@@ -1415,7 +1415,7 @@ index 8937bd5567640331ea6b093d6339c66cbb0ef041..1334908533b146feb68d88d95c3b9333
                              }
                          }
 diff --git a/core/src/mindustry/ui/dialogs/SchematicsDialog.java b/core/src/mindustry/ui/dialogs/SchematicsDialog.java
-index 1819d3cabac2aeadbb57bf74cf6962f829c7dded..a217936e691d4cf30cf020697303bb3040a2db07 100644
+index 1819d3cabac2aeadbb57bf74cf6962f829c7dded..1591e0b8277d1e7a082f4838464cfe69f38bb114 100644
 --- a/core/src/mindustry/ui/dialogs/SchematicsDialog.java
 +++ b/core/src/mindustry/ui/dialogs/SchematicsDialog.java
 @@ -15,6 +15,8 @@ import arc.scene.ui.layout.*;
@@ -1583,113 +1583,114 @@ index 1819d3cabac2aeadbb57bf74cf6962f829c7dded..a217936e691d4cf30cf020697303bb30
      public void showEdit(Schematic s){
          new BaseDialog("@schematic.edit"){{
              setFillParent(true);
-@@ -579,6 +681,11 @@ public class SchematicsDialog extends BaseDialog{
+@@ -376,6 +478,7 @@ public class SchematicsDialog extends BaseDialog{
+     }
+ 
+     void addTag(Schematic s, String tag){
++        s.labels.remove(it -> it.equals(tag));
+         s.labels.add(tag);
+         s.save();
+         tagsChanged();
+@@ -579,6 +682,11 @@ public class SchematicsDialog extends BaseDialog{
                      t.button("@schematic.texttag", Icon.add, () -> showNewTag(res -> rebuild[0].run())).wrapLabel(false).get().getLabelCell().padLeft(5);
                      t.button("@schematic.icontag", Icon.add, () -> showNewIconTag(res -> rebuild[0].run())).wrapLabel(false).get().getLabelCell().padLeft(5);
                  });
 +                p.row();
 +                p.table(t -> {
 +                    t.left().defaults().fillX().height(tagh).pad(2);
-+                    t.button("自动标签", Icon.add, () -> arcAutoTags(res -> rebuild[0].run())).wrapLabel(false).get().getLabelCell().padLeft(5);
++                    t.button("自动标签", Icon.add, () -> arcAutoTags(rebuild[0])).wrapLabel(false).get().getLabelCell().padLeft(5);
 +                });
  
              };
  
-@@ -587,6 +694,109 @@ public class SchematicsDialog extends BaseDialog{
+@@ -587,6 +695,102 @@ public class SchematicsDialog extends BaseDialog{
          dialog.show();
      }
  
-+    void arcAutoTags(Cons<String> cons){
++    void arcAutoTags(Runnable done){
 +        new Dialog(){{
 +            closeOnBack();
 +            setFillParent(true);
 +
-+            cont.pane(t -> {
-+                resized(true, () -> {
-+                    t.clearChildren();
-+                    t.marginRight(19f);
-+                    t.defaults().size(48f);
++            Table t = new Table();
++            cont.pane(t);
++            resized(true, () -> {
++                t.clearChildren();
++                t.marginRight(19f);
++                t.defaults().size(48f);
 +
-+                    int cols = (int)Math.min(20, Core.graphics.getWidth() / Scl.scl(52f));
++                int cols = (int)Math.min(20, Core.graphics.getWidth() / Scl.scl(52f));
 +
-+                    for(ContentType ctype : defaultContentIcons){
-+                        t.row();
-+                        t.image().colspan(cols).growX().width(Float.NEGATIVE_INFINITY).height(3f).color(Pal.accent);
-+                        t.row();
++                for(ContentType ctype : defaultContentIcons){
++                    t.row();
++                    t.image().colspan(cols).growX().width(Float.NEGATIVE_INFINITY).height(3f).color(Pal.accent);
++                    t.row();
 +
-+                        int i = 0;
-+                        for(UnlockableContent u : content.getBy(ctype).<UnlockableContent>as()){
-+                            if(!u.isHidden() && u.unlockedNow() && u.hasEmoji() && !tags.contains(u.emoji())){
-+                                t.button(new TextureRegionDrawable(u.uiIcon), Styles.flati, iconMed, () -> {
-+                                    String out = u.emoji() + "";
++                    int i = 0;
++                    for(UnlockableContent u : content.getBy(ctype).<UnlockableContent>as()){
++                        if(!u.isHidden() && u.unlockedNow() && u.hasEmoji() && !tags.contains(u.emoji())){
++                            t.button(new TextureRegionDrawable(u.uiIcon), Styles.flati, iconMed, () -> {
++                                String out = u.emoji();
++                                tags.add(out);
++                                arcAutoTag(u, out);
 +
-+                                    tags.add(out);
-+                                    tagsChanged();
++                                done.run();
++                                hide();
++                            });
 +
-+                                    if(u instanceof Block block){
-+                                        for(Schematic s : schematics.all()){
-+                                            s.tiles.each(sBlock -> {
-+                                                if(sBlock.block == block){
-+                                                    addTag(s, out);
-+                                                    cons.get(out);
-+                                                    hide();
-+                                                }
-+                                            });
-+                                        }
-+                                    }else if(u instanceof Item item){
-+                                        Seq<Block> blocklist = new Seq<>();
-+                                        for(Block factory : content.blocks()){
-+                                            if(factory instanceof GenericCrafter crafter){
-+                                                if(crafter.outputItems == null) continue;
-+                                                for(ItemStack stack : crafter.outputItems){
-+                                                    if(stack.item == item) blocklist.add(factory);
-+                                                }
-+                                            }
-+                                        }
-+                                        for(Schematic s : schematics.all()){
-+                                            s.tiles.each(sBlock -> {
-+                                                if(blocklist.contains(sBlock.block)){
-+                                                    addTag(s, out);
-+                                                    cons.get(out);
-+                                                    hide();
-+                                                }
-+                                            });
-+                                        }
-+                                    }else if(u instanceof Liquid liquid){
-+                                        Seq<Block> blocklist = new Seq<>();
-+                                        for(Block factory : content.blocks()){
-+                                            if(factory instanceof GenericCrafter crafter){
-+                                                if(crafter.outputLiquids == null) continue;
-+                                                for(LiquidStack stack : crafter.outputLiquids){
-+                                                    if(stack.liquid == liquid) blocklist.add(factory);
-+                                                }
-+                                            }
-+                                        }
-+                                        for(Schematic s : schematics.all()){
-+                                            s.tiles.each(sBlock -> {
-+                                                if(blocklist.contains(sBlock.block)){
-+                                                    addTag(s, out);
-+                                                    cons.get(out);
-+                                                    hide();
-+                                                }
-+                                            });
-+                                        }
-+                                    }
-+
-+
-+                                    cons.get(out);
-+
-+                                    hide();
-+                                });
-+
-+                                if(++i % cols == 0) t.row();
-+                            }
++                            if(++i % cols == 0) t.row();
 +                        }
 +                    }
-+                });
++                }
 +            });
 +            buttons.button("@back", Icon.left, this::hide).size(210f, 64f);
 +        }}.show();
++    }
++
++    void arcAutoTag(UnlockableContent u, String tag){
++        if(u instanceof Block block){
++            for(Schematic s : schematics.all()){
++                s.tiles.each(sBlock -> {
++                    if(sBlock.block == block){
++                        addTag(s, tag);
++                    }
++                });
++            }
++        }else if(u instanceof Item item){
++            Seq<Block> blocklist = new Seq<>();
++            for(Block factory : content.blocks()){
++                if(factory instanceof GenericCrafter crafter){
++                    if(crafter.outputItems == null) continue;
++                    for(ItemStack stack : crafter.outputItems){
++                        if(stack.item == item) blocklist.add(factory);
++                    }
++                }
++            }
++            for(Schematic s : schematics.all()){
++                s.tiles.each(sBlock -> {
++                    if(blocklist.contains(sBlock.block)){
++                        addTag(s, tag);
++                    }
++                });
++            }
++        }else if(u instanceof Liquid liquid){
++            Seq<Block> blocklist = new Seq<>();
++            for(Block factory : content.blocks()){
++                if(factory instanceof GenericCrafter crafter){
++                    if(crafter.outputLiquids == null) continue;
++                    for(LiquidStack stack : crafter.outputLiquids){
++                        if(stack.liquid == liquid) blocklist.add(factory);
++                    }
++                }
++            }
++            for(Schematic s : schematics.all()){
++                s.tiles.each(sBlock -> {
++                    if(blocklist.contains(sBlock.block)){
++                        addTag(s, tag);
++                    }
++                });
++            }
++        }
 +    }
 +
 +    boolean arcSchematicCanBuild(Schematic s){
@@ -1705,7 +1706,7 @@ index 1819d3cabac2aeadbb57bf74cf6962f829c7dded..a217936e691d4cf30cf020697303bb30
      void buildTags(Schematic schem, Table t){
          buildTags(schem, t, true);
      }
-@@ -800,13 +1010,44 @@ public class SchematicsDialog extends BaseDialog{
+@@ -800,13 +1004,44 @@ public class SchematicsDialog extends BaseDialog{
                      }
                  });
              }
