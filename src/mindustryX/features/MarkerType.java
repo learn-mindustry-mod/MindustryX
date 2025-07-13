@@ -118,8 +118,8 @@ public class MarkerType{
         init();
         Events.run(WorldLoadEvent.class, () -> last = null);
         ui.hudGroup.addChildAt(0, new Element(){
-            private final Circle outer = new Circle(0, 0, 120);
-            private final Circle inner = new Circle(0, 0, 60);
+            private final Circle outer = new Circle(0, 0, Scl.scl(120));
+            private final Circle inner = new Circle(0, 0, Scl.scl(60));
 
             {
                 name = "markPanUI";
