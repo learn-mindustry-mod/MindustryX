@@ -180,6 +180,7 @@ public class DamagePopup{
         }
 
         public void draw(){
+            if(RenderExt.unitHide.get() && damaged instanceof Unit) return;
             float alphaScaleEase = Bezier.quadratic(v1, fin(),
             v2.set(1f, 1f),
             v3.set(0f, 1f),
