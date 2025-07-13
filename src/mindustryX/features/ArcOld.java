@@ -5,6 +5,7 @@ import arc.files.*;
 import arc.func.*;
 import arc.graphics.*;
 import arc.graphics.g2d.*;
+import arc.graphics.gl.*;
 import arc.math.*;
 import arc.math.geom.*;
 import arc.scene.style.*;
@@ -48,8 +49,9 @@ public class ArcOld{
         Fi file = backgrounds.random();
         mainExecutor.submit(() -> {
             try{
-                var texture = new TextureRegion(new Texture(file));
+                var pixmap = new PixmapTextureData(new Pixmap(file), false, true);
                 Core.app.post(() -> {
+                    var texture = new TextureRegion(new Texture(pixmap));
                     if(image.getDrawable() != null) ((TextureRegion)image.getDrawable()).texture.dispose();
                     image.setDrawable(texture);
                 });
