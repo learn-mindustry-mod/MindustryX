@@ -70,7 +70,7 @@ data class ReplayData(
             if (value > Short.MAX_VALUE) {
                 writeInt((1 shl 31) or value)
             } else {
-                writeVarShort(value)
+                writeShort(value)
             }
         }
     }
