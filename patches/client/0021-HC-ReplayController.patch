@@ -13,8 +13,9 @@ way-zer <himc.wicp@gmail.com> on 2024/4/22 at 18:10
 way-zer <himc.wicp@gmail.com> on 2024/4/22 at 20:15
 ---
  core/src/mindustry/core/NetClient.java | 3 +++
+ core/src/mindustry/io/TypeIO.java      | 2 +-
  core/src/mindustry/net/Net.java        | 2 ++
- 2 files changed, 5 insertions(+)
+ 3 files changed, 6 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/core/NetClient.java b/core/src/mindustry/core/NetClient.java
 index cd80be66ce1459e9276f71edb98ef8afe81ff6d9..74fdf93ba8907d17cb6ee1bd3e7e05708e883a2b 100644
@@ -43,6 +44,19 @@ index cd80be66ce1459e9276f71edb98ef8afe81ff6d9..74fdf93ba8907d17cb6ee1bd3e7e0570
              connecting = false;
              logic.reset();
              platform.updateRPC();
+diff --git a/core/src/mindustry/io/TypeIO.java b/core/src/mindustry/io/TypeIO.java
+index c93d0921230fcbaacdd8cd673cf12fd4c313e823..93332c435d9383d9fb584e81f676171318f77c98 100644
+--- a/core/src/mindustry/io/TypeIO.java
++++ b/core/src/mindustry/io/TypeIO.java
+@@ -316,7 +316,7 @@ public class TypeIO{
+             netClient.addRemovedEntity(entity.id());
+         }
+ 
+-        return null; //no need to actually return anything
++        return new UnitSyncContainer(entity); //MDTX: We should return non-null
+     }
+ 
+     public static void writeUnit(Writes write, Unit unit){
 diff --git a/core/src/mindustry/net/Net.java b/core/src/mindustry/net/Net.java
 index 7072e96706e4134bccc29c2cd6b40e2290b1072c..8929ef9d867729c779f809f08bb4bd075e7b9593 100644
 --- a/core/src/mindustry/net/Net.java
