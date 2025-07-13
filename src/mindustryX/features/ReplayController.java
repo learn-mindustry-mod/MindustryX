@@ -3,9 +3,7 @@ package mindustryX.features;
 import arc.*;
 import arc.files.*;
 import arc.scene.ui.layout.*;
-import arc.struct.*;
 import arc.util.*;
-import arc.util.io.*;
 import mindustry.*;
 import mindustry.core.*;
 import mindustry.game.*;
@@ -15,10 +13,7 @@ import mindustry.net.Packets.*;
 import mindustry.ui.dialogs.*;
 import mindustryX.features.SettingsV2.*;
 
-import java.io.*;
-import java.nio.*;
 import java.util.*;
-import java.util.zip.*;
 
 import static mindustry.Vars.*;
 
@@ -30,13 +25,10 @@ import static mindustry.Vars.*;
 public class ReplayController{
     private static final CheckPref enable = new CheckPref("replayRecord");
 
-    public static boolean recording, replaying;
+    public static boolean replaying;
 
-    private static Writes writes;
-    private static float startTime;
-    private static final ByteBuffer tmpBuf = ByteBuffer.allocate(32768);
-    private static final Writes tmpWr = new Writes(new ByteBufferOutput(tmpBuf));
-    private static ReplayData now = null;
+    private static ReplayData.Writer writer;
+    private static ReplayData.Reader reader;
 
     public static void init(){
         Events.run(EventType.Trigger.update, () -> {
@@ -62,180 +54,122 @@ public class ReplayController{
         }
     }
 
-    private static class ReplayData{
-        int version;
-        Date time;
-        String ip;
-        String name;
-        float length;
-        private final IntIntMap packetCount = new IntIntMap();
-
-        ReplayData(int version, Date time, String ip, String name){
-            this.version = version;
-            this.time = time;
-            this.ip = ip;
-            this.name = name;
-        }
-    }
-
     public static void onConnect(String ip){
         if(!enable.get() || LogicExt.contentsCompatibleMode) return;
         if(replaying) return;
         var file = saveDirectory.child(new Date().getTime() + ".mrep");
+        ReplayData.Writer writer;
         try{
-            writes = new Writes(new DataOutputStream(new DeflaterOutputStream(file.write(false, 8192))));
+            writer = new ReplayData.Writer(file.write(false, 8192));
         }catch(Exception e){
             Log.err("创建回放出错!", e);
             return;
         }
         boolean anonymous = Core.settings.getBool("anonymous", false);
-        writes.i(Version.build);
-        writes.l(new Date().getTime());
-        writes.str(anonymous ? "anonymous" : ip);
-        writes.str(anonymous ? "anonymous" : Vars.player.name.trim());
-        startTime = Time.time;
-        recording = true;
+        ReplayData header = new ReplayData(Version.build, new Date(), anonymous ? "anonymous" : ip, anonymous ? "anonymous" : Vars.player.name.trim());
+        writer.writeHeader(header);
         Log.info("录制中: @", file.absolutePath());
+        ReplayController.writer = writer;
     }
-
-    public static void stop(){
-        recording = false;
-        try{
-            writes.close();
-        }catch(Exception ignored){
-        }
-        writes = null;
-    }
-
-    private static final Net fakeServer = new Net(null){
-        @Override
-        public boolean server(){
-            return true;
-        }
-    };
 
     public static void onClientPacket(Packet p){
-        if(!recording || p instanceof Streamable) return;
+        if(writer == null) return;
         if(p instanceof Disconnect){
-            stop();
+            writer.close();
+            writer = null;
             Log.info("录制结束");
             return;
         }
         try{
-            byte id = Net.getPacketId(p);
-            writes.f(Time.time - startTime);
-            writes.b(id);
-            tmpBuf.position(0);
-            var bak = net;
-            net = fakeServer;
-            try{
-                p.write(tmpWr);
-            }finally{
-                net = bak;
-            }
-            int l = tmpBuf.position();
-            writes.s(l);
-            writes.b(tmpBuf.array(), 0, l);
+            writer.writePacket(p);
         }catch(Exception e){
             net.disconnect();
+            Log.err(e);
             Core.app.post(() -> ui.showException("录制出错!", e));
         }
     }
 
     //replay
 
-    public static Reads createReads(Fi input){
+    public static void startPlay(Fi input){
         try{
-            return new Reads(new DataInputStream(new InflaterInputStream(input.read(32768))));
+            reader = new ReplayData.Reader(input);
+            Log.infoTag("Replay", reader.getMeta().toString());
         }catch(Exception e){
             Core.app.post(() -> ui.showException("读取回放失败!", e));
         }
-        return null;
-    }
 
-    public static void startPlay(Fi input){
-        try(Reads r = createReads(input)){
-            int version = r.i();
-            Date time = new Date(r.l());
-            String ip = r.str();
-            String name = r.str();
-            Log.infoTag("Replay", Strings.format("version: @, time: @, ip: @, name: @", version, time, ip, name));
-            now = new ReplayData(version, time, ip, name);
-            while(true){
-                float l = version > 10 ? r.f() :
-                (r.l() * Time.toSeconds / Time.nanosPerMilli / 1000);
-                byte id = r.b();
-                r.skip(r.us());
-                now.packetCount.put(id, now.packetCount.get(id, 0) + 1);
-                now.length = l;
-            }
-        }catch(Exception e){
-            if(!(e.getCause() instanceof EOFException)){
-                Log.err(e);
-                return;
-            }
-        }
-
-        Reads reads = createReads(input);
-        reads.skip(12);
-        reads.str();
-        reads.str();
         replaying = true;
-
         ui.loadfrag.show("@connecting");
-        ui.loadfrag.setButton(() -> {
-            replaying = false;
-            ui.loadfrag.hide();
-            netClient.disconnectQuietly();
-        });
+        ui.loadfrag.setButton(ReplayController::stopPlay);
 
         logic.reset();
         net.reset();
         netClient.beginConnecting();
         Reflect.set(net, "active", true);
 
-        startTime = Time.time;
         Threads.daemon("Replay Controller", () -> {
+            float startTime = Time.time;
             try{
                 while(replaying){
-                    float nextTime = now.version > 10 ? reads.f() :
-                    (reads.l() * Time.toSeconds / Time.nanosPerMilli / 1000);
-                    Packet p = Net.newPacket(reads.b());
-                    p.read(reads, reads.us());
-                    while(Time.time - startTime < nextTime)
+                    var info = reader.nextPacket();
+                    Packet packet = reader.readPacket(info);
+                    while(Time.time - startTime < info.getOffset())
                         Thread.sleep(1);
-                    Core.app.post(() -> net.handleClientReceived(p));
+                    Core.app.post(() -> net.handleClientReceived(packet));
                 }
             }catch(Exception e){
+                //May EOF
                 replaying = false;
-                reads.close();
-                net.disconnect();
-                Core.app.post(() -> logic.reset());
+                Log.err(e);
+            }finally{
+                stopPlay();
             }
         });
     }
 
     public static void stopPlay(){
-        replaying = false;
+        if(!replaying) return;
         Log.infoTag("Replay", "stop");
+        replaying = false;
+        reader.close();
+        reader = null;
+        net.disconnect();
+        ui.loadfrag.hide();
+        Core.app.post(() -> logic.reset());
     }
 
 
     public static void showInfo(){
         BaseDialog dialog = new BaseDialog("回放统计");
-        var replay = now;
-        if(replay == null){
+        if(reader == null){
             dialog.cont.add("未加载回放!");
             return;
         }
-        dialog.cont.add("回放版本:" + replay.version).row();
-        dialog.cont.add("回放创建时间:" + replay.time).row();
-        dialog.cont.add("服务器ip:" + replay.ip).row();
-        dialog.cont.add("玩家名:" + replay.name).row();
-        int secs = (int)(replay.length / 60);
-        dialog.cont.add("回放长度:" + (secs / 3600) + ":" + (secs / 60 % 60) + ":" + (secs % 60)).row();
-        dialog.cont.pane(t -> replay.packetCount.keys().toArray().each(b ->
-        t.add(Net.newPacket((byte)b).getClass().getSimpleName() + " " + replay.packetCount.get(b)).row())).growX().row();
+        var replay = reader.getMeta();
+        dialog.cont.add("回放版本:" + replay.getVersion()).row();
+        dialog.cont.add("回放创建时间:" + replay.getTime()).row();
+        dialog.cont.add("服务器ip:" + replay.getServerIp()).row();
+        dialog.cont.add("玩家名:" + replay.getRecordPlayer()).row();
+
+        if(reader.getSource() != null){
+            var tmpReader = new ReplayData.Reader(reader.getSource());
+            var packets = tmpReader.allPacket();
+            tmpReader.close();
+
+            dialog.cont.add("数据包总数：" + packets.size()).row();
+            int secs = (int)(packets.get(packets.size() - 1).getOffset() / 60);
+            dialog.cont.add("回放长度:" + (secs / 3600) + ":" + (secs / 60 % 60) + ":" + (secs % 60)).row();
+            dialog.cont.pane(t -> {
+                t.defaults().pad(2);
+                for(var packet : packets){
+                    t.add(Strings.format("+@s", Strings.fixed(packet.getOffset() / 60f, 2)));
+                    t.add(Net.newPacket(packet.getId()).getClass().getSimpleName()).fillX();
+                    t.add("L=" + packet.getLength());
+                    t.row();
+                }
+            }).growX().row();
+        }
         dialog.addCloseButton();
         dialog.show();
     }

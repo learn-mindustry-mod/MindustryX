@@ -8,7 +8,7 @@ Subject: [PATCH] H: replace pingHost with PingService
  1 file changed, 1 insertion(+), 5 deletions(-)
 
 diff --git a/core/src/mindustry/net/Net.java b/core/src/mindustry/net/Net.java
-index 2aa96d4b4cf08cf8520e9c7cf21f28cbe78ce168..2046c94122cd77093358cafde68941f7d679faac 100644
+index 0b2be4c8a299463df8b317551e272ca7cd702ce0..332f2e11d8575e0b70f3589e685c4beb5c7a9049 100644
 --- a/core/src/mindustry/net/Net.java
 +++ b/core/src/mindustry/net/Net.java
 @@ -37,10 +37,6 @@ public class Net{
