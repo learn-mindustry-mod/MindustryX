@@ -54,3 +54,13 @@ See `./patches/`.
 ## Contribution
 1. cd `work/` and execute `../scripts/applyPatches`
 2. commit your feature in `work/`, then `../scripts/genPatches.sh` and commit in root.
+
+## Star History
+
+<a href="https://www.star-history.com/#TinyLake/MindustryX&Date">
+ <picture>
+   <source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/svg?repos=TinyLake/MindustryX&type=Date&theme=dark" />
+   <source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/svg?repos=TinyLake/MindustryX&type=Date" />
+   <img alt="Star History Chart" src="https://api.star-history.com/svg?repos=TinyLake/MindustryX&type=Date" />
+ </picture>
+</a>
