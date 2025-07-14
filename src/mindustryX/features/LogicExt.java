@@ -16,6 +16,7 @@ public class LogicExt{
     public static boolean noUpdatePlayerMovement = false;
 
     private static final CheckPref invertMapClick0 = new CheckPref("gameUI.invertMapClick");
+    public static final CheckPref commandLogicAI = new CheckPref("gameUI.commandLogicAI");
     public static final CheckPref reliableSync = new CheckPref("debug.reliableSync");
     public static final SliderPref limitUpdate = new SliderPref("debug.limitUpdate", 0, 0, 100, 1, (it) -> {
         if(it == 0) return "关闭";

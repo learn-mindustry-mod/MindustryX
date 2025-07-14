@@ -182,10 +182,10 @@ index 8a3d830d8fe215154af569b863214dab26096f3a..5b0ee5946cb022e256aff23f2f1bfc71
  
      public static int roundAmount(int number){
 diff --git a/core/src/mindustry/game/Schematics.java b/core/src/mindustry/game/Schematics.java
-index 93b85a591a895fb117f7b4fb983f25cd90a923a0..d992db855c0b4f78549e9769a7916806d16eb5f6 100644
+index 62ddc27653c07346ee62c8e50d30ae5148efc37f..d992db855c0b4f78549e9769a7916806d16eb5f6 100644
 --- a/core/src/mindustry/game/Schematics.java
 +++ b/core/src/mindustry/game/Schematics.java
-@@ -98,7 +99,9 @@ public class Schematics implements Loadable{
+@@ -99,7 +99,9 @@ public class Schematics implements Loadable{
          all.sort();
  
          if(shadowBuffer == null && !headless){
@@ -196,7 +196,7 @@ index 93b85a591a895fb117f7b4fb983f25cd90a923a0..d992db855c0b4f78549e9769a7916806
          }
      }
  
-@@ -542,7 +545,7 @@ public class Schematics implements Loadable{
+@@ -543,7 +545,7 @@ public class Schematics implements Loadable{
          try(DataInputStream stream = new DataInputStream(new InflaterInputStream(input))){
              short width = stream.readShort(), height = stream.readShort();
  
@@ -205,7 +205,7 @@ index 93b85a591a895fb117f7b4fb983f25cd90a923a0..d992db855c0b4f78549e9769a7916806
  
              StringMap map = new StringMap();
              int tags = stream.readUnsignedByte();
-@@ -568,7 +571,7 @@ public class Schematics implements Loadable{
+@@ -569,7 +571,7 @@ public class Schematics implements Loadable{
  
              int total = stream.readInt();
  

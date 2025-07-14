@@ -10,10 +10,10 @@ Subject: [PATCH] Fixed #10891
  2 files changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/core/src/mindustry/game/Schematics.java b/core/src/mindustry/game/Schematics.java
-index 620434d144ed63ec2bb31797a818ffab294d311c..71c227a32b7bc653df29212c71b36826da8791c3 100644
+index 620434d144ed63ec2bb31797a818ffab294d311c..d43599fef130da4ed935b7fc819acd73517477df 100644
 --- a/core/src/mindustry/game/Schematics.java
 +++ b/core/src/mindustry/game/Schematics.java
-@@ -98,7 +97,7 @@ public class Schematics implements Loadable{
+@@ -98,7 +98,7 @@ public class Schematics implements Loadable{
  
          all.sort();
  

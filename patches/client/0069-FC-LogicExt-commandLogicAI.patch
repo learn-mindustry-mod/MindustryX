@@ -1,0 +1,30 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: way-zer <himc.wicp@gmail.com>
+Date: Mon, 14 Jul 2025 23:48:57 +0800
+Subject: [PATCH] FC(LogicExt) commandLogicAI
+
+---
+ core/src/mindustry/entities/comp/UnitComp.java | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/core/src/mindustry/entities/comp/UnitComp.java b/core/src/mindustry/entities/comp/UnitComp.java
+index 351b1feab1e6930b1cbc48c978a77b87a22b0e3d..c474e2d483bee0cf4b3564dfe32b1a8b3a3fdd79 100644
+--- a/core/src/mindustry/entities/comp/UnitComp.java
++++ b/core/src/mindustry/entities/comp/UnitComp.java
+@@ -28,6 +28,7 @@ import mindustry.world.blocks.*;
+ import mindustry.world.blocks.environment.*;
+ import mindustry.world.blocks.payloads.*;
+ import mindustry.world.meta.*;
++import mindustryX.features.*;
+ 
+ import static mindustry.Vars.*;
+ import static mindustry.logic.GlobalVars.*;
+@@ -480,7 +481,7 @@ abstract class UnitComp implements Healthc, Physicsc, Hitboxc, Statusc, Teamc, I
+ 
+     /** @return whether the unit has a CommandAI controller */
+     public boolean isCommandable(){
+-        return controller instanceof CommandAI;
++        return controller instanceof CommandAI || (LogicExt.commandLogicAI.get() && allowCommand());
+     }
+ 
+     public boolean canTarget(Teamc other){

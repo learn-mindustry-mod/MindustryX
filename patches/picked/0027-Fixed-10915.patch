@@ -12,7 +12,7 @@ Subject: [PATCH] Fixed #10915
  4 files changed, 15 insertions(+), 22 deletions(-)
 
 diff --git a/core/src/mindustry/entities/units/BuildPlan.java b/core/src/mindustry/entities/units/BuildPlan.java
-index f9930f707f74bb2bc6f5d6114acf80c54fbf6cf7..8dfb53de7a993cb0e6619bc9868c9fc331167c64 100644
+index f9930f707f74bb2bc6f5d6114acf80c54fbf6cf7..e8f76158535bdb848db962682ea1eeb75af336f8 100644
 --- a/core/src/mindustry/entities/units/BuildPlan.java
 +++ b/core/src/mindustry/entities/units/BuildPlan.java
 @@ -21,8 +21,6 @@ public class BuildPlan implements Position, QuadTreeObject{
@@ -24,7 +24,7 @@ index f9930f707f74bb2bc6f5d6114acf80c54fbf6cf7..8dfb53de7a993cb0e6619bc9868c9fc3
  
      /** Last progress.*/
      public float progress;
-@@ -111,22 +110,12 @@ public class BuildPlan implements Position, QuadTreeObject{
+@@ -111,22 +109,12 @@ public class BuildPlan implements Position, QuadTreeObject{
          copy.block = block;
          copy.breaking = breaking;
          copy.config = config;
@@ -48,10 +48,10 @@ index f9930f707f74bb2bc6f5d6114acf80c54fbf6cf7..8dfb53de7a993cb0e6619bc9868c9fc3
          if(breaking){
              return rect.set(-100f, -100f, 0f, 0f);
 diff --git a/core/src/mindustry/game/Schematics.java b/core/src/mindustry/game/Schematics.java
-index 71c227a32b7bc653df29212c71b36826da8791c3..93b85a591a895fb117f7b4fb983f25cd90a923a0 100644
+index d43599fef130da4ed935b7fc819acd73517477df..62ddc27653c07346ee62c8e50d30ae5148efc37f 100644
 --- a/core/src/mindustry/game/Schematics.java
 +++ b/core/src/mindustry/game/Schematics.java
-@@ -275,7 +275,7 @@ public class Schematics implements Loadable{
+@@ -276,7 +276,7 @@ public class Schematics implements Loadable{
  
      /** Creates an array of build plans from a schematic's data, centered on the provided x+y coordinates. */
      public Seq<BuildPlan> toPlans(Schematic schem, int x, int y){
