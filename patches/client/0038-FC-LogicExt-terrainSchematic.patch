@@ -45,7 +45,7 @@ index 866717c452850ab14c94e81c4b34b540afbc9553..05b6b25f0cf612d8cf39a798e9422f76
          }
          Tile tile = world.tile(place.x, place.y);
 diff --git a/core/src/mindustry/game/Schematics.java b/core/src/mindustry/game/Schematics.java
-index 20e5aeac5a46c49c792904f3eb6c5ec702b947a9..ce8f648cf5d11cc8585b734a7fe6778a13f3cdcf 100644
+index d992db855c0b4f78549e9769a7916806d16eb5f6..73cf53228343852f6ae58d3dda6d3e9599ee513f 100644
 --- a/core/src/mindustry/game/Schematics.java
 +++ b/core/src/mindustry/game/Schematics.java
 @@ -34,6 +34,7 @@ import mindustry.world.blocks.sandbox.*;
@@ -59,7 +59,7 @@ index 20e5aeac5a46c49c792904f3eb6c5ec702b947a9..ce8f648cf5d11cc8585b734a7fe6778a
 @@ -279,7 +280,7 @@ public class Schematics implements Loadable{
      /** Creates an array of build plans from a schematic's data, centered on the provided x+y coordinates. */
      public Seq<BuildPlan> toPlans(Schematic schem, int x, int y){
-         return schem.tiles.map(t -> new BuildPlan(t.x + x - schem.width/2, t.y + y - schem.height/2, t.rotation, t.block, t.config).original(t.x, t.y, schem.width, schem.height))
+         return schem.tiles.map(t -> new BuildPlan(t.x + x - schem.width/2, t.y + y - schem.height/2, t.rotation, t.block, t.config))
 -            .removeAll(s -> (!s.block.isVisible() && !(s.block instanceof CoreBlock)) || !s.block.unlockedNow()).sort(Structs.comparingInt(s -> -s.block.schematicPriority));
 +            .removeAll(s -> !LogicExt.terrainSchematic && ((!s.block.isVisible() && !(s.block instanceof CoreBlock)) || !s.block.unlockedNow())).sort(Structs.comparingInt(s -> -s.block.schematicPriority));
      }
@@ -127,7 +127,7 @@ index 20e5aeac5a46c49c792904f3eb6c5ec702b947a9..ce8f648cf5d11cc8585b734a7fe6778a
          return new Schematic(tiles, new StringMap(), width, height);
      }
 diff --git a/core/src/mindustry/input/MobileInput.java b/core/src/mindustry/input/MobileInput.java
-index 5b61bcb907807316906682135f04f710ac270790..5981c4395cd97d988109f1325dd0fd67f4f38fa1 100644
+index 3c291a14a3dcbaee09c33d8b0059c2b3b4b24c41..1ebb2888672ce37be40f9ffb2fc227cc901cd146 100644
 --- a/core/src/mindustry/input/MobileInput.java
 +++ b/core/src/mindustry/input/MobileInput.java
 @@ -235,15 +235,8 @@ public class MobileInput extends InputHandler implements GestureListener{

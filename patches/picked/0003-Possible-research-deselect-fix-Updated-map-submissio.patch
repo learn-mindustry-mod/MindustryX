@@ -1,0 +1,50 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Anuken <arnukren@gmail.com>
+Date: Sat, 10 May 2025 10:05:02 +0800
+Subject: [PATCH] Possible research deselect fix / Updated map submissions
+
+(cherry picked from commit 23c45154a957c8e39e9657d7bc495aa4b0fd4e31)
+---
+ core/src/mindustry/editor/MapEditorDialog.java   |  1 +
+ .../src/mindustry/ui/dialogs/ResearchDialog.java | 16 +++++++++++-----
+ 2 files changed, 12 insertions(+), 5 deletions(-)
+
+diff --git a/core/src/mindustry/editor/MapEditorDialog.java b/core/src/mindustry/editor/MapEditorDialog.java
+index 93b679be7c3b2a9101c08182818ce6c83ffa6fb3..1cc8c15c83754c4c543bbd72bd06d63f0c2e40a4 100644
+--- a/core/src/mindustry/editor/MapEditorDialog.java
++++ b/core/src/mindustry/editor/MapEditorDialog.java
+@@ -320,6 +320,7 @@ public class MapEditorDialog extends Dialog implements Disposable{
+     public @Nullable Map save(){
+         boolean isEditor = state.rules.editor;
+         state.rules.editor = false;
++        state.rules.allowEditRules = false;
+         state.rules.objectiveFlags.clear();
+         state.rules.objectives.each(MapObjective::reset);
+         String name = editor.tags.get("name", "").trim();
+diff --git a/core/src/mindustry/ui/dialogs/ResearchDialog.java b/core/src/mindustry/ui/dialogs/ResearchDialog.java
+index 5db3bfba9f5b975459511e14a5e0890b0d32a7ac..b2d7166a2c963ce6fe8c4c678033a7e1ba04dcb7 100644
+--- a/core/src/mindustry/ui/dialogs/ResearchDialog.java
++++ b/core/src/mindustry/ui/dialogs/ResearchDialog.java
+@@ -488,11 +488,17 @@ public class ResearchDialog extends BaseDialog{
+             }
+ 
+             if(mobile){
+-                tapped(() -> {
+-                    Element e = Core.scene.getHoverElement();
+-                    if(e == this){
+-                        hoverNode = null;
+-                        rebuild();
++                addListener(new InputListener(){
++                    @Override
++                    public boolean touchDown(InputEvent event, float x, float y, int pointer, KeyCode button){
++                        if(pointer == -1) return false;
++                        Element e = Core.scene.hit(Core.input.mouseX(pointer), Core.input.mouseY(pointer), true);
++                        if(e == View.this){
++                            hoverNode = null;
++                            rebuild();
++                        }
++
++                        return false;
+                     }
+                 });
+             }
