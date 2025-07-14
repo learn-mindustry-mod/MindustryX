@@ -9,13 +9,13 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 ---
- core/src/mindustry/core/ContentLoader.java | 17 ++++++++++
- core/src/mindustry/core/NetClient.java     |  2 ++
- core/src/mindustry/io/TypeIO.java          | 12 +++++--
- core/src/mindustry/net/Net.java            | 39 +++++++++++++++++++---
- core/src/mindustry/net/NetworkIO.java      | 13 +++++++-
+ core/src/mindustry/core/ContentLoader.java | 17 ++++++++
+ core/src/mindustry/core/NetClient.java     |  2 +
+ core/src/mindustry/io/TypeIO.java          | 12 +++++-
+ core/src/mindustry/net/Net.java            | 50 ++++++++++++++++++++--
+ core/src/mindustry/net/NetworkIO.java      | 13 +++++-
  core/src/mindustry/net/Packets.java        |  2 +-
- 6 files changed, 77 insertions(+), 8 deletions(-)
+ 6 files changed, 88 insertions(+), 8 deletions(-)
 
 diff --git a/core/src/mindustry/core/ContentLoader.java b/core/src/mindustry/core/ContentLoader.java
 index 1ef48b5018109fbf1ab14475c93ad4867a7fffbf..1b6076ffaa5b184f0743e421b2f013bd04d0a9ee 100644
@@ -110,7 +110,7 @@ index 93332c435d9383d9fb584e81f676171318f77c98..ea91419ee59ecc32cd45b75c85e3e9ec
              boolean writePlan = !headless || !net.server();
              write.b(writePlan ? 1 : 0); //always has config
 diff --git a/core/src/mindustry/net/Net.java b/core/src/mindustry/net/Net.java
-index 332f2e11d8575e0b70f3589e685c4beb5c7a9049..ffed1f9652a3e5444af16e1f03b390fe3a1f6de7 100644
+index 332f2e11d8575e0b70f3589e685c4beb5c7a9049..bb7c21c637cad2a9ca8b5074a4e438a82140ba00 100644
 --- a/core/src/mindustry/net/Net.java
 +++ b/core/src/mindustry/net/Net.java
 @@ -1,6 +1,7 @@
@@ -132,21 +132,26 @@ index 332f2e11d8575e0b70f3589e685c4beb5c7a9049..ffed1f9652a3e5444af16e1f03b390fe
  import static mindustry.Vars.*;
  
  @SuppressWarnings("unchecked")
-@@ -27,6 +27,9 @@ public class Net{
-     private static Seq<Prov<? extends Packet>> packetProvs = new Seq<>();
+@@ -28,6 +28,11 @@ public class Net{
      private static Seq<Class<? extends Packet>> packetClasses = new Seq<>();
      private static ObjectIntMap<Class<?>> packetToId = new ObjectIntMap<>();
+ 
++    private static boolean mappingLoaded = false;
 +    private static Seq<String> oldMappings = new Seq<>();
 +    private static ObjectIntMap<String> oldPacketToId = new ObjectIntMap<>();
 +    private static IntIntMap oldIdMappings = new IntIntMap();
- 
++
      private boolean server;
      private boolean active;
-@@ -48,6 +51,24 @@ public class Net{
- 
-         //register generated packet classes
+     private boolean clientLoaded;
+@@ -50,6 +55,30 @@ public class Net{
          Call.registerPackets();
-+
+     }
+ 
++    private static void initV146PacketsMapping(){
++        if(mappingLoaded) return;
++        mappingLoaded = true;
++        Log.info("Initializing v146 packets mapping...");
 +        Fi fi = Core.files != null ? Core.files.internal("packetsV146.txt") : new Fi("packetsV146.txt", Files.FileType.internal);
 +        oldMappings.addAll(fi.readString().replace("\r", "").split("\n"));
 +        for(String name : oldMappings){
@@ -164,14 +169,18 @@ index 332f2e11d8575e0b70f3589e685c4beb5c7a9049..ffed1f9652a3e5444af16e1f03b390fe
 +            if(!oldIdMappings.containsKey(i))
 +                Log.warn("Deleted packet: " + oldMappings.get(i));
 +        }
-     }
- 
++        Log.info("== End load v146 packets mapping ==");
++    }
++
      /** Registers a new packet type for serialization. */
-@@ -59,12 +80,16 @@ public class Net{
+     public static <T extends Packet> void registerPacket(Prov<T> cons){
+         packetProvs.add(cons);
+@@ -59,12 +88,18 @@ public class Net{
      }
  
      public static byte getPacketId(Packet packet){
 -        int id = packetToId.get(packet.getClass(), -1);
++        if(LogicExt.v146Mode) initV146PacketsMapping();
 +        int id = LogicExt.v146Mode ? oldPacketToId.get(packet.getClass().getSimpleName(), -1) : packetToId.get(packet.getClass(), -1);
          if(id == -1) throw new ArcRuntimeException("Unknown packet type: " + packet.getClass());
          return (byte)id;
@@ -179,13 +188,14 @@ index 332f2e11d8575e0b70f3589e685c4beb5c7a9049..ffed1f9652a3e5444af16e1f03b390fe
  
      public static <T extends Packet> T newPacket(byte id){
 +        if(LogicExt.v146Mode){
-+            int id2 = LogicExt.v146Mode ? oldIdMappings.get(id & 0xff, -1) : id & 0xff;
++            initV146PacketsMapping();
++            int id2 = oldIdMappings.get(id & 0xff, -1);
 +            return ((Prov<T>)packetProvs.get(id2)).get();
 +        }
          return ((Prov<T>)packetProvs.get(id & 0xff)).get();
      }
  
-@@ -199,6 +224,7 @@ public class Net{
+@@ -199,6 +234,7 @@ public class Net{
      }
  
      public void disconnect(){
@@ -193,7 +203,7 @@ index 332f2e11d8575e0b70f3589e685c4beb5c7a9049..ffed1f9652a3e5444af16e1f03b390fe
          if(active && !server){
              Log.info("Disconnecting.");
          }
-@@ -268,7 +294,12 @@ public class Net{
+@@ -268,7 +304,13 @@ public class Net{
       * Call to handle a packet being received for the client.
       */
      public void handleClientReceived(Packet object){
@@ -202,6 +212,7 @@ index 332f2e11d8575e0b70f3589e685c4beb5c7a9049..ffed1f9652a3e5444af16e1f03b390fe
 +            object.handled();
 +        }catch(RuntimeException e){
 +            if(LogicExt.contentsCompatibleMode && e.getCause() instanceof EOFException){
++                //ignore
 +            }else throw e;
 +        }
  
