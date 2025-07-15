@@ -4,11 +4,14 @@ Date: Mon, 14 Jul 2025 23:48:57 +0800
 Subject: [PATCH] FC(LogicExt) commandLogicAI
 
 ---
- core/src/mindustry/entities/comp/UnitComp.java | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ core/src/mindustry/entities/comp/UnitComp.java         | 3 ++-
+ core/src/mindustry/input/DesktopInput.java             | 4 ++--
+ core/src/mindustry/input/InputHandler.java             | 6 +++---
+ core/src/mindustry/ui/fragments/PlacementFragment.java | 2 +-
+ 4 files changed, 8 insertions(+), 7 deletions(-)
 
 diff --git a/core/src/mindustry/entities/comp/UnitComp.java b/core/src/mindustry/entities/comp/UnitComp.java
-index 351b1feab1e6930b1cbc48c978a77b87a22b0e3d..c474e2d483bee0cf4b3564dfe32b1a8b3a3fdd79 100644
+index 351b1feab1e6930b1cbc48c978a77b87a22b0e3d..fe44a128441e576d58ee00b2d49d27cdb5627324 100644
 --- a/core/src/mindustry/entities/comp/UnitComp.java
 +++ b/core/src/mindustry/entities/comp/UnitComp.java
 @@ -28,6 +28,7 @@ import mindustry.world.blocks.*;
@@ -19,12 +22,78 @@ index 351b1feab1e6930b1cbc48c978a77b87a22b0e3d..c474e2d483bee0cf4b3564dfe32b1a8b
  
  import static mindustry.Vars.*;
  import static mindustry.logic.GlobalVars.*;
-@@ -480,7 +481,7 @@ abstract class UnitComp implements Healthc, Physicsc, Hitboxc, Statusc, Teamc, I
+@@ -475,7 +476,7 @@ abstract class UnitComp implements Healthc, Physicsc, Hitboxc, Statusc, Teamc, I
  
-     /** @return whether the unit has a CommandAI controller */
-     public boolean isCommandable(){
--        return controller instanceof CommandAI;
-+        return controller instanceof CommandAI || (LogicExt.commandLogicAI.get() && allowCommand());
+     /** @return whether the unit *can* be commanded, even if its controller is not currently CommandAI. */
+     public boolean allowCommand(){
+-        return controller instanceof CommandAI || (controller instanceof LogicAI ai && (ai.controller == null || !ai.controller.block.privileged) && type.allowChangeCommands);
++        return controller instanceof CommandAI || (LogicExt.commandLogicAI.get() && controller instanceof LogicAI ai && (ai.controller == null || !ai.controller.block.privileged) && type.allowChangeCommands);
      }
  
-     public boolean canTarget(Teamc other){
+     /** @return whether the unit has a CommandAI controller */
+diff --git a/core/src/mindustry/input/DesktopInput.java b/core/src/mindustry/input/DesktopInput.java
+index c4328b04ee1889c9dfb4a906f9e280fb3597c076..d09cd740b88841a007b63d8c16ad2128397e785f 100644
+--- a/core/src/mindustry/input/DesktopInput.java
++++ b/core/src/mindustry/input/DesktopInput.java
+@@ -313,7 +313,7 @@ public class DesktopInput extends InputHandler{
+                     selectedUnits.set(selectedCommandUnits(Tmp.r1.x, Tmp.r1.y, Tmp.r1.width, Tmp.r1.height));
+                 }else {
+                     for(var unit : player.team().data().units){
+-                        if(unit.isCommandable()){
++                        if(unit.allowCommand()){
+                             selectedUnits.add(unit);
+                         }
+                     }
+@@ -329,7 +329,7 @@ public class DesktopInput extends InputHandler{
+                     selectedUnits.set(selectedCommandUnits(Tmp.r1.x, Tmp.r1.y, Tmp.r1.width, Tmp.r1.height, u -> u instanceof Payloadc));
+                 }else {
+                     for(var unit : player.team().data().units){
+-                        if(unit.isCommandable() && unit instanceof  Payloadc){
++                        if(unit.allowCommand() && unit instanceof  Payloadc){
+                             selectedUnits.add(unit);
+                         }
+                     }
+diff --git a/core/src/mindustry/input/InputHandler.java b/core/src/mindustry/input/InputHandler.java
+index f87732352cc7606d0b6c087cc65dfcacf1a33e13..7554385dd4c9a7e4d38802e3167917a17823a143 100644
+--- a/core/src/mindustry/input/InputHandler.java
++++ b/core/src/mindustry/input/InputHandler.java
+@@ -1120,7 +1120,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+ 
+         if(commandMode){
+             //happens sometimes
+-            selectedUnits.removeAll(u -> !u.isCommandable());
++            selectedUnits.removeAll(u -> !u.allowCommand());
+ 
+             //draw command overlay UI
+             for(Unit unit : selectedUnits){
+@@ -1991,7 +1991,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+         tmpUnits.clear();
+         float rad = 4f;
+         tree.intersect(x - rad/2f, y - rad/2f, rad, rad, tmpUnits);
+-        return tmpUnits.min(u -> u.isCommandable(), u -> u.dst(x, y) - u.hitSize/2f);
++        return tmpUnits.min(u -> u.allowCommand(), u -> u.dst(x, y) - u.hitSize/2f);
+     }
+ 
+     public @Nullable Unit selectedEnemyUnit(float x, float y){
+@@ -2013,7 +2013,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
+         tmpUnits.clear();
+         float rad = 4f;
+         tree.intersect(Tmp.r1.set(x - rad/2f, y - rad/2f, rad*2f + w, rad*2f + h).normalize(), tmpUnits);
+-        tmpUnits.removeAll(u -> !u.isCommandable() || !predicate.get(u));
++        tmpUnits.removeAll(u -> !u.allowCommand() || !predicate.get(u));
+         return tmpUnits;
+     }
+ 
+diff --git a/core/src/mindustry/ui/fragments/PlacementFragment.java b/core/src/mindustry/ui/fragments/PlacementFragment.java
+index f72028490ae976418fa8804a41100f5ec407c2d4..cd450dc7fb6bee86ffc3bcb8cb551f5b761d812f 100644
+--- a/core/src/mindustry/ui/fragments/PlacementFragment.java
++++ b/core/src/mindustry/ui/fragments/PlacementFragment.java
+@@ -690,7 +690,7 @@ public class PlacementFragment{
+                                         control.input.selectedUnits.clear();
+                                         control.input.commandBuildings.clear();
+                                         for(var unit : player.team().data().units){
+-                                            if(unit.isCommandable()){
++                                            if(unit.allowCommand()){
+                                                 control.input.selectedUnits.add(unit);
+                                             }
+                                         }
