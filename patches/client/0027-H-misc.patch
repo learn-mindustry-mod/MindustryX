@@ -182,7 +182,7 @@ index 8a3d830d8fe215154af569b863214dab26096f3a..5b0ee5946cb022e256aff23f2f1bfc71
  
      public static int roundAmount(int number){
 diff --git a/core/src/mindustry/game/Schematics.java b/core/src/mindustry/game/Schematics.java
-index 62ddc27653c07346ee62c8e50d30ae5148efc37f..d992db855c0b4f78549e9769a7916806d16eb5f6 100644
+index d43599fef130da4ed935b7fc819acd73517477df..0b5cb341ed1c4a6fa7d14f8c3a0ed79e656448d9 100644
 --- a/core/src/mindustry/game/Schematics.java
 +++ b/core/src/mindustry/game/Schematics.java
 @@ -99,7 +99,9 @@ public class Schematics implements Loadable{

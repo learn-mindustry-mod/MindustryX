@@ -54,7 +54,7 @@ index c4328b04ee1889c9dfb4a906f9e280fb3597c076..d09cd740b88841a007b63d8c16ad2128
                          }
                      }
 diff --git a/core/src/mindustry/input/InputHandler.java b/core/src/mindustry/input/InputHandler.java
-index f87732352cc7606d0b6c087cc65dfcacf1a33e13..7554385dd4c9a7e4d38802e3167917a17823a143 100644
+index 76dac8b604367c3f68bc910b2e5894710b43f486..c6c5d64a6f49d7e2df248fd2723f35842aaa7f19 100644
 --- a/core/src/mindustry/input/InputHandler.java
 +++ b/core/src/mindustry/input/InputHandler.java
 @@ -1120,7 +1120,7 @@ public abstract class InputHandler implements InputProcessor, GestureListener{
