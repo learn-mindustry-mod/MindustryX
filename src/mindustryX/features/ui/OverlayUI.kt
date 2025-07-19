@@ -12,6 +12,7 @@ import arc.scene.event.InputEvent
 import arc.scene.event.InputListener
 import arc.scene.event.Touchable
 import arc.scene.ui.ImageButton.ImageButtonStyle
+import arc.scene.ui.TextButton
 import arc.scene.ui.layout.Scl
 import arc.scene.ui.layout.Table
 import arc.scene.ui.layout.WidgetGroup
@@ -199,7 +200,7 @@ object OverlayUI {
                 addListener(ResizeListener())
 
                 table { header ->
-                    header.add("测试面板")
+                    header.add(data.title)
                     header.add().growX()
 
                     header.touchable = Touchable.enabled
@@ -271,18 +272,21 @@ object OverlayUI {
             t.touchable = Touchable.enabled
             t.visibility = Boolp { open }
             t.bottom()
-            t.defaults().size(Vars.iconLarge).pad(4f)
+            t.defaults().size(Vars.iconLarge).width(Vars.iconLarge * 1.5f).pad(4f)
             t.button(Icon.add) {
                 UIExtKt.showFloatSettingsPanel {
                     add("添加面板").color(Color.gold).align(Align.center).row()
-                    defaults().minWidth(120f).pad(4f)
+                    defaults().minWidth(120f).fillX().pad(4f)
                     windows.forEach {
-                        button(it.data.title) {
-                            it.data.enabled = true
-                        }.disabled { _ -> it.data.enabled }.row()
+                        add(TextButton(it.data.title).apply {
+                            label.setWrap(false)
+                            setDisabled { it.data.enabled }
+                            changed { it.data.enabled = true }
+                        }).row()
                     }
                 }
-            }.width(Vars.iconLarge * 1.5f)
+            }
+            t.button(Icon.exit) { toggle() }
         }
     }
 

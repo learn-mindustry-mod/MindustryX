@@ -6,7 +6,6 @@ import arc.util.Align
 import mindustry.core.PerfCounter
 import mindustry.game.EventType
 import mindustry.gen.Tex
-import mindustryX.features.ui.OverlayUI
 
 object DebugUtil {
     @JvmField
@@ -42,16 +41,14 @@ object DebugUtil {
     }
 
     @JvmStatic
-    fun initUI() {
-        OverlayUI.registerWindow("debug", Table(Tex.pane).apply {
-            left()
-            check("Render Debug") { renderDebug = it }.checked { renderDebug }.row()
-            label { "Draw: $lastDrawRequests" }.fillX().labelAlign(Align.left).row()
-            label { "Vertices: $lastVertices" }.fillX().labelAlign(Align.left).row()
-            label { "Texture: $lastSwitchTexture" }.fillX().labelAlign(Align.left).row()
-            label { "Flush: $lastFlushCount" }.fillX().labelAlign(Align.left).row()
-            image().update { DebugUtil.reset() }.row()
-        })
+    fun metricTable(): Table = Table(Tex.pane).apply {
+        left()
+        check("Render Debug") { renderDebug = it }.checked { renderDebug }.row()
+        label { "Draw: $lastDrawRequests" }.fillX().labelAlign(Align.left).row()
+        label { "Vertices: $lastVertices" }.fillX().labelAlign(Align.left).row()
+        label { "Texture: $lastSwitchTexture" }.fillX().labelAlign(Align.left).row()
+        label { "Flush: $lastFlushCount" }.fillX().labelAlign(Align.left).row()
+        image().update { DebugUtil.reset() }.row()
     }
 
     @JvmStatic

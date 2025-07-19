@@ -51,6 +51,10 @@ class GridTable : Table() {
         return cells.firstOrNull()?.get()
     }
 
+    override fun getMinWidth(): Float {
+        return cell.minWidth()
+    }
+
     override fun getPrefWidth(): Float {
         // prefer maxWidth
         return super.getMaxWidth()

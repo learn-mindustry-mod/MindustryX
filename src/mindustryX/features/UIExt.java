@@ -22,9 +22,7 @@ import mindustryX.features.ui.toolTable.*;
 import static mindustry.Vars.*;
 
 public class UIExt{
-    public static final CheckPref teamsStatDisplayVisible = new CheckPref("gameUI.teamsStatDisplay");
-    public static final CheckPref quickToolVisible = new CheckPref("gameUI.quickTool", true);
-    public static SettingsV2.Data<Integer> quickToolOffset = new SettingsV2.SliderPref("gameUI.quickToolOffset", 0, -250, 250, 10);
+    public static final CheckPref overlayButton = new CheckPref("gameUI.overlayButton", true);
 
     public static TeamSelectDialog teamSelect;
     public static ModsRecommendDialog modsRecommend = new ModsRecommendDialog();
@@ -36,37 +34,25 @@ public class UIExt{
     public static WaveInfoDisplay waveInfoDisplay = new WaveInfoDisplay();
     public static NewCoreItemsDisplay coreItems = new NewCoreItemsDisplay();
 
-    static{
-        teamsStatDisplayVisible.addFallbackName("showOtherTeamResource");
-        quickToolVisible.addFallbackName("showQuickToolTable");
-        quickToolOffset.addFallbackName("quickToolOffset");
-    }
-
     public static void init(){
         teamSelect = new TeamSelectDialog();
-
         teamsStatDisplay = new TeamsStatDisplay();
-        ui.hudGroup.fill(t -> {
-            t.name = "otherCore";
-            t.left().add(teamsStatDisplay.wrapped());
-            t.visible(teamsStatDisplayVisible::get);
-        });
 
         ui.hudGroup.fill(t -> {
-            t.right().name = "quickTool";
-            t.defaults().right();
-            t.update(() -> t.y = quickToolOffset.getValue());
-            t.add(auxiliaryTools.wrapped()).row();
-            t.add(NewToolTable.INSTANCE.wrapped()).row();
-            t.add(advanceToolTable.wrapped()).row();
-            t.add(advanceBuildTool.wrapped()).row();
-            t.visible(quickToolVisible::get);
+            t.left().name = "quickTool";
+            t.button(Icon.settings, Styles.flati, iconMed, OverlayUI.INSTANCE::toggle);
+            t.visible(overlayButton::get);
         });
 
         LogicSupport.init();
         OverlayUI.INSTANCE.init();
 
-        DebugUtil.initUI();
+        OverlayUI.INSTANCE.registerWindow("debug", DebugUtil.metricTable());
+        OverlayUI.INSTANCE.registerWindow("auxiliaryTools", auxiliaryTools);
+        OverlayUI.INSTANCE.registerWindow("quickTool", NewToolTable.INSTANCE);
+        OverlayUI.INSTANCE.registerWindow("mappingTool", advanceToolTable);
+        OverlayUI.INSTANCE.registerWindow("advanceBuildTool", advanceBuildTool);
+        OverlayUI.INSTANCE.registerWindow("teamsStats", teamsStatDisplay.wrapped());
     }
 
     public static void buildPositionRow(Table tt, Vec2 vec){

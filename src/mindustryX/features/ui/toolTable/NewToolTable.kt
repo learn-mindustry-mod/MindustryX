@@ -33,7 +33,6 @@ object NewToolTable : ToolTableBase("${Iconc.settings}") {
         gridTable.defaults().size(Vars.iconLarge)
 
         button("[cyan]信", "中央监控室") { UIExt.arcMessageDialog.show() }
-        toggle("[cyan]资", "多队伍资源信息显示(左侧)", { UIExt.teamsStatDisplayVisible.value }) { UIExt.teamsStatDisplayVisible.toggle() }
         button("[cyan]S", "同步一波") { Call.sendChatMessage("/sync") }
         button("[cyan]观", "观察者模式") { Call.sendChatMessage("/ob") }
         button("[cyan]版", "服务器信息版") { Call.sendChatMessage("/broad") }
