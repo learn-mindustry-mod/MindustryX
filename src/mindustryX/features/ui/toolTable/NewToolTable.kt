@@ -42,6 +42,7 @@ object NewToolTable : ToolTableBase("${Iconc.settings}") {
         button("[white]法", "法国军礼") {
             Vars.ui.showConfirm("受不了，直接投降？") { Call.sendChatMessage("/vote gameover") }
         }
+        toggle("扫", "扫描模式", { RenderExt.transportScan.value }) { RenderExt.transportScan.toggle() }
 
         toggle("[cyan]块", "建筑显示", { RenderExt.blockRenderLevel > 0 }) { RenderExt.blockRenderLevel0.cycle() }
         toggle("[cyan]兵", "兵种显示", { !RenderExt.unitHide.value }) { RenderExt.unitHide.toggle() }
@@ -49,9 +50,8 @@ object NewToolTable : ToolTableBase("${Iconc.settings}") {
         toggle("[cyan]效", "特效显示", { Vars.renderer.enableEffects }) { Settings.toggle("effects") }
         toggle("[cyan]墙", "墙体阴影显示", { Vars.enableDarkness }) { Vars.enableDarkness = !Vars.enableDarkness }
         toggle("[cyan]${Iconc.map}", "小地图显示", { Core.settings.getBool("minimap") }) { Settings.toggle("minimap") }
-
         toggle("箱", "碰撞箱显示", { RenderExt.unitHitbox.value }) { RenderExt.unitHitbox.toggle() }
-        toggle("扫", "扫描模式", { RenderExt.transportScan.value }) { RenderExt.transportScan.toggle() }
+
         button("${Iconc.blockRadar}", "雷达开关") { ArcRadar.mobileRadar = !ArcRadar.mobileRadar }.get().also {
             SettingsV2.bindQuickSettings(it, ArcRadar.settings)
         }
