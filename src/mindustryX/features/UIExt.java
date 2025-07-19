@@ -64,6 +64,9 @@ public class UIExt{
         });
 
         LogicSupport.init();
+        OverlayUI.INSTANCE.init();
+
+        DebugUtil.initUI();
     }
 
     public static void buildPositionRow(Table tt, Vec2 vec){

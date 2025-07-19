@@ -5,6 +5,7 @@ import arc.input.KeyBind
 import arc.input.KeyBind.KeybindValue
 import arc.input.KeyCode
 import mindustry.Vars
+import mindustryX.features.ui.OverlayUI
 
 @Suppress("EnumEntryName")
 enum class BindingExt(val default: KeybindValue = KeyCode.unset, val category: String? = null, val onTap: (() -> Unit)? = null) {
@@ -22,7 +23,7 @@ enum class BindingExt(val default: KeybindValue = KeyCode.unset, val category: S
     toggle_block_render(KeyCode.unset, onTap = { RenderExt.blockRenderLevel0.cycle() }),
     focusLogicController(KeyCode.unset, onTap = { mindustryX.features.func.focusLogicController() }),
     placeRouterReplacement(KeyCode.shiftLeft),
-    openDebugDialog(KeyCode.f12, onTap = { DebugUtil.openDialog() }),
+    openDebugDialog(KeyCode.f12, onTap = { OverlayUI.toggle() }),
     commandLogicAI(KeyCode.unset, onTap = { LogicExt.commandLogicAI.toggle() }),
     ;
 

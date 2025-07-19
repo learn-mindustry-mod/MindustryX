@@ -3,6 +3,7 @@ package mindustryX.features.ui
 import arc.Core
 import arc.Graphics.Cursor.SystemCursor
 import arc.func.Boolp
+import arc.graphics.Color
 import arc.input.KeyCode
 import arc.math.geom.Rect
 import arc.math.geom.Vec2
@@ -11,6 +12,7 @@ import arc.scene.event.InputEvent
 import arc.scene.event.InputListener
 import arc.scene.event.Touchable
 import arc.scene.ui.ImageButton
+import arc.scene.ui.ImageButton.ImageButtonStyle
 import arc.scene.ui.layout.Scl
 import arc.scene.ui.layout.Table
 import arc.scene.ui.layout.WidgetGroup
@@ -20,9 +22,66 @@ import mindustry.Vars
 import mindustry.gen.Icon
 import mindustry.gen.Tex
 import mindustry.ui.Styles
+import mindustryX.features.SettingsV2
+import mindustryX.features.SettingsV2.PersistentProvider
+import mindustryX.features.UIExtKt
+import kotlin.math.roundToInt
 
 object OverlayUI {
-    class Window(val table: Table) : Table() {
+    data class WindowData(
+        val enabled: Boolean = false,
+        val pinned: Boolean = false,
+        val rect: Rect? = null,
+    )
+
+    class WindowSetting(name: String) : SettingsV2.Data<WindowData>(name, WindowData()) {
+        init {
+            persistentProvider = PersistentProvider.AsUBJson(
+                PersistentProvider.Arc(name),
+                WindowData::class.java
+            )
+        }
+
+        override fun buildUI(table: Table) {
+            table.table().fillX().get().apply {
+                image(Icon.list).padRight(4f)
+                add(title).width(148f).padRight(8f)
+
+                val myToggleI = ImageButtonStyle(Styles.clearNonei).apply {
+                    imageUpColor = Color.darkGray
+                    imageCheckedColor = Color.white
+                }
+                button(Icon.eyeSmall, myToggleI, Vars.iconSmall) {
+                    set(value.copy(enabled = !value.enabled))
+                }.padRight(4f).checked { value.enabled }
+                button(Icon.lockSmall, myToggleI, Vars.iconSmall) {
+                    set(value.copy(pinned = !value.pinned))
+                }.padRight(4f).checked { value.pinned }
+                label {
+                    val rect = value.rect ?: return@label "[grey][UNUSED]"
+                    "[${rect.x.roundToInt()},${rect.y.roundToInt()} - ${rect.width.roundToInt()}x${rect.height.roundToInt()}]"
+                }
+
+                add().growX()
+                addTools()
+            }
+            table.row()
+        }
+
+        var enabled: Boolean
+            get() = value.enabled
+            set(v) {
+                set(value.copy(enabled = v))
+            }
+
+        var pinned: Boolean
+            get() = value.pinned
+            set(v) {
+                set(value.copy(pinned = v))
+            }
+    }
+
+    class Window(name: String, val table: Table) : Table() {
         inner class DragListener : InputListener() {
             private val last = Vec2()
             override fun touchDown(event: InputEvent, x: Float, y: Float, pointer: Int, button: KeyCode?): Boolean {
@@ -113,18 +172,27 @@ object OverlayUI {
             }
         }
 
+        val setting = WindowSetting("overlayUI.$name")
         private val paneBg = Tex.pane
-        var pinned = false
-        var rect = Rect(0f, 0f, 800f, 600f)
         private var dragging = false
 
         init {
-            rebuild()
-            update { if (!dragging) keepInStage() }
+            this.name = name
+            visible { setting.enabled && (open || setting.value.pinned) }
+            update {
+                if (!dragging) keepInStage()
+                if (setting.changed()) rebuild()
+            }
         }
 
         fun rebuild() {
             clear()
+            val rect = setting.value.rect ?: Rect().setCentered(
+                parent.width / 2, parent.height / 2,
+                parent.width.coerceAtMost(Scl.scl(600f)) / Scl.scl(),
+                parent.height.coerceAtMost(Scl.scl(400f)) / Scl.scl(),
+            )
+
             if (open) {
                 //编辑模式
                 background = paneBg
@@ -133,7 +201,6 @@ object OverlayUI {
 
                 table { header ->
                     header.add("测试面板")
-                    header.label { "$rect" }
                     header.add().growX()
 
                     header.touchable = Touchable.enabled
@@ -146,7 +213,7 @@ object OverlayUI {
                     header.button(Icon.lockOpenSmall, ImageButton.ImageButtonStyle(Styles.cleari).apply {
                         up = null
                         imageChecked = Icon.lockSmall
-                    }) { pinned = !pinned }.checked { pinned }
+                    }) { setting.pinned = !setting.pinned }.checked { setting.pinned }
                     header.button(Icon.cancelSmall, Styles.cleari) {
                         remove()
                     }
@@ -172,18 +239,21 @@ object OverlayUI {
             keepInStage()
             validate()
             val pos = localToParentCoordinates(Tmp.v1.set(table.x, table.y))
-            rect.setPosition(pos)
-            rect.setSize(table.width / Scl.scl(), table.height / Scl.scl())
 
+            val rect = Rect(pos.x, pos.y, table.width / Scl.scl(), table.height / Scl.scl())
             //自动贴边处理
             if (getX(Align.left) == 0f) rect.x = 0f
             if (getX(Align.right) == parent.width) rect.x = parent.width - rect.width
             if (getY(Align.bottom) == 0f) rect.y = 0f
             if (getY(Align.top) == parent.height) rect.y = parent.height - rect.height
+            setting.set(setting.value.copy(rect = rect))
         }
     }
 
     var open = false
+        private set
+    val windows: List<Window>
+        get() = group.children.filterIsInstance<Window>()
 
     private val group = WidgetGroup().apply {
         name = "overlayUI"
@@ -192,23 +262,40 @@ object OverlayUI {
         zIndex = 99
 
         fill(Styles.black6) { t ->
+            t.name = "overlayUI-bg"
             t.touchable = Touchable.enabled
             t.visibility = Boolp { open }
             t.bottom()
             t.defaults().size(Vars.iconLarge).pad(4f)
             t.button(Icon.add) {
-                addChild(Window(Table(Tex.whitePane)))
+                UIExtKt.showFloatSettingsPanel {
+                    add("添加面板").color(Color.gold).align(Align.center).row()
+                    defaults().minWidth(120f).pad(4f)
+                    windows.forEach {
+                        if (it.setting.enabled) return@forEach
+                        button(it.setting.title) {
+                            it.setting.enabled = true
+                        }.row()
+                    }
+                }
             }.width(Vars.iconLarge * 1.5f)
         }
+    }
 
-        addChild(Window(Table(Tex.whitePane)))
+    fun registerWindow(name: String, table: Table): Window {
+        val window = Window(name, table)
+        group.addChild(window)
+        return window
+    }
+
+    fun init() {
+        Core.scene.add(group)
     }
 
     fun toggle() {
-        Core.scene.add(group)
         open = !open
         group.children.filterIsInstance<Window>().forEach {
-            it.visible = open || it.pinned
+            it.updateVisibility()
             if (it.visible) it.rebuild()
         }
     }

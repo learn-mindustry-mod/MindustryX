@@ -1,13 +1,12 @@
 package mindustryX.features
 
 import arc.Events
-import arc.util.Strings
+import arc.scene.ui.layout.Table
+import arc.util.Align
 import mindustry.core.PerfCounter
 import mindustry.game.EventType
-import mindustry.ui.Styles
-import mindustry.ui.dialogs.BaseDialog
-import mindustryX.features.ui.comp.DragSortListener
-import mindustryX.features.ui.comp.GridTable
+import mindustry.gen.Tex
+import mindustryX.features.ui.OverlayUI
 
 object DebugUtil {
     @JvmField
@@ -43,36 +42,23 @@ object DebugUtil {
     }
 
     @JvmStatic
+    fun initUI() {
+        OverlayUI.registerWindow("debug", Table(Tex.pane).apply {
+            left()
+            check("Render Debug") { renderDebug = it }.checked { renderDebug }.row()
+            label { "Draw: $lastDrawRequests" }.fillX().labelAlign(Align.left).row()
+            label { "Vertices: $lastVertices" }.fillX().labelAlign(Align.left).row()
+            label { "Texture: $lastSwitchTexture" }.fillX().labelAlign(Align.left).row()
+            label { "Flush: $lastFlushCount" }.fillX().labelAlign(Align.left).row()
+            image().update { DebugUtil.reset() }.row()
+        })
+    }
+
+    @JvmStatic
     fun reset() {
         lastSwitchTexture = 0
         lastFlushCount = 0
         lastVertices = 0
         lastDrawRequests = 0
-    }
-
-    @JvmStatic
-    fun openDialog() = BaseDialog("DEBUG").apply {
-        cont.apply {
-            check("Render Debug") { renderDebug = it }.checked { renderDebug }.row()
-            label {
-                Strings.format("D/V/T/F @/@/@/@", lastDrawRequests, lastVertices, lastSwitchTexture, lastFlushCount).also {
-                    DebugUtil.reset()
-                }
-            }.style(Styles.outlineLabel).row()
-
-            add(GridTable().apply {
-                defaults().width(80f).height(40f).pad(4f)
-
-                repeat(48) {
-                    val cell = button("#$it") {
-                        // Do nothing, just for debug
-                    }
-                    cell.get().addListener(DragSortListener())
-                }
-            }).width(480f).row()
-        }
-        addCloseButton()
-        closeOnBack()
-        show()
     }
 }
