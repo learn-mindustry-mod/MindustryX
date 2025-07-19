@@ -25,6 +25,7 @@ import mindustry.gen.Icon
 import mindustry.gen.Tex
 import mindustry.ui.Styles
 import mindustryX.features.SettingsV2
+import mindustryX.features.SettingsV2.CheckPref
 import mindustryX.features.SettingsV2.PersistentProvider
 import mindustryX.features.UIExtKt
 import kotlin.math.roundToInt
@@ -208,10 +209,6 @@ object OverlayUI {
                 touchable = Touchable.enabled
                 addListener(ResizeListener())
 
-                addChild(ImageButton(Icon.resize).apply {
-                    addListener(FixedResizeListener(Align.left or Align.bottom))
-                })
-
                 table { header ->
                     header.add(data.title)
                     header.add().growX()
@@ -252,6 +249,11 @@ object OverlayUI {
                     validate()
                     cell.size(Float.NEGATIVE_INFINITY)
                 }
+
+                addChild(ImageButton(Icon.resize).apply {
+                    setSize(Vars.iconMed)
+                    addListener(FixedResizeListener(Align.left or Align.bottom))
+                })
             } else {
                 //预览模式, 作为Group使用
                 background = null
@@ -297,6 +299,7 @@ object OverlayUI {
         }
     }
 
+    private val showOverlayButton: CheckPref = CheckPref("gameUI.overlayButton", true)
     var open = false
         private set
     val windows: List<Window>
@@ -342,6 +345,11 @@ object OverlayUI {
                 }
             }
             t.button(Icon.exit) { toggle() }
+        }
+        fill { t ->
+            t.left().name = "toggle"
+            t.button(Icon.settings, Vars.iconMed) { toggle() }
+            t.visible { showOverlayButton.value }
         }
     }
 

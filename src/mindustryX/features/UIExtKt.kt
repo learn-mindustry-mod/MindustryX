@@ -6,24 +6,15 @@ import arc.func.Prov
 import arc.scene.ui.layout.Table
 import arc.util.Align
 import mindustry.Vars
-import mindustry.gen.Icon
 import mindustry.gen.Tex
-import mindustry.ui.Styles
-import mindustryX.features.SettingsV2.CheckPref
 import mindustryX.features.ui.LogicSupport
 import mindustryX.features.ui.OverlayUI
 import mindustryX.features.ui.toolTable.NewToolTable
 
 object UIExtKt {
-    private val showOverlayButton: CheckPref = CheckPref("gameUI.overlayButton", true)
 
     @JvmStatic
     fun init() {
-        Vars.ui.hudGroup.fill { t: Table ->
-            t.left().name = "quickTool"
-            t.button(Icon.settings, Styles.flati, Vars.iconMed) { OverlayUI.toggle() }
-            t.visible { showOverlayButton.value }
-        }
         LogicSupport.init()
         OverlayUI.init()
 
