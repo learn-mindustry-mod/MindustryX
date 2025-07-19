@@ -17,6 +17,7 @@ import mindustry.world.blocks.liquid.*;
 import mindustry.world.blocks.production.*;
 import mindustry.world.blocks.storage.*;
 import mindustry.world.meta.*;
+import mindustryX.features.func.*;
 
 import static mindustry.Vars.*;
 
@@ -27,6 +28,13 @@ public class ArcTransportScanMode{
     private static final Seq<Point> path = new Seq<>();
 
     public static void draw(){
+        Draw.z(Layer.overlayUI + 0.01f);
+
+        Vec2 pos = Core.input.mouseWorld();
+        String text = Strings.format("@,@\n距离: @",
+        (int)(pos.x / tilesize), (int)(pos.y / tilesize), (int)(player.dst(pos) / tilesize));
+        FuncX.drawText(pos, text);
+
         Draw.z(Layer.overlayUI);
 
         //check tile being hovered over
