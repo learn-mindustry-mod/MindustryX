@@ -11,7 +11,6 @@ import arc.scene.Element
 import arc.scene.event.InputEvent
 import arc.scene.event.InputListener
 import arc.scene.event.Touchable
-import arc.scene.ui.ImageButton
 import arc.scene.ui.ImageButton.ImageButtonStyle
 import arc.scene.ui.layout.Scl
 import arc.scene.ui.layout.Table
@@ -172,25 +171,25 @@ object OverlayUI {
             }
         }
 
-        val setting = WindowSetting("overlayUI.$name")
+        val data = WindowSetting("overlayUI.$name")
         private val paneBg = Tex.pane
         private var dragging = false
+        val settings = mutableListOf<SettingsV2.Data<*>>(data)
 
         init {
             this.name = name
-            visible { setting.enabled && (open || setting.value.pinned) }
+            visible { data.enabled && (open || data.value.pinned) }
             update {
                 if (!dragging) keepInStage()
-                if (setting.changed()) rebuild()
+                if (data.changed()) rebuild()
             }
         }
 
         fun rebuild() {
             clear()
-            val rect = setting.value.rect ?: Rect().setCentered(
+            val rect = data.value.rect ?: Rect().setCentered(
                 parent.width / 2, parent.height / 2,
-                parent.width.coerceAtMost(Scl.scl(600f)) / Scl.scl(),
-                parent.height.coerceAtMost(Scl.scl(400f)) / Scl.scl(),
+                table.prefWidth, table.prefHeight,
             )
 
             if (open) {
@@ -208,14 +207,20 @@ object OverlayUI {
 
                     header.defaults().size(Vars.iconMed).pad(2f)
                     header.button(Icon.settingsSmall, Styles.cleari) {
+                        UIExtKt.showFloatSettingsPanel {
+                            defaults().minWidth(120f).pad(4f)
+                            settings.forEach { setting ->
+                                setting.buildUI(this)
+                            }
+                        }
                     }
                     header.add().width(Vars.iconMed / 2)
-                    header.button(Icon.lockOpenSmall, ImageButton.ImageButtonStyle(Styles.cleari).apply {
+                    header.button(Icon.lockOpenSmall, ImageButtonStyle(Styles.cleari).apply {
                         up = null
                         imageChecked = Icon.lockSmall
-                    }) { setting.pinned = !setting.pinned }.checked { setting.pinned }
+                    }) { data.pinned = !data.pinned }.checked { data.pinned }
                     header.button(Icon.cancelSmall, Styles.cleari) {
-                        setting.enabled = false
+                        data.enabled = false
                     }
                 }.fillX().row()
                 image().fillX().row()
@@ -246,7 +251,7 @@ object OverlayUI {
             if (getX(Align.right) == parent.width) rect.x = parent.width - rect.width
             if (getY(Align.bottom) == 0f) rect.y = 0f
             if (getY(Align.top) == parent.height) rect.y = parent.height - rect.height
-            setting.set(setting.value.copy(rect = rect))
+            data.set(data.value.copy(rect = rect))
         }
     }
 
@@ -272,9 +277,9 @@ object OverlayUI {
                     add("添加面板").color(Color.gold).align(Align.center).row()
                     defaults().minWidth(120f).pad(4f)
                     windows.forEach {
-                        button(it.setting.title) {
-                            it.setting.enabled = true
-                        }.disabled { _ -> it.setting.enabled }.row()
+                        button(it.data.title) {
+                            it.data.enabled = true
+                        }.disabled { _ -> it.data.enabled }.row()
                     }
                 }
             }.width(Vars.iconLarge * 1.5f)
