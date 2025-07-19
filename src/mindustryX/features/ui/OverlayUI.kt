@@ -215,7 +215,7 @@ object OverlayUI {
                         imageChecked = Icon.lockSmall
                     }) { setting.pinned = !setting.pinned }.checked { setting.pinned }
                     header.button(Icon.cancelSmall, Styles.cleari) {
-                        remove()
+                        setting.enabled = false
                     }
                 }.fillX().row()
                 image().fillX().row()
@@ -272,10 +272,9 @@ object OverlayUI {
                     add("添加面板").color(Color.gold).align(Align.center).row()
                     defaults().minWidth(120f).pad(4f)
                     windows.forEach {
-                        if (it.setting.enabled) return@forEach
                         button(it.setting.title) {
                             it.setting.enabled = true
-                        }.row()
+                        }.disabled { _ -> it.setting.enabled }.row()
                     }
                 }
             }.width(Vars.iconLarge * 1.5f)
