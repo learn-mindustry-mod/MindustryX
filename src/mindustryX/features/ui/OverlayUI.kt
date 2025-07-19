@@ -3,6 +3,7 @@ package mindustryX.features.ui
 import arc.Core
 import arc.Graphics.Cursor.SystemCursor
 import arc.func.Boolp
+import arc.func.Prov
 import arc.graphics.Color
 import arc.input.KeyCode
 import arc.math.geom.Rect
@@ -175,11 +176,13 @@ object OverlayUI {
         val data = WindowSetting("overlayUI.$name")
         private val paneBg = Tex.pane
         private var dragging = false
+
+        var availability: Prov<Boolean> = Prov { true }
         val settings = mutableListOf<SettingsV2.Data<*>>(data)
 
         init {
             this.name = name
-            visible { data.enabled && (open || data.value.pinned) }
+            visible { data.enabled && availability.get() && (open || data.value.pinned) }
             update {
                 if (!dragging) keepInStage()
                 if (data.changed()) rebuild()
@@ -277,12 +280,26 @@ object OverlayUI {
                 UIExtKt.showFloatSettingsPanel {
                     add("添加面板").color(Color.gold).align(Align.center).row()
                     defaults().minWidth(120f).fillX().pad(4f)
+                    val notAvailable = mutableListOf<Window>()
                     windows.forEach {
+                        if (!it.availability.get()) {
+                            notAvailable.add(it)
+                            return@forEach
+                        }
                         add(TextButton(it.data.title).apply {
                             label.setWrap(false)
                             setDisabled { it.data.enabled }
                             changed { it.data.enabled = true }
                         }).row()
+                    }
+                    if (notAvailable.isNotEmpty()) {
+                        add("当前不可用的面板:").align(Align.center).row()
+                        notAvailable.forEach {
+                            add(TextButton(it.data.title).apply {
+                                label.setWrap(false)
+                                isDisabled = true
+                            }).row()
+                        }
                     }
                 }
             }

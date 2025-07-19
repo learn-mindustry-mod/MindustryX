@@ -15,15 +15,12 @@ import mindustry.content.*;
 import mindustry.core.*;
 import mindustry.gen.*;
 import mindustry.ui.*;
-import mindustryX.features.SettingsV2.*;
 import mindustryX.features.ui.*;
 import mindustryX.features.ui.toolTable.*;
 
 import static mindustry.Vars.*;
 
 public class UIExt{
-    public static final CheckPref overlayButton = new CheckPref("gameUI.overlayButton", true);
-
     public static TeamSelectDialog teamSelect;
     public static ModsRecommendDialog modsRecommend = new ModsRecommendDialog();
     public static TeamsStatDisplay teamsStatDisplay;
@@ -38,21 +35,7 @@ public class UIExt{
         teamSelect = new TeamSelectDialog();
         teamsStatDisplay = new TeamsStatDisplay();
 
-        ui.hudGroup.fill(t -> {
-            t.left().name = "quickTool";
-            t.button(Icon.settings, Styles.flati, iconMed, OverlayUI.INSTANCE::toggle);
-            t.visible(overlayButton::get);
-        });
-
-        LogicSupport.init();
-        OverlayUI.INSTANCE.init();
-
-        OverlayUI.INSTANCE.registerWindow("debug", DebugUtil.metricTable());
-        OverlayUI.INSTANCE.registerWindow("auxiliaryTools", auxiliaryTools);
-        OverlayUI.INSTANCE.registerWindow("quickTool", NewToolTable.INSTANCE);
-        OverlayUI.INSTANCE.registerWindow("mappingTool", advanceToolTable);
-        OverlayUI.INSTANCE.registerWindow("advanceBuildTool", advanceBuildTool);
-        OverlayUI.INSTANCE.registerWindow("teamsStats", teamsStatDisplay.wrapped());
+        UIExtKt.init();
     }
 
     public static void buildPositionRow(Table tt, Vec2 vec){
