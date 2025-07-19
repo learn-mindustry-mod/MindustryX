@@ -12,6 +12,7 @@ import arc.scene.Element
 import arc.scene.event.InputEvent
 import arc.scene.event.InputListener
 import arc.scene.event.Touchable
+import arc.scene.ui.ImageButton
 import arc.scene.ui.ImageButton.ImageButtonStyle
 import arc.scene.ui.TextButton
 import arc.scene.ui.layout.Scl
@@ -138,6 +139,7 @@ object OverlayUI {
 
             override fun touchDown(event: InputEvent, x: Float, y: Float, pointer: Int, button: KeyCode): Boolean {
                 if (Core.app.isMobile && pointer != 0) return false
+                mouseMoved(event, x, y)
                 if (event.targetActor != this@Window || resizeSide == 0) return false
                 last.set(event.stageX, event.stageY)
                 toFront()
@@ -148,23 +150,32 @@ object OverlayUI {
                 if (Core.app.isMobile && pointer != 0) return
                 val delta = Tmp.v1.set(event.stageX, event.stageY).sub(last)
                 last.set(event.stageX, event.stageY)
+                dragResize(resizeSide, delta)
+            }
 
-                //消除不相关方向偏置
-                if (Align.isCenterHorizontal(resizeSide)) delta.x = 0f
-                if (Align.isCenterVertical(resizeSide)) delta.y = 0f
-                //delta 将delta转换为尺寸增量
-                if (Align.isLeft(resizeSide)) delta.x = -delta.x
-                if (Align.isBottom(resizeSide)) delta.y = -delta.y
-                //clamp delta变化
-                if (width + delta.x < minWidth) delta.x = minWidth - width
-                if (maxWidth > 0 && width + delta.x > maxWidth) delta.x = maxWidth - width
-                if (height + delta.y < minHeight) delta.y = minHeight - height
-                if (maxHeight > 0 && height + delta.y > maxHeight) delta.y = maxHeight - height
-                //应用delta
-                if (Align.isLeft(resizeSide)) this@Window.x -= delta.x
-                if (Align.isBottom(resizeSide)) this@Window.y -= delta.y
-                setSize(width + delta.x, height + delta.y)
+            override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: KeyCode?) {
+                if (Core.app.isMobile && pointer != 0) return
+                saveTableRect()
+            }
+        }
 
+        inner class FixedResizeListener(val align: Int) : InputListener() {
+            private val last = Vec2()
+
+            override fun touchDown(event: InputEvent, x: Float, y: Float, pointer: Int, button: KeyCode): Boolean {
+                if (Core.app.isMobile && pointer != 0) return false
+                mouseMoved(event, x, y)
+                if (event.targetActor != event.listenerActor) return false
+                last.set(event.stageX, event.stageY)
+                toFront()
+                return true
+            }
+
+            override fun touchDragged(event: InputEvent, x: Float, y: Float, pointer: Int) {
+                if (Core.app.isMobile && pointer != 0) return
+                val delta = Tmp.v1.set(event.stageX, event.stageY).sub(last)
+                last.set(event.stageX, event.stageY)
+                dragResize(align, delta)
             }
 
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: KeyCode?) {
@@ -191,16 +202,15 @@ object OverlayUI {
 
         fun rebuild() {
             clear()
-            val rect = data.value.rect ?: Rect().setCentered(
-                parent.width / 2, parent.height / 2,
-                table.prefWidth, table.prefHeight,
-            )
-
             if (open) {
                 //编辑模式
                 background = paneBg
                 touchable = Touchable.enabled
                 addListener(ResizeListener())
+
+                addChild(ImageButton(Icon.resize).apply {
+                    addListener(FixedResizeListener(Align.left or Align.bottom))
+                })
 
                 table { header ->
                     header.add(data.title)
@@ -218,7 +228,7 @@ object OverlayUI {
                             }
                         }
                     }
-                    header.add().width(Vars.iconMed / 2)
+                    header.add().width(8f)
                     header.button(Icon.lockOpenSmall, ImageButtonStyle(Styles.cleari).apply {
                         up = null
                         imageChecked = Icon.lockSmall
@@ -229,27 +239,55 @@ object OverlayUI {
                 }.fillX().row()
                 image().fillX().row()
 
-                setPosition(rect.x - background.leftWidth, rect.y - background.bottomHeight)
-                val tableCell = add(table).size(rect.width, rect.height).grow()
-                pack()
-                tableCell.size(Float.NEGATIVE_INFINITY)
+                val rect = data.value.rect
+                if (rect == null) {
+                    add(table).grow()
+                    pack()
+                    setPosition(parent.getX(Align.center), parent.getY(Align.center), Align.center)
+                    saveTableRect()
+                } else {
+                    val cell = add(table).size(rect.width / Scl.scl(), rect.height / Scl.scl()).grow()
+                    setPosition(rect.x - background.leftWidth, rect.y - background.bottomHeight)
+                    setSize(minWidth, minHeight)
+                    validate()
+                    cell.size(Float.NEGATIVE_INFINITY)
+                }
             } else {
                 //预览模式, 作为Group使用
                 background = null
-                setPosition(rect.x, rect.y)
                 touchable = Touchable.childrenOnly
                 add(table).grow()
-                setBounds(rect.x, rect.y, rect.width, rect.height)
+                data.value.rect?.let { rect ->
+                    setBounds(rect.x, rect.y, rect.width, rect.height)
+                }
             }
+        }
+
+        fun dragResize(side: Int, delta: Vec2) {
+            //消除不相关方向偏置
+            if (Align.isCenterHorizontal(side)) delta.x = 0f
+            if (Align.isCenterVertical(side)) delta.y = 0f
+            //delta 将delta转换为尺寸增量
+            if (Align.isLeft(side)) delta.x = -delta.x
+            if (Align.isBottom(side)) delta.y = -delta.y
+            //clamp delta变化
+            if (width + delta.x < minWidth) delta.x = minWidth - width
+            if (maxWidth > 0 && width + delta.x > maxWidth) delta.x = maxWidth - width
+            if (height + delta.y < minHeight) delta.y = minHeight - height
+            if (maxHeight > 0 && height + delta.y > maxHeight) delta.y = maxHeight - height
+            //应用delta
+            if (Align.isLeft(side)) this@Window.x -= delta.x
+            if (Align.isBottom(side)) this@Window.y -= delta.y
+            setSize(width + delta.x, height + delta.y)
         }
 
         fun saveTableRect() {
             if (parent == null) return
             keepInStage()
             validate()
-            val pos = localToParentCoordinates(Tmp.v1.set(table.x, table.y))
 
-            val rect = Rect(pos.x, pos.y, table.width / Scl.scl(), table.height / Scl.scl())
+            val pos = localToParentCoordinates(Tmp.v1.set(table.x, table.y))
+            val rect = Rect(pos.x, pos.y, table.width, table.height)
             //自动贴边处理
             if (getX(Align.left) == 0f) rect.x = 0f
             if (getX(Align.right) == parent.width) rect.x = parent.width - rect.width
