@@ -23,7 +23,7 @@ enum class BindingExt(val default: KeybindValue = KeyCode.unset, val category: S
     toggle_block_render(KeyCode.unset, onTap = { RenderExt.blockRenderLevel0.cycle() }),
     focusLogicController(KeyCode.unset, onTap = { mindustryX.features.func.focusLogicController() }),
     placeRouterReplacement(KeyCode.shiftLeft),
-    openDebugDialog(KeyCode.f12, onTap = { OverlayUI.toggle() }),
+    overlayUI(KeyCode.z, onTap = { if (!Core.input.ctrl()) OverlayUI.toggle() }),
     commandLogicAI(KeyCode.unset, onTap = { LogicExt.commandLogicAI.toggle() }),
     ;
 
