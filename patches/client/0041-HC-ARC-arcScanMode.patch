@@ -4,30 +4,12 @@ Date: Sun, 19 May 2024 19:40:31 +0800
 Subject: [PATCH] HC: ARC arcScanMode
 
 ---
- .../world/blocks/distribution/DirectionBridge.java |  7 +++++++
- .../world/blocks/distribution/ItemBridge.java      | 14 +++++++++++++-
- .../world/blocks/distribution/MassDriver.java      |  3 +++
- 3 files changed, 23 insertions(+), 1 deletion(-)
+ core/src/mindustry/world/blocks/distribution/ItemBridge.java | 5 ++++-
+ core/src/mindustry/world/blocks/distribution/MassDriver.java | 3 +++
+ 2 files changed, 7 insertions(+), 1 deletion(-)
 
-diff --git a/core/src/mindustry/world/blocks/distribution/DirectionBridge.java b/core/src/mindustry/world/blocks/distribution/DirectionBridge.java
-index 2c0077cc99557c80f49d0cf496c92309b31e482e..341b81c8ec8cae795b3e5c3872e253f9317975bc 100644
---- a/core/src/mindustry/world/blocks/distribution/DirectionBridge.java
-+++ b/core/src/mindustry/world/blocks/distribution/DirectionBridge.java
-@@ -215,5 +215,12 @@ public class DirectionBridge extends Block{
-             }
-             return null;
-         }
-+        public boolean arcCheckAccept(Building source) {
-+            //only accept if there's an output point.
-+            if(findLink() == null) return false;
-+
-+            int rel = this.relativeToEdge(source.tile);
-+            return rel != rotation && occupied[(rel + 2) % 4] == null;
-+        }
-     }
- }
 diff --git a/core/src/mindustry/world/blocks/distribution/ItemBridge.java b/core/src/mindustry/world/blocks/distribution/ItemBridge.java
-index 97c69dd2cfe25d81b94b7031fbd5919672f0b8cf..082ce9f9b4d540b42ba76901f4f6d4f4c61fcbe9 100644
+index 97c69dd2cfe25d81b94b7031fbd5919672f0b8cf..c6a77a0f45c062d49994bb760785f417aa237a3b 100644
 --- a/core/src/mindustry/world/blocks/distribution/ItemBridge.java
 +++ b/core/src/mindustry/world/blocks/distribution/ItemBridge.java
 @@ -494,7 +494,7 @@ public class ItemBridge extends Block{
@@ -39,19 +21,10 @@ index 97c69dd2cfe25d81b94b7031fbd5919672f0b8cf..082ce9f9b4d540b42ba76901f4f6d4f4
          }
  
          @Override
-@@ -540,5 +540,17 @@ public class ItemBridge extends Block{
+@@ -540,5 +540,8 @@ public class ItemBridge extends Block{
                  wasMoved = moved = read.bool();
              }
          }
-+
-+        public boolean arcLinkValid() {
-+            return linkValid(this.tile, world.tile(link));
-+        }
-+
-+        public boolean arcCheckDump(Building to){
-+            return checkDump(to);
-+        }
-+
 +        public boolean arcCheckAccept(Building source) {
 +            return checkAccept(source, world.tile(link));
 +        }

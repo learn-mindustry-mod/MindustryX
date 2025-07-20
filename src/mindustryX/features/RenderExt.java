@@ -186,7 +186,7 @@ public class RenderExt{
         if(player == null || player.dead()) return;
         ArcRadar.draw();
         if(payloadPreview.get()) PayloadDropHint.draw(player);
-        if(transportScan.get()) ArcTransportScanMode.draw();
+        if(transportScan.get()) NewTransferScanMode.INSTANCE.draw();
     }
 
     public static void onGroupDraw(Drawc t){
