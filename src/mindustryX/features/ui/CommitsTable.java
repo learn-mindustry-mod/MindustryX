@@ -46,7 +46,7 @@ public class CommitsTable extends Table{
 
         row();
 
-        pane(t -> t.add(commitsTable).minHeight(200f).grow()).grow();
+        pane(Styles.noBarPane, t -> t.add(commitsTable).minHeight(200f).grow()).grow();
     }
 
     @Override

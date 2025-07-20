@@ -5,6 +5,7 @@ import arc.Events
 import arc.files.Fi
 import arc.graphics.Color
 import arc.math.Mathf
+import arc.scene.ui.ScrollPane
 import arc.util.Align
 import arc.util.Http
 import arc.util.Log
@@ -122,6 +123,7 @@ object AutoUpdate {
     fun showDialog(version: Release? = latest) {
         checkUpdate()
         val dialog = BaseDialog("自动更新")
+        dialog.getCell(dialog.cont).setElement(ScrollPane(dialog.cont))
         dialog.cont.table().growY().get().apply {
             fun buildVersionList(versions: List<Release>) {
                 table().fillX().get().apply {
