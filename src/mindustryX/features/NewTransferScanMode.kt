@@ -22,6 +22,7 @@ import mindustry.world.blocks.liquid.LiquidRouter
 import mindustry.world.blocks.production.GenericCrafter
 import mindustry.world.blocks.production.Pump
 import mindustry.world.blocks.sandbox.LiquidSource
+import mindustry.world.blocks.storage.StorageBlock
 import mindustry.world.blocks.storage.Unloader
 import mindustryX.features.func.drawText
 
@@ -90,6 +91,13 @@ object NewTransferScanMode {
             drawConnection(build, receiver, itemOutputColor)
             drawOutput(receiver, type, color)
         }
+        build.proximity.asIterable()
+            .filter { getWrapper(it).run { forceInput && canInput(build, type) } }
+            .forEach { unloader ->
+                val receiver = getWrapper(unloader).actualInputReceiver(build, type) ?: return@forEach
+                drawConnection(build, receiver, color)
+                drawOutput(receiver, type, color)
+            }
     }
 
     private fun drawInput(build: Building, type: TransportType, color: Color) {
@@ -103,7 +111,7 @@ object NewTransferScanMode {
         inputs.addAll(wrapper.externalPossibleInputs())
         inputs.retainAll { wrapper.canInput(it, type) }
         for (input in inputs) {
-            val source = getWrapper(input).actualOutputSource(build, type) ?: continue
+            val source = if (wrapper.forceInput) input else getWrapper(input).actualOutputSource(build, type) ?: continue
             drawConnection(source, build, color)
             drawInput(source, type, color)
         }
@@ -144,7 +152,11 @@ object NewTransferScanMode {
         }
     }
 
-    abstract class BuildingAdaptor(val isEndPoint: Boolean = false) {
+    abstract class BuildingAdaptor(
+        val isEndPoint: Boolean = false,
+        // Force input ignore output check from other building
+        val forceInput: Boolean = false,
+    ) {
         abstract val build: Building
         protected open fun getItemPossibleOutputs(): List<Building> = emptyList()
         protected open fun getLiquidPossibleOutputs(): List<Building> = emptyList()
@@ -204,18 +216,14 @@ object NewTransferScanMode {
             val back = build.back()
 
             return when (build.state) {
-                2 -> { // 输出模式
-                    if ((build.block as StackConveyor).outputRouter) {
-                        build.proximity.filter { it != back }
-                    } else {
-                        listOfNotNull(front)
-                    }
+                // 输出模式
+                2 -> if ((build.block as StackConveyor).outputRouter) {
+                    build.proximity.filter { it != back }
+                } else {
+                    listOfNotNull(front)
                 }
 
-                1 -> { // 输入模式
-                    if (front != null) listOf(front) else emptyList()
-                }
-
+                1 -> listOfNotNull(front)// 输入模式
                 else -> { // 待机模式
                     build.proximity.filterIsInstance<StackConveyor.StackConveyorBuild>()
                 }
@@ -223,13 +231,10 @@ object NewTransferScanMode {
         }
 
         override fun canInputItem(from: Building): Boolean {
-            val front = build.front()
-            val back = build.back()
-
             return when (build.state) {
-                2 -> from is StackConveyor.StackConveyorBuild && from == back
-                1 -> from != front
-                else -> from is StackConveyor.StackConveyorBuild
+                2 -> from is StackConveyor.StackConveyorBuild && from == build.back()
+                1 -> from != build.front()
+                else -> from is StackConveyor.StackConveyorBuild && from.front() == build
             }
         }
     }
@@ -239,14 +244,14 @@ object NewTransferScanMode {
         override fun canInputItem(from: Building): Boolean = true
     }
 
-    private class UnloaderAdaptor(override val build: Building) : BuildingAdaptor() {
-        override fun getItemPossibleOutputs(): List<Building> = build.proximity.toList()
-        override fun canInputItem(from: Building): Boolean = from.canUnload()
+    private class UnloaderAdaptor(override val build: Building) : BuildingAdaptor(forceInput = true) {
+        override fun getItemPossibleOutputs(): List<Building> = build.proximity.filter { it.block !is StorageBlock }
+        override fun canInputItem(from: Building): Boolean = from.canUnload() && from.interactable(build.team)
     }
 
-    private class DirectionalUnloaderAdaptor(override val build: Building) : BuildingAdaptor() {
+    private class DirectionalUnloaderAdaptor(override val build: Building) : BuildingAdaptor(forceInput = true) {
         override fun getItemPossibleOutputs(): List<Building> = listOfNotNull(build.front())
-        override fun canInputItem(from: Building): Boolean = from == build.back() && from.canUnload()
+        override fun canInputItem(from: Building): Boolean = from == build.back() && from.canUnload() && from.interactable(build.team)
     }
 
     private class BridgeAdaptor(override val build: ItemBridge.ItemBridgeBuild, val type: TransportType) : BuildingAdaptor() {
@@ -319,7 +324,9 @@ object NewTransferScanMode {
 
         override fun canInput(from: Building, type: TransportType): Boolean {
             if (type != this.type) return false
-            return from in build.occupied || from != build.front()
+            if (from in build.occupied) return true
+            val dir = from.relativeTo(build).toInt()
+            return build.findLink() != null && build.occupied[dir] == null
         }
     }
 
@@ -353,8 +360,5 @@ object NewTransferScanMode {
     }
 
     private class NoopAdaptor(override val build: Building) : BuildingAdaptor() {
-        // No-op adaptor for unsupported buildings
-        override fun getPossibleOutputs(type: TransportType): List<Building> = emptyList()
-        override fun canInput(from: Building, type: TransportType): Boolean = false
     }
 }
