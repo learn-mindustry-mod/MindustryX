@@ -4,6 +4,7 @@ import arc.math.Mathf
 import arc.scene.Element
 import arc.scene.ui.layout.Cell
 import arc.scene.ui.layout.Table
+import arc.util.Reflect
 import kotlin.math.min
 
 /**自动换行的Table布局
@@ -22,7 +23,10 @@ class GridTable : Table() {
     private fun computeColumns() {
         if (!hasChildren()) return
         val children = this.children.asIterable()
-        val cellWidth = cell.minWidth().takeIf { it > 0 } ?: children.firstOrNull { it.visible }?.minWidth ?: Float.MAX_VALUE
+        val cellMinWidth = cell.minWidth().takeIf { it > 0 }
+            ?: children.firstOrNull { it.visible }?.minWidth
+            ?: Float.MAX_VALUE
+        val cellWidth = cellMinWidth + Reflect.get<Float>(cell, "padLeft")
         val newColumns = Mathf.floor(width / cellWidth).coerceAtLeast(1)
         val columnsChanged = columns != min(newColumns, children.count { it.visible })
         val visibleChanged = children.count { it.visible } != cells.size || cells.any { it.get()?.visible != true }
@@ -56,7 +60,8 @@ class GridTable : Table() {
     }
 
     override fun getPrefWidth(): Float {
-        // prefer maxWidth
-        return super.getMaxWidth()
+        return super.getMaxWidth().takeUnless { it == 0f }
+            ?: super.getPrefWidth().takeIf { it >= width }
+            ?: (cell.minWidth() * Mathf.ceil(Mathf.sqrt(cells.size * 4 / 3f)))
     }
 }
