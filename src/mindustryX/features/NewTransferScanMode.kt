@@ -9,6 +9,7 @@ import arc.math.Mathf
 import arc.util.Strings
 import arc.util.Tmp
 import mindustry.Vars.*
+import mindustry.content.Items
 import mindustry.gen.Building
 import mindustry.graphics.Drawf
 import mindustry.graphics.Layer
@@ -19,6 +20,9 @@ import mindustry.world.blocks.liquid.LiquidBridge
 import mindustry.world.blocks.liquid.LiquidJunction
 import mindustry.world.blocks.liquid.LiquidRouter
 import mindustry.world.blocks.production.GenericCrafter
+import mindustry.world.blocks.production.Pump
+import mindustry.world.blocks.sandbox.LiquidSource
+import mindustry.world.blocks.storage.Unloader
 import mindustryX.features.func.drawText
 
 /**
@@ -77,25 +81,31 @@ object NewTransferScanMode {
     private fun drawOutput(build: Building, type: TransportType, color: Color) {
         if (!visited.add(build)) return
         val wrapper = getWrapper(build)
-        if (wrapper.isEndPoint) return
+        if (wrapper.isEndPoint && build != currentBuild) {
+            Drawf.selected(build, color)
+            return
+        }
         for (output in wrapper.getPossibleOutputs(type)) {
-            if (getWrapper(output).canInput(build, type)) {
-                drawConnection(build, output, itemOutputColor)
-                drawOutput(output, type, color)
-            }
+            val receiver = getWrapper(output).actualInputReceiver(build, type) ?: continue
+            drawConnection(build, receiver, itemOutputColor)
+            drawOutput(receiver, type, color)
         }
     }
 
     private fun drawInput(build: Building, type: TransportType, color: Color) {
         if (!visited.add(build)) return
         val wrapper = getWrapper(build)
-        if (wrapper.isEndPoint) return
+        if (wrapper.isEndPoint && build != currentBuild) {
+            Drawf.selected(build, color)
+            return
+        }
         val inputs = build.proximity.toMutableList()
         inputs.addAll(wrapper.externalPossibleInputs())
-        inputs.retainAll { wrapper.canInput(it, type) && build in getWrapper(it).getPossibleOutputs(type) }
+        inputs.retainAll { wrapper.canInput(it, type) }
         for (input in inputs) {
-            drawConnection(input, build, color)
-            drawInput(input, type, color)
+            val source = getWrapper(input).actualOutputSource(build, type) ?: continue
+            drawConnection(source, build, color)
+            drawInput(source, type, color)
         }
     }
 
@@ -134,7 +144,8 @@ object NewTransferScanMode {
         }
     }
 
-    open class BuildingAdapator(val isEndPoint: Boolean = false) {
+    abstract class BuildingAdaptor(val isEndPoint: Boolean = false) {
+        abstract val build: Building
         protected open fun getItemPossibleOutputs(): List<Building> = emptyList()
         protected open fun getLiquidPossibleOutputs(): List<Building> = emptyList()
         open fun getPossibleOutputs(type: TransportType): List<Building> =
@@ -146,60 +157,56 @@ object NewTransferScanMode {
         protected open fun canInputLiquid(from: Building) = false
         open fun canInput(from: Building, type: TransportType): Boolean =
             if (type == TransportType.ITEM) canInputItem(from) else canInputLiquid(from)
+
+        // For special causes, it delegates to other building
+        open fun actualOutputSource(to: Building, type: TransportType): Building? = if (to in getPossibleOutputs(type)) build else null
+        open fun actualInputReceiver(from: Building, type: TransportType): Building? = if (canInput(from, type)) build else null
     }
 
     /**
      * 获取建筑的包装器实例
-     * Get wrapper instance for building
+     * Get wrapper instance for build
      */
-    fun getWrapper(build: Building): BuildingAdapator = when (build) {
-        // 导管
-        is Conduit.ConduitBuild -> ConduitAdapator(build)
-        // 液体路由器
-        is LiquidRouter.LiquidRouterBuild -> LiquidRouterAdapator(build)
-        // 液体桥
-        is LiquidBridge.LiquidBridgeBuild -> BridgeAdapator(build, TransportType.LIQUID)
-        is LiquidJunction.LiquidJunctionBuild -> JunctionAdapator(build, TransportType.LIQUID)
-        is DirectionLiquidBridge.DuctBridgeBuild -> DirectionBridgeAdapator(build, TransportType.LIQUID)
+    fun getWrapper(build: Building): BuildingAdaptor = when (build) {
+        is Conduit.ConduitBuild -> ConduitAdaptor(build)
+        is LiquidRouter.LiquidRouterBuild -> LiquidRouterAdaptor(build)
+        is LiquidBridge.LiquidBridgeBuild -> BridgeAdaptor(build, TransportType.LIQUID)
+        is LiquidJunction.LiquidJunctionBuild -> JunctionAdaptor(build, TransportType.LIQUID)
+        is DirectionLiquidBridge.DuctBridgeBuild -> DirectionBridgeAdaptor(build, TransportType.LIQUID)
+        is Pump.PumpBuild, is LiquidSource.LiquidSourceBuild -> SourceAdaptor(build, TransportType.LIQUID)
 
-        // 传送带类
-        is Conveyor.ConveyorBuild, is Duct.DuctBuild -> ConveyorAdapator(build)
-        // 路由器和交叉器
-        is Router.RouterBuild, is Sorter.SorterBuild, is OverflowGate.OverflowGateBuild -> RouterAdapator(build)
-        // 物品桥
-        is ItemBridge.ItemBridgeBuild -> BridgeAdapator(build, TransportType.ITEM)
-        // 塑钢传送带
-        is StackConveyor.StackConveyorBuild -> StackConveyorAdapator(build)
-        is Junction.JunctionBuild, is DuctJunction.DuctJunctionBuild -> JunctionAdapator(build, TransportType.ITEM)
-        // 导管桥
-        is DuctBridge.DuctBridgeBuild -> DirectionBridgeAdapator(build, TransportType.ITEM)
-        // 质量驱动器
-        is MassDriver.MassDriverBuild -> MassDriverAdapator(build)
-        // 定向卸载器
-        is DirectionalUnloader.DirectionalUnloaderBuild -> DirectionalUnloaderAdapator(build)
+        is Conveyor.ConveyorBuild, is Duct.DuctBuild -> ConveyorAdaptor(build)
+        is Router.RouterBuild, is Sorter.SorterBuild, is OverflowGate.OverflowGateBuild -> RouterAdaptor(build)
+        is ItemBridge.ItemBridgeBuild -> BridgeAdaptor(build, TransportType.ITEM)
+        is StackConveyor.StackConveyorBuild -> StackConveyorAdaptor(build)
+        is Junction.JunctionBuild, is DuctJunction.DuctJunctionBuild -> JunctionAdaptor(build, TransportType.ITEM)
+        is DuctBridge.DuctBridgeBuild -> DirectionBridgeAdaptor(build, TransportType.ITEM)
+        is Unloader.UnloaderBuild -> UnloaderAdaptor(build)
+        is DirectionalUnloader.DirectionalUnloaderBuild -> DirectionalUnloaderAdaptor(build)
+        is MassDriver.MassDriverBuild -> MassDriverAdaptor(build)
 
         //TODO 下面的没有检查
-        is OverflowDuct.OverflowDuctBuild, is DuctRouter.DuctRouterBuild -> RouterAdapator(build)
+        is OverflowDuct.OverflowDuctBuild, is DuctRouter.DuctRouterBuild -> RouterAdaptor(build)
 
-        is GenericCrafter.GenericCrafterBuild -> GenericCrafterAdapator(build, build != currentBuild)
-        else -> BuildingAdapator()//Noop
+        is GenericCrafter.GenericCrafterBuild -> GenericCrafterAdaptor(build)
+        else -> NoopAdaptor(build)
     }
 
     // ===== 具体包装器实现 =====
-    private class ConveyorAdapator(private val building: Building) : BuildingAdapator() {
-        override fun getItemPossibleOutputs(): List<Building> = listOfNotNull(building.front())
-        override fun canInputItem(from: Building): Boolean = from != building.front()
+    private class ConveyorAdaptor(override val build: Building) : BuildingAdaptor() {
+        override fun getItemPossibleOutputs(): List<Building> = listOfNotNull(build.front())
+        override fun canInputItem(from: Building): Boolean = from != build.front()
     }
 
-    private class StackConveyorAdapator(private val building: StackConveyor.StackConveyorBuild) : BuildingAdapator() {
+    private class StackConveyorAdaptor(override val build: StackConveyor.StackConveyorBuild) : BuildingAdaptor() {
         override fun getItemPossibleOutputs(): List<Building> {
-            val front = building.front()
-            val back = building.back()
+            val front = build.front()
+            val back = build.back()
 
-            return when (building.state) {
+            return when (build.state) {
                 2 -> { // 输出模式
-                    if ((building.block as StackConveyor).outputRouter) {
-                        building.proximity.filter { it != back }
+                    if ((build.block as StackConveyor).outputRouter) {
+                        build.proximity.filter { it != back }
                     } else {
                         listOfNotNull(front)
                     }
@@ -210,16 +217,16 @@ object NewTransferScanMode {
                 }
 
                 else -> { // 待机模式
-                    building.proximity.filterIsInstance<StackConveyor.StackConveyorBuild>()
+                    build.proximity.filterIsInstance<StackConveyor.StackConveyorBuild>()
                 }
             }
         }
 
         override fun canInputItem(from: Building): Boolean {
-            val front = building.front()
-            val back = building.back()
+            val front = build.front()
+            val back = build.back()
 
-            return when (building.state) {
+            return when (build.state) {
                 2 -> from is StackConveyor.StackConveyorBuild && from == back
                 1 -> from != front
                 else -> from is StackConveyor.StackConveyorBuild
@@ -227,24 +234,28 @@ object NewTransferScanMode {
         }
     }
 
-    private class RouterAdapator(private val building: Building) : BuildingAdapator() {
-        override fun getItemPossibleOutputs(): List<Building> = building.proximity.toList()
+    private class RouterAdaptor(override val build: Building) : BuildingAdaptor() {
+        override fun getItemPossibleOutputs(): List<Building> = build.proximity.toList()
         override fun canInputItem(from: Building): Boolean = true
     }
 
-    private class DirectionalUnloaderAdapator(private val building: Building) : BuildingAdapator() {
-        override fun getItemPossibleOutputs(): List<Building> = listOfNotNull(building.front())
-        override fun canInputItem(from: Building): Boolean = from == building.back()
+    private class UnloaderAdaptor(override val build: Building) : BuildingAdaptor() {
+        override fun getItemPossibleOutputs(): List<Building> = build.proximity.toList()
+        override fun canInputItem(from: Building): Boolean = from.canUnload()
     }
 
-    private class BridgeAdapator(private val build: ItemBridge.ItemBridgeBuild, val type: TransportType) : BuildingAdapator() {
+    private class DirectionalUnloaderAdaptor(override val build: Building) : BuildingAdaptor() {
+        override fun getItemPossibleOutputs(): List<Building> = listOfNotNull(build.front())
+        override fun canInputItem(from: Building): Boolean = from == build.back() && from.canUnload()
+    }
+
+    private class BridgeAdaptor(override val build: ItemBridge.ItemBridgeBuild, val type: TransportType) : BuildingAdaptor() {
         val block = build.block as ItemBridge
         private val linkValid get() = block.linkValid(build.tile, world.tile(build.link))
         override fun getPossibleOutputs(type: TransportType): List<Building> {
             if (type != this.type) return emptyList()
             if (linkValid) return listOf(world.build(build.link))
-            val back = build.back()
-            return build.proximity.filter { it != back }
+            return build.proximity.filter { build.canDump(it, Items.copper) }
         }
 
         override fun externalPossibleInputs(): List<Building> = buildList {
@@ -261,61 +272,68 @@ object NewTransferScanMode {
         }
     }
 
-    private class JunctionAdapator(private val build: Building, val type: TransportType) : BuildingAdapator() {
+    private class JunctionAdaptor(override val build: Building, val type: TransportType) : BuildingAdaptor(isEndPoint = true) {
         override fun getPossibleOutputs(type: TransportType): List<Building> {
             if (type != this.type) return emptyList()
             return build.proximity.toList()
         }
 
-        override fun canInput(from: Building, type: TransportType): Boolean {
-            if (type != this.type) return false
+        override fun actualInputReceiver(from: Building, type: TransportType): Building? {
+            if (type != this.type) return null
             val dir = from.relativeTo(build).toInt()
-            val output = build.nearby(dir) ?: return false
-            return getWrapper(output).canInput(build, type)
+            val output = build.nearby(dir) ?: return null
+            return getWrapper(output).actualInputReceiver(build, type)
+        }
+
+        override fun actualOutputSource(to: Building, type: TransportType): Building? {
+            if (type != this.type) return null
+            val dir = to.relativeTo(build).toInt()
+            val output = build.nearby(dir) ?: return null
+            return getWrapper(output).actualOutputSource(build, type)
         }
     }
 
-    private class MassDriverAdapator(private val building: MassDriver.MassDriverBuild) : BuildingAdapator() {
+    private class MassDriverAdaptor(override val build: MassDriver.MassDriverBuild) : BuildingAdaptor() {
         override fun getItemPossibleOutputs(): List<Building> {
-            return if (building.arcLinkValid()) {
-                val target = world.build(building.link)
+            return if (build.arcLinkValid()) {
+                val target = world.build(build.link)
                 if (target != null) listOf(target) else emptyList()
             } else {
-                building.proximity.toList()
+                build.proximity.toList()
             }
         }
 
         override fun canInputItem(from: Building): Boolean = true
     }
 
-    private class DirectionBridgeAdapator(private val building: DirectionBridge.DirectionBridgeBuild, val type: TransportType) : BuildingAdapator() {
+    private class DirectionBridgeAdaptor(override val build: DirectionBridge.DirectionBridgeBuild, val type: TransportType) : BuildingAdaptor() {
         override fun getPossibleOutputs(type: TransportType): List<Building> {
             if (type != this.type) return emptyList()
-            val link = building.findLink()
-            return if (link != null) listOf(link) else listOfNotNull(building.front())
+            val link = build.findLink()
+            return if (link != null) listOf(link) else listOfNotNull(build.front())
         }
 
         override fun externalPossibleInputs(): List<Building> {
-            return building.occupied.filterNotNull()
+            return build.occupied.filterNotNull()
         }
 
         override fun canInput(from: Building, type: TransportType): Boolean {
             if (type != this.type) return false
-            return from in building.occupied || from != building.front()
+            return from in build.occupied || from != build.front()
         }
     }
 
-    private class ConduitAdapator(private val building: Building) : BuildingAdapator() {
-        override fun getLiquidPossibleOutputs(): List<Building> = listOfNotNull(building.front())
-        override fun canInputLiquid(from: Building): Boolean = from != building.front()
+    private class ConduitAdaptor(override val build: Building) : BuildingAdaptor() {
+        override fun getLiquidPossibleOutputs(): List<Building> = listOfNotNull(build.front())
+        override fun canInputLiquid(from: Building): Boolean = from != build.front()
     }
 
-    private class LiquidRouterAdapator(private val building: Building) : BuildingAdapator() {
-        override fun getLiquidPossibleOutputs(): List<Building> = building.proximity.toList()
+    private class LiquidRouterAdaptor(override val build: Building) : BuildingAdaptor() {
+        override fun getLiquidPossibleOutputs(): List<Building> = build.proximity.toList()
         override fun canInputLiquid(from: Building): Boolean = true
     }
 
-    private class GenericCrafterAdapator(private val build: GenericCrafter.GenericCrafterBuild, isEndPoint: Boolean) : BuildingAdapator(isEndPoint) {
+    private class GenericCrafterAdaptor(override val build: GenericCrafter.GenericCrafterBuild) : BuildingAdaptor(isEndPoint = true) {
         val block = build.block as GenericCrafter
         override fun getPossibleOutputs(type: TransportType): List<Building> {
             if (type == TransportType.ITEM && block.outputItems == null) return emptyList()
@@ -325,5 +343,18 @@ object NewTransferScanMode {
 
         override fun canInputItem(from: Building): Boolean = build.block.hasItems && build.block.itemFilter.any { it }
         override fun canInputLiquid(from: Building): Boolean = build.block.hasLiquids && build.block.liquidFilter.any { it }
+    }
+
+    private class SourceAdaptor(override val build: Building, val type: TransportType) : BuildingAdaptor(isEndPoint = true) {
+        override fun getPossibleOutputs(type: TransportType): List<Building> {
+            if (type != this.type) return emptyList()
+            return build.proximity.toList()
+        }
+    }
+
+    private class NoopAdaptor(override val build: Building) : BuildingAdaptor() {
+        // No-op adaptor for unsupported buildings
+        override fun getPossibleOutputs(type: TransportType): List<Building> = emptyList()
+        override fun canInput(from: Building, type: TransportType): Boolean = false
     }
 }
