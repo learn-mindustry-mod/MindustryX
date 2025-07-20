@@ -221,7 +221,7 @@ object SettingsV2 {
         override fun buildUI(table: Table) {
             val elem = TextField(value)
             elem.changed { set(elem.text) }
-            elem.update { elem.text = value }
+            elem.update { if (!elem.hasKeyboard()) elem.text = value }
 
             table.table().fillX().padTop(3f).get().apply {
                 add(title).padRight(8f)
@@ -237,7 +237,7 @@ object SettingsV2 {
             val elem = TextArea("")
             elem.setPrefRows(5f)
             elem.changed { set(elem.text) }
-            elem.update { elem.text = value }
+            elem.update { if (!elem.hasKeyboard()) elem.text = value }
 
             table.table().fillX().padTop(3f).get().apply {
                 add(title).left().expandX()
@@ -307,7 +307,7 @@ object SettingsV2 {
 
             override fun clicked(event: InputEvent, x: Float, y: Float) {
                 if (Core.input.keyDown(KeyCode.shiftLeft) || Time.timeSinceMillis(startTime) > 500) {
-                    UIExtKt.showFloatSettingsPanel{
+                    UIExtKt.showFloatSettingsPanel {
                         settings.forEach { it.buildUI(this) }
                     }
                 } else {
