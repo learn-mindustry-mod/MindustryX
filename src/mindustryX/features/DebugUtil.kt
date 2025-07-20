@@ -1,6 +1,7 @@
 package mindustryX.features
 
 import arc.Events
+import arc.scene.event.Touchable
 import arc.scene.ui.layout.Table
 import arc.util.Align
 import mindustry.core.PerfCounter
@@ -44,10 +45,10 @@ object DebugUtil {
     fun metricTable(): Table = Table(Tex.pane).apply {
         left()
         check("Render Debug") { renderDebug = it }.checked { renderDebug }.row()
-        label { "Draw: $lastDrawRequests" }.fillX().labelAlign(Align.left).row()
-        label { "Vertices: $lastVertices" }.fillX().labelAlign(Align.left).row()
-        label { "Texture: $lastSwitchTexture" }.fillX().labelAlign(Align.left).row()
-        label { "Flush: $lastFlushCount" }.fillX().labelAlign(Align.left).row()
+        label { "Draw: $lastDrawRequests" }.fillX().labelAlign(Align.left).touchable(Touchable.disabled).row()
+        label { "Vertices: $lastVertices" }.fillX().labelAlign(Align.left).touchable(Touchable.disabled).row()
+        label { "Texture: $lastSwitchTexture" }.fillX().labelAlign(Align.left).touchable(Touchable.disabled).row()
+        label { "Flush: $lastFlushCount" }.fillX().labelAlign(Align.left).touchable(Touchable.disabled).row()
         image().update { DebugUtil.reset() }.row()
     }
 

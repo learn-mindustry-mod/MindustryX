@@ -210,7 +210,7 @@ object OverlayUI {
                 addListener(ResizeListener())
 
                 table { header ->
-                    header.add(data.title)
+                    header.add(data.title).minWidth(0f).ellipsis(true)
                     header.add().growX()
 
                     header.touchable = Touchable.enabled
@@ -225,7 +225,6 @@ object OverlayUI {
                             }
                         }
                     }
-                    header.add().width(8f)
                     header.button(Icon.lockOpenSmall, ImageButtonStyle(Styles.cleari).apply {
                         up = null
                         imageChecked = Icon.lockSmall
