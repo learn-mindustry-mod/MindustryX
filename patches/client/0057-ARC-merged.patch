@@ -750,7 +750,7 @@ index c7a5fbefd8e4880b99f07f7dba50cd287d53c1eb..7945014bbe38ab1f5c84257a42175350
                  //TODO desync?
                  case mission -> state.rules.mission = text;
 diff --git a/core/src/mindustry/type/UnitType.java b/core/src/mindustry/type/UnitType.java
-index 1f563d93654aed2033135b022c4e535abc451789..ccbbc08f62932c27d2392b6d1da06c3605f4a0a7 100644
+index 239a819e35a8acf37f7a40f5c543356a7e76658b..e0e3504e05332ec521e0034e3dc0559d03874b40 100644
 --- a/core/src/mindustry/type/UnitType.java
 +++ b/core/src/mindustry/type/UnitType.java
 @@ -38,6 +38,7 @@ import mindustry.world.blocks.units.*;
@@ -887,7 +887,7 @@ index 1f563d93654aed2033135b022c4e535abc451789..ccbbc08f62932c27d2392b6d1da06c36
      }
  
      /** @return whether this block supports a specific environment. */
-@@ -1635,12 +1699,15 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -1633,12 +1697,15 @@ public class UnitType extends UnlockableContent implements Senseable{
              unit.y + Angles.trnsy(unit.rotation + 180f, itemOffsetY),
              size, size);
  

@@ -12,7 +12,7 @@ way-zer <himc.wicp@gmail.com> on 2024/5/4 at 22:17
  core/src/mindustry/type/Item.java             |   5 +
  core/src/mindustry/type/Liquid.java           |   2 +
  core/src/mindustry/type/StatusEffect.java     |   2 +
- core/src/mindustry/type/UnitType.java         |  37 +++-
+ core/src/mindustry/type/UnitType.java         |  35 +++-
  core/src/mindustry/type/Weapon.java           |  12 ++
  core/src/mindustry/world/Block.java           |   4 +-
  .../world/blocks/defense/ForceProjector.java  |   5 +-
@@ -30,7 +30,7 @@ way-zer <himc.wicp@gmail.com> on 2024/5/4 at 22:17
  core/src/mindustry/world/meta/Stat.java       |  21 ++-
  core/src/mindustry/world/meta/StatCat.java    |   5 +-
  core/src/mindustry/world/meta/StatValues.java | 177 +++++++++++++-----
- 21 files changed, 246 insertions(+), 71 deletions(-)
+ 21 files changed, 244 insertions(+), 71 deletions(-)
 
 diff --git a/core/src/mindustry/type/Item.java b/core/src/mindustry/type/Item.java
 index 3ba4dc9de5a10c39e4e0257e854dabd7434e7b6d..ffac65db1338a457df5189565f554d80cc076500 100644
@@ -96,7 +96,7 @@ index 05dc34595d11d67a878c5dbaef8340fe6becf3ce..423eece86780e56801cae15e5870bc25
          if(damage < 0) stats.add(Stat.healing, -damage * 60f, StatUnit.perSecond);
  
 diff --git a/core/src/mindustry/type/UnitType.java b/core/src/mindustry/type/UnitType.java
-index 9002ef6d3a63ace145aa051cc7d96b1d80bac36e..1f563d93654aed2033135b022c4e535abc451789 100644
+index 9002ef6d3a63ace145aa051cc7d96b1d80bac36e..239a819e35a8acf37f7a40f5c543356a7e76658b 100644
 --- a/core/src/mindustry/type/UnitType.java
 +++ b/core/src/mindustry/type/UnitType.java
 @@ -37,6 +37,7 @@ import mindustry.world.blocks.payloads.*;
@@ -107,7 +107,7 @@ index 9002ef6d3a63ace145aa051cc7d96b1d80bac36e..1f563d93654aed2033135b022c4e535a
  
  import static arc.graphics.g2d.Draw.*;
  import static mindustry.Vars.*;
-@@ -731,29 +732,47 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -731,29 +732,45 @@ public class UnitType extends UnlockableContent implements Senseable{
          stats.add(Stat.health, health);
          stats.add(Stat.armor, armor);
          stats.add(Stat.speed, speed * 60f / tilesize, StatUnit.tilesSecond);
@@ -117,7 +117,6 @@ index 9002ef6d3a63ace145aa051cc7d96b1d80bac36e..1f563d93654aed2033135b022c4e535a
          stats.add(Stat.range, Strings.autoFixed(maxRange / tilesize, 1), StatUnit.blocks);
          stats.add(Stat.targetsAir, targetAir);
          stats.add(Stat.targetsGround, targetGround);
-+        stats.add(StatExt.unitItemCapacity, itemCapacity);
 +        stats.add(StatExt.aiController,aiController.get().getClass().getSimpleName());
  
          if(abilities.any()){
@@ -125,7 +124,6 @@ index 9002ef6d3a63ace145aa051cc7d96b1d80bac36e..1f563d93654aed2033135b022c4e535a
 +            stats.add(Stat.abilities, StatValues.abilities(this, abilities));
 +        }
 +
-+        stats.add(StatExt.unitrange, (int)(maxRange / tilesize), StatUnit.blocks);
 +        stats.add(StatExt.estimateDPS,estimateDps());
 +        stats.add(StatExt.ammoType, ammoType.icon());
 +        stats.add(StatExt.ammoCapacity, ammoCapacity);
@@ -161,7 +159,7 @@ index 9002ef6d3a63ace145aa051cc7d96b1d80bac36e..1f563d93654aed2033135b022c4e535a
          }
          if(buildSpeed > 0){
              stats.addPercent(Stat.buildSpeed, buildSpeed);
-@@ -772,6 +791,10 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -772,6 +789,10 @@ public class UnitType extends UnlockableContent implements Senseable{
              stats.add(Stat.weapons, StatValues.weapons(this, weapons));
          }
  
@@ -172,7 +170,7 @@ index 9002ef6d3a63ace145aa051cc7d96b1d80bac36e..1f563d93654aed2033135b022c4e535a
          if(immunities.size > 0){
              var imm = immunities.toSeq().sort();
              //it's redundant to list wet for naval units
-@@ -839,6 +862,8 @@ public class UnitType extends UnlockableContent implements Senseable{
+@@ -839,6 +860,8 @@ public class UnitType extends UnlockableContent implements Senseable{
  
          allowLegStep = example instanceof Legsc || example instanceof Crawlc;
  

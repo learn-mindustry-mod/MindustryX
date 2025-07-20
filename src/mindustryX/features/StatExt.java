@@ -12,7 +12,6 @@ import static mindustry.Vars.*;
 
 public class StatExt{
     public static Stat
-    unitrange = new Stat("unit_range"),
     canOverdrive = new Stat("can_overdrive"),
     cost = new Stat("cost"),
     healthScaling = new Stat("health_scaling"),
@@ -22,7 +21,6 @@ public class StatExt{
     dragMultiplier = new Stat("drag_multiplier"),//移动阻力倍率
 
     bufferCapacity = new Stat("buffer_capacity", StatCat.items),
-    sepOutput = new Stat("sep_output", StatCat.crafting),
     regenSpeed = new Stat("regen_speed", StatCat.function),//力墙 回复速度
     regenSpeedBroken = new Stat("regen_speed_broken", StatCat.function),//力墙 过热时回复速度
     mend = new Stat("mend", StatCat.function),//治疗 修复量
@@ -36,7 +34,6 @@ public class StatExt{
     boostMultiplier = new Stat("boost_multiplier", StatCat.movement),
     drownTimeMultiplier = new Stat("drown_time_multiplier", StatCat.movement),
     mineLevel = new Stat("mine_level", StatCat.support),
-    unitItemCapacity = new Stat("unit_item_capacity", StatCat.support),
 
     crushDamage = new Stat("crush_damage", StatCat.combat),//碾压伤害(每格)
     estimateDPS = new Stat("estimate_dps", StatCat.combat),
