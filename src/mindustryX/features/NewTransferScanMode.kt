@@ -201,7 +201,7 @@ object NewTransferScanMode {
         is OverflowDuct.OverflowDuctBuild, is DuctRouter.DuctRouterBuild -> RouterAdaptor(build)
 
         is GenericCrafter.GenericCrafterBuild -> GenericCrafterAdaptor(build)
-        else -> NoopAdaptor(build)
+        else -> DefaultAdaptor(build)
     }
 
     // ===== 具体包装器实现 =====
@@ -308,7 +308,7 @@ object NewTransferScanMode {
             }
         }
 
-        override fun canInputItem(from: Building): Boolean = true
+        override fun canInputItem(from: Building): Boolean = build.arcLinkValid()
     }
 
     private class DirectionBridgeAdaptor(override val build: DirectionBridge.DirectionBridgeBuild, val type: TransportType) : BuildingAdaptor() {
@@ -359,6 +359,13 @@ object NewTransferScanMode {
         }
     }
 
-    private class NoopAdaptor(override val build: Building) : BuildingAdaptor() {
+    private class DefaultAdaptor(override val build: Building) : BuildingAdaptor() {
+        override fun canInputItem(from: Building): Boolean {
+            return build.block.hasItems && build.block.itemFilter.any { it }
+        }
+
+        override fun canInputLiquid(from: Building): Boolean {
+            return build.block.hasLiquids && build.block.liquidFilter.any { it }
+        }
     }
 }
