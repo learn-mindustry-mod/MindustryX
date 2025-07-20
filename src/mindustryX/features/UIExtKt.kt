@@ -3,6 +3,10 @@ package mindustryX.features
 import arc.Core
 import arc.func.Cons
 import arc.func.Prov
+import arc.scene.Element
+import arc.scene.event.InputEvent
+import arc.scene.event.InputListener
+import arc.scene.event.Touchable
 import arc.scene.ui.layout.Table
 import arc.util.Align
 import mindustry.Vars
@@ -35,11 +39,18 @@ object UIExtKt {
         val mouse = Core.input.mouse()
         val table = Table(Tex.pane).apply {
             builder.invoke(this)
-            button("@close") { this.remove() }.fillX()
+
+            touchable = Touchable.enabled
+            addListener(object : InputListener() {
+                override fun exit(event: InputEvent, x: Float, y: Float, pointer: Int, toActor: Element?) {
+                    if (hit(x, y, false) == null) remove()
+                }
+            })
         }
         Core.scene.add(table)
         table.pack()
         table.setPosition(mouse.x, mouse.y, Align.center)
         table.keepInStage()
+        Core.scene.setScrollFocus(table)
     }
 }
