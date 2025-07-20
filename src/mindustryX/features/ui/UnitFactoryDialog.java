@@ -509,7 +509,7 @@ public class UnitFactoryDialog extends BaseDialog{
                 int i = 0;
                 for(StatusEffect effect : content.statusEffects()){
                     Cell<ImageButton> cell = selection.button(new TextureRegionDrawable(effect.uiIcon), Styles.cleari, 32f, () -> {
-                        float time = unitStatus.isEmpty() ? 600f : unitStatus.peek().time;
+                        float time = unitStatus.isEmpty() ? 600f * 60 : unitStatus.peek().time;
                         unitStatus.add(new StatusEntry().set(effect, time));
 
                         rebuildInfo.run();
@@ -553,9 +553,13 @@ public class UnitFactoryDialog extends BaseDialog{
                     t.add("<瞬间状态>").expandX();
                 }else{
                     t.table(bottom -> {
-                        bottom.field("", text -> entry.time = Strings.parseFloat(text))
+                        bottom.field("", text -> entry.time = Strings.parseFloat(text) * 60f)
                         .valid(text -> Strings.canParsePositiveFloat(text.replaceAll("∞", "Infinity")))
-                        .update(it -> it.setText(Float.isInfinite(entry.time) ? "∞" : "" + entry.time))
+                        .update(it -> {
+                            if(!it.hasKeyboard()){
+                                it.setText(Float.isInfinite(entry.time) ? "∞" : "" + entry.time / 60f);
+                            }
+                        })
                         .width(100f);
 
                         bottom.add("秒");
