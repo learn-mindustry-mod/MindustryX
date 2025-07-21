@@ -39,6 +39,7 @@ object UIExtKt {
         val mouse = Core.input.mouse()
         val table = Table(Tex.pane).apply {
             builder.invoke(this)
+            button("@close") { this.remove() }.fillX()
 
             touchable = Touchable.enabled
             addListener(object : InputListener() {
