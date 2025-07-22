@@ -316,7 +316,7 @@ public class UnitFactoryDialog extends BaseDialog{
             UIExt.announce("[green]点击屏幕返回", 2f);
         }).padLeft(4);
 
-        posTable.button(new TextureRegionDrawable(UnitTypes.gamma.uiIcon), Styles.clearNonei, 24, () -> spawnUnit.set(player.unit())).padLeft(4);
+        posTable.button(new TextureRegionDrawable(UnitTypes.gamma.uiIcon), Styles.clearNonei, 24, () -> spawnUnit.set(player)).padLeft(4);
     }
 
     private void setupCountTable(){
