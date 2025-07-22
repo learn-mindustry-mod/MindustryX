@@ -31,9 +31,9 @@ public class Hooks implements ApplicationListener{
     public void init(){
         Log.infoTag("MindustryX", "Hooks.init");
         LogicExt.init();
-        if(AutoUpdate.INSTANCE.getActive())
-            AutoUpdate.INSTANCE.checkUpdate();
         if(!Vars.headless){
+            if(AutoUpdate.INSTANCE.getActive())
+                AutoUpdate.INSTANCE.checkUpdate();
             RenderExt.init();
             TimeControl.init();
             UIExt.init();
@@ -41,7 +41,7 @@ public class Hooks implements ApplicationListener{
             ArcOld.colorizeContent();
             DamagePopup.init();
         }
-        if(Core.settings.getBool("console")){
+        if(Vars.headless || Core.settings.getBool("console")){
             Vars.mods.getScripts().runConsole("X=Packages.mindustryX.features");
         }
     }
