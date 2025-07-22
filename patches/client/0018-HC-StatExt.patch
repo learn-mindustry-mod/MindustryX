@@ -27,10 +27,10 @@ way-zer <himc.wicp@gmail.com> on 2024/5/4 at 22:17
  .../world/consumers/ConsumeItemDynamic.java   |   2 +-
  .../world/consumers/ConsumeItems.java         |   2 +-
  .../consumers/ConsumePayloadDynamic.java      |   2 +-
- core/src/mindustry/world/meta/Stat.java       |  21 ++-
+ core/src/mindustry/world/meta/Stat.java       |  21 +-
  core/src/mindustry/world/meta/StatCat.java    |   5 +-
- core/src/mindustry/world/meta/StatValues.java | 177 +++++++++++++-----
- 21 files changed, 244 insertions(+), 71 deletions(-)
+ core/src/mindustry/world/meta/StatValues.java | 179 +++++++++++++-----
+ 21 files changed, 246 insertions(+), 71 deletions(-)
 
 diff --git a/core/src/mindustry/type/Item.java b/core/src/mindustry/type/Item.java
 index 3ba4dc9de5a10c39e4e0257e854dabd7434e7b6d..ffac65db1338a457df5189565f554d80cc076500 100644
@@ -520,7 +520,7 @@ index 416df5a20af4767cdfdc2646bce19468ad11cd28..239311eea91980f2c3e0facd6613b237
      public final String name;
      public final int id;
 diff --git a/core/src/mindustry/world/meta/StatValues.java b/core/src/mindustry/world/meta/StatValues.java
-index 886fa305abb4deb98f09bbe88a29bcea0356f090..06a784e8eaf020b3da5b13aa95d0464a23f6a398 100644
+index 886fa305abb4deb98f09bbe88a29bcea0356f090..9bff6d9bb9c9b2789ef294d943929b9046dbc2f3 100644
 --- a/core/src/mindustry/world/meta/StatValues.java
 +++ b/core/src/mindustry/world/meta/StatValues.java
 @@ -25,6 +25,8 @@ import mindustry.ui.*;
@@ -597,18 +597,20 @@ index 886fa305abb4deb98f09bbe88a29bcea0356f090..06a784e8eaf020b3da5b13aa95d0464a
                      }
                  }
              });
-@@ -635,7 +659,9 @@ public class StatValues{
+@@ -635,7 +659,11 @@ public class StatValues{
                          bt.row();
                      }
  
 -                    if(type.damage > 0 && (type.collides || type.splashDamage <= 0)){
-+                    if(type instanceof LightningBulletType lb){
++                    if(type instanceof LaserBulletType lb && lb.lightningSpacing > 0){
++                        lightning(Mathf.floor(lb.length / lb.lightningSpacing) + 1, lb.lightningDamage, lb.lightningLength, lb.lightningLengthRand).display(bt);
++                    }if(type instanceof LightningBulletType lb){
 +                        lightning(0, lb.damage, lb.lightningLength, lb.lightningLengthRand).display(bt);
 +                    }else if(type.damage > 0 && (type.collides || type.splashDamage <= 0)){
                          if(type.continuousDamage() > 0){
                              bt.add(Core.bundle.format("bullet.damage", type.continuousDamage()) + StatUnit.perSecond.localized());
                          }else{
-@@ -644,11 +670,11 @@ public class StatValues{
+@@ -644,11 +672,11 @@ public class StatValues{
                      }
  
                      if(type.buildingDamageMultiplier != 1){
@@ -622,7 +624,7 @@ index 886fa305abb4deb98f09bbe88a29bcea0356f090..06a784e8eaf020b3da5b13aa95d0464a
                      }
  
                      if(type.shieldDamageMultiplier != 1){
-@@ -664,8 +690,7 @@ public class StatValues{
+@@ -664,8 +692,7 @@ public class StatValues{
                      }
  
                      if(!compact && !Mathf.equal(type.reloadMultiplier, 1f)){
@@ -632,7 +634,7 @@ index 886fa305abb4deb98f09bbe88a29bcea0356f090..06a784e8eaf020b3da5b13aa95d0464a
                      }
  
                      if(type.knockback > 0){
-@@ -680,8 +705,24 @@ public class StatValues{
+@@ -680,8 +707,24 @@ public class StatValues{
                          sep(bt, Core.bundle.format("bullet.healamount", Strings.autoFixed(type.healAmount, 2)));
                      }
  
@@ -659,7 +661,7 @@ index 886fa305abb4deb98f09bbe88a29bcea0356f090..06a784e8eaf020b3da5b13aa95d0464a
                      }
  
                      if(type.incendAmount > 0){
-@@ -689,11 +730,11 @@ public class StatValues{
+@@ -689,11 +732,11 @@ public class StatValues{
                      }
  
                      if(type.homingPower > 0.01f){
@@ -674,7 +676,7 @@ index 886fa305abb4deb98f09bbe88a29bcea0356f090..06a784e8eaf020b3da5b13aa95d0464a
                      }
  
                      if(type.pierceArmor){
-@@ -722,39 +763,51 @@ public class StatValues{
+@@ -722,39 +765,51 @@ public class StatValues{
                      }
  
                      if(type.intervalBullet != null){
@@ -752,7 +754,7 @@ index 886fa305abb4deb98f09bbe88a29bcea0356f090..06a784e8eaf020b3da5b13aa95d0464a
                      }
                  }).padLeft(5).padTop(5).padBottom(compact ? 0 : 5).growX().margin(compact ? 0 : 10);
                  table.row();
-@@ -762,12 +815,48 @@ public class StatValues{
+@@ -762,12 +817,48 @@ public class StatValues{
          };
      }
  
