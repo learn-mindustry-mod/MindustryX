@@ -11,10 +11,10 @@ Subject: [PATCH] API: more error log
  4 files changed, 7 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/core/Control.java b/core/src/mindustry/core/Control.java
-index 47f55d3ff7f6605bafe4ff3ab52ab21498003916..d3d8f6823f96617b914fe50868bc2cb068920288 100644
+index 56c3a614b3888dc4896ede5523fd6173f55b9a1b..049fcac4259da91c56ffaf5e73eb362e8ed341fa 100644
 --- a/core/src/mindustry/core/Control.java
 +++ b/core/src/mindustry/core/Control.java
-@@ -614,6 +614,7 @@ public class Control implements ApplicationListener, Loadable{
+@@ -615,6 +615,7 @@ public class Control implements ApplicationListener, Loadable{
          try{
              assets.update();
          }catch(Exception ignored){
@@ -23,7 +23,7 @@ index 47f55d3ff7f6605bafe4ff3ab52ab21498003916..d3d8f6823f96617b914fe50868bc2cb0
  
          input.updateState();
 diff --git a/core/src/mindustry/core/World.java b/core/src/mindustry/core/World.java
-index 8852976c901392570798f6581b6799df83247153..afe6e48acbdde4557f2ed4209caf0b863f9364f5 100644
+index 1ad6f1176dbb3aeafc96d3544b516eb8430167b2..d7e19c075d5a7129cf4e14b4b7b031a98399a8c5 100644
 --- a/core/src/mindustry/core/World.java
 +++ b/core/src/mindustry/core/World.java
 @@ -238,6 +238,7 @@ public class World{
@@ -35,10 +35,10 @@ index 8852976c901392570798f6581b6799df83247153..afe6e48acbdde4557f2ed4209caf0b86
      }
  
 diff --git a/core/src/mindustry/game/FogControl.java b/core/src/mindustry/game/FogControl.java
-index 8d67a35d7f009edb61bed84d75297886d9aa77b3..1406fb765640e7e77caff95edc0803245f334df1 100644
+index 4ef68bf44d62001517049f20ab3a1c07cd7cf382..f5a383a4636a48408685407917775b64ba07bc55 100644
 --- a/core/src/mindustry/game/FogControl.java
 +++ b/core/src/mindustry/game/FogControl.java
-@@ -338,7 +338,9 @@ public final class FogControl implements CustomChunk{
+@@ -337,7 +337,9 @@ public final class FogControl implements CustomChunk{
  
                      updateStatic();
                      //ignore, don't want to crash this thread

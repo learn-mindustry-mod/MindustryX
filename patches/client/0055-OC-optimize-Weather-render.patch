@@ -12,10 +12,10 @@ Content-Transfer-Encoding: 8bit
  1 file changed, 7 insertions(+), 14 deletions(-)
 
 diff --git a/core/src/mindustry/type/Weather.java b/core/src/mindustry/type/Weather.java
-index e70e0af9af7233663453ff4d57466622cb6f4cf8..1d3dc6174b0e050ec318a34ce66a185a069a6ecb 100644
+index 0800964bca1566f490fd56c86ff0dea5aa958c97..7ba63171a6478587ef5566bee94f7d38bcc92236 100644
 --- a/core/src/mindustry/type/Weather.java
 +++ b/core/src/mindustry/type/Weather.java
-@@ -119,11 +119,9 @@ public class Weather extends UnlockableContent{
+@@ -120,11 +120,9 @@ public class Weather extends UnlockableContent{
                                float sinSclMin, float sinSclMax, float sinMagMin, float sinMagMax,
                                boolean randomParticleRotation){
          rand.setSeed(0);
@@ -28,7 +28,7 @@ index e70e0af9af7233663453ff4d57466622cb6f4cf8..1d3dc6174b0e050ec318a34ce66a185a
  
          for(int i = 0; i < total; i++){
              float scl = rand.random(0.5f, 1f);
-@@ -144,7 +142,7 @@ public class Weather extends UnlockableContent{
+@@ -145,7 +143,7 @@ public class Weather extends UnlockableContent{
              y += Tmp.r1.y;
  
              if(Tmp.r3.setCentered(x, y, size).overlaps(Tmp.r2)){
@@ -37,7 +37,7 @@ index e70e0af9af7233663453ff4d57466622cb6f4cf8..1d3dc6174b0e050ec318a34ce66a185a
                  Draw.rect(region, x, y, size, size, rotation);
              }
          }
-@@ -156,13 +154,11 @@ public class Weather extends UnlockableContent{
+@@ -157,13 +155,11 @@ public class Weather extends UnlockableContent{
          rand.setSeed(0);
          float padding = sizeMax*0.9f;
  
@@ -52,7 +52,7 @@ index e70e0af9af7233663453ff4d57466622cb6f4cf8..1d3dc6174b0e050ec318a34ce66a185a
  
          for(int i = 0; i < total; i++){
              float scl = rand.random(0.5f, 1f);
-@@ -180,15 +176,14 @@ public class Weather extends UnlockableContent{
+@@ -181,15 +177,14 @@ public class Weather extends UnlockableContent{
              y += Tmp.r1.y;
  
              if(Tmp.r3.setCentered(x, y, size).overlaps(Tmp.r2)){
@@ -70,7 +70,7 @@ index e70e0af9af7233663453ff4d57466622cb6f4cf8..1d3dc6174b0e050ec318a34ce66a185a
          Core.camera.bounds(Tmp.r2);
          int total = (int)(Tmp.r1.area() / density * intensity) / 2;
          Lines.stroke(stroke);
-@@ -220,8 +215,7 @@ public class Weather extends UnlockableContent{
+@@ -221,8 +216,7 @@ public class Weather extends UnlockableContent{
                      Draw.color(Tmp.c1.set(tile.floor().mapColor).mul(1.5f).a(opacity));
                      Draw.rect(splashes[(int)(life * (splashes.length - 1))], x, y);
                  }else if(tile != null && tile.floor().liquidDrop == null && !tile.floor().solid){
@@ -80,7 +80,7 @@ index e70e0af9af7233663453ff4d57466622cb6f4cf8..1d3dc6174b0e050ec318a34ce66a185a
  
                      float space = 45f;
                      for(int j : new int[]{-1, 1}){
-@@ -248,8 +242,7 @@ public class Weather extends UnlockableContent{
+@@ -249,8 +243,7 @@ public class Weather extends UnlockableContent{
      }
  
      public static void drawNoise(Texture noise, Color color, float noisescl, float opacity, float baseSpeed, float intensity, float vwindx, float vwindy, float offset){

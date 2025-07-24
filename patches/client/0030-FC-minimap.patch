@@ -17,7 +17,7 @@ Content-Transfer-Encoding: 8bit
  3 files changed, 30 insertions(+), 10 deletions(-)
 
 diff --git a/core/src/mindustry/graphics/MinimapRenderer.java b/core/src/mindustry/graphics/MinimapRenderer.java
-index 6dbe5beb6a52baa63e46df6a4bfdd406488b1124..1d7a4175dd2b534cd3baef91c572320f5ed1d8fb 100644
+index e1513b06c05607e6315ad645071f72617b90e892..d5ff2658e3159eb49b51e49c49232edd3bf099a9 100644
 --- a/core/src/mindustry/graphics/MinimapRenderer.java
 +++ b/core/src/mindustry/graphics/MinimapRenderer.java
 @@ -166,7 +166,7 @@ public class MinimapRenderer{

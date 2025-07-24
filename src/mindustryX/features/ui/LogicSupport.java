@@ -247,7 +247,7 @@ public class LogicSupport{
 
         int index = 0;
         for(LogicLink link : executor.build.links){
-            if(link.active && link.valid){
+            if(link.valid){
                 int finalIndex = index;
                 constTable.table(Tex.whitePane, table -> {
                     table.left().setColor(color);

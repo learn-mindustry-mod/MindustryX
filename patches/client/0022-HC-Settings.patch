@@ -19,7 +19,7 @@ way-zer <himc.wicp@gmail.com> on 2024/7/1
  1 file changed, 62 insertions(+), 24 deletions(-)
 
 diff --git a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
-index 4fb56d595aa155dc0f34cec88d0f5cea700d177f..9fa6ca36f077ba1d4262863c7ff84a618667d944 100644
+index a4d720354e869657d03619ada5f10cd32ac9bfa8..5d143f6d785ee1730288ac7324cc90a618cc828f 100644
 --- a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
 +++ b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
 @@ -24,6 +24,7 @@ import mindustry.gen.*;
@@ -69,7 +69,7 @@ index 4fb56d595aa155dc0f34cec88d0f5cea700d177f..9fa6ca36f077ba1d4262863c7ff84a61
      }
  
      void addSettings(){
-@@ -386,7 +385,7 @@ public class SettingsMenuDialog extends BaseDialog{
+@@ -383,7 +382,7 @@ public class SettingsMenuDialog extends BaseDialog{
  
          graphics.sliderPref("screenshake", 4, 0, 8, i -> (i / 4f) + "x");
  

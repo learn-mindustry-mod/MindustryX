@@ -11,8 +11,8 @@ Content-Transfer-Encoding: 8bit
 
 ---
  .../ui/dialogs/SchematicsDialog.java          | 20 ++++++++++
- .../world/blocks/logic/LogicBlock.java        | 40 ++++++++++++++++---
- 2 files changed, 54 insertions(+), 6 deletions(-)
+ .../world/blocks/logic/LogicBlock.java        | 38 ++++++++++++++++---
+ 2 files changed, 53 insertions(+), 5 deletions(-)
 
 diff --git a/core/src/mindustry/ui/dialogs/SchematicsDialog.java b/core/src/mindustry/ui/dialogs/SchematicsDialog.java
 index a7acdc419bf88e63c98a88bb5ff8e7393f028c8c..b64106d2d78e05e53ef965a3310463319a24fb41 100644
@@ -53,10 +53,10 @@ index a7acdc419bf88e63c98a88bb5ff8e7393f028c8c..b64106d2d78e05e53ef965a331046331
              if(!Mathf.zero(cons) || !Mathf.zero(prod)){
                  cont.table(t -> {
 diff --git a/core/src/mindustry/world/blocks/logic/LogicBlock.java b/core/src/mindustry/world/blocks/logic/LogicBlock.java
-index 92bbb5b8d68b89c6d7ffad48bbe59ee868b98c62..545fcec5010faf88c92738fcf90d55ef3f6b85ab 100644
+index 9ca025febeda4c6c3abbb3815c298cf840c54a21..7674befb497045ef7e6527525f125df806506296 100644
 --- a/core/src/mindustry/world/blocks/logic/LogicBlock.java
 +++ b/core/src/mindustry/world/blocks/logic/LogicBlock.java
-@@ -193,7 +193,7 @@ public class LogicBlock extends Block{
+@@ -184,7 +184,7 @@ public class LogicBlock extends Block{
      public void drawPlace(int x, int y, int rotation, boolean valid){
          if(privileged) return;
  
@@ -65,25 +65,16 @@ index 92bbb5b8d68b89c6d7ffad48bbe59ee868b98c62..545fcec5010faf88c92738fcf90d55ef
      }
  
      @Override
-@@ -219,7 +219,7 @@ public class LogicBlock extends Block{
-                     String name = stream.readUTF();
-                     short x = stream.readShort(), y = stream.readShort();
- 
--                    Tmp.p2.set((int)(offset / (tilesize/2)), (int)(offset / (tilesize/2)));
-+                    Tmp.p2.set((int)(offset / (tilesize / 2)), (int)(offset / (tilesize / 2)));
-                     transformer.get(Tmp.p1.set(x * 2, y * 2).sub(Tmp.p2));
-                     Tmp.p1.add(Tmp.p2);
-                     Tmp.p1.x /= 2;
-@@ -384,7 +384,7 @@ public class LogicBlock extends Block{
+@@ -370,7 +370,7 @@ public class LogicBlock extends Block{
                      for(LogicLink link : links){
-                         if(link.active && link.valid){
+                         if(link.valid){
                              Building build = world.build(link.x, link.y);
 -                            executor.links[index ++] = build;
 +                            executor.links[index++] = build;
                              if(build != null) executor.linkIds.add(build.id);
                          }
                      }
-@@ -564,7 +564,7 @@ public class LogicBlock extends Block{
+@@ -546,7 +546,7 @@ public class LogicBlock extends Block{
                  running = true;
                  while(accumulator >= 1f){
                      executor.runOnce();
@@ -92,7 +83,7 @@ index 92bbb5b8d68b89c6d7ffad48bbe59ee868b98c62..545fcec5010faf88c92738fcf90d55ef
                      if(executor.yield){
                          executor.yield = false;
                          break;
-@@ -667,7 +667,7 @@ public class LogicBlock extends Block{
+@@ -678,7 +678,7 @@ public class LogicBlock extends Block{
          }
  
          public boolean validLink(Building other){
@@ -101,7 +92,7 @@ index 92bbb5b8d68b89c6d7ffad48bbe59ee868b98c62..545fcec5010faf88c92738fcf90d55ef
          }
  
          @Override
-@@ -681,7 +681,7 @@ public class LogicBlock extends Block{
+@@ -692,7 +692,7 @@ public class LogicBlock extends Block{
              Table vars = new Table();
              table.table(t -> {
                  t.defaults().size(40);
@@ -110,7 +101,7 @@ index 92bbb5b8d68b89c6d7ffad48bbe59ee868b98c62..545fcec5010faf88c92738fcf90d55ef
                      if(!accessible())
                          UIExt.announce("[yellow]当前无权编辑，仅供查阅");
                      showEditDialog();
-@@ -695,6 +695,34 @@ public class LogicBlock extends Block{
+@@ -706,6 +706,34 @@ public class LogicBlock extends Block{
                      links.clear();
                      updateCode(code, true, null);
                  }).disabled(b -> net.client()).tooltip("重置所有链接");

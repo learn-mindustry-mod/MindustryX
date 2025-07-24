@@ -38,7 +38,7 @@ index cd80be66ce1459e9276f71edb98ef8afe81ff6d9..4e9a0515a149b8b08d5c2ea83b10aa51
          });
  
 diff --git a/core/src/mindustry/io/TypeIO.java b/core/src/mindustry/io/TypeIO.java
-index c93d0921230fcbaacdd8cd673cf12fd4c313e823..93332c435d9383d9fb584e81f676171318f77c98 100644
+index 2f7f846406105f8345018682e2e46e46c943cc94..f94486244c0356b0143ef7c04f08e9ad0e9b8c6d 100644
 --- a/core/src/mindustry/io/TypeIO.java
 +++ b/core/src/mindustry/io/TypeIO.java
 @@ -316,7 +316,7 @@ public class TypeIO{

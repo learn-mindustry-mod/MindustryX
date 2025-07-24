@@ -11,10 +11,10 @@ Subject: [PATCH] FR(RenderExt) blockRenderLevel
  4 files changed, 11 insertions(+), 6 deletions(-)
 
 diff --git a/core/src/mindustry/core/Renderer.java b/core/src/mindustry/core/Renderer.java
-index cf406487b3bf6cbf1e592a15728a8440299efec1..e5a5a3e83a71852877e31100c0eb4bf80b56128a 100644
+index f1905078aeefde5367737d7609bfc6122eda9c72..c3619bccaab8ca76f327e97c1e274d07c7575ab5 100644
 --- a/core/src/mindustry/core/Renderer.java
 +++ b/core/src/mindustry/core/Renderer.java
-@@ -332,7 +332,8 @@ public class Renderer implements ApplicationListener{
+@@ -333,7 +333,8 @@ public class Renderer implements ApplicationListener{
  
          Draw.draw(Layer.background, this::drawBackground);
          Draw.draw(Layer.floor, blocks.floor::drawFloor);
@@ -24,7 +24,7 @@ index cf406487b3bf6cbf1e592a15728a8440299efec1..e5a5a3e83a71852877e31100c0eb4bf8
          Draw.draw(Layer.block - 0.09f, () -> {
              blocks.floor.beginDraw();
              blocks.floor.drawLayer(CacheLayer.walls);
-@@ -417,7 +418,8 @@ public class Renderer implements ApplicationListener{
+@@ -418,7 +419,8 @@ public class Renderer implements ApplicationListener{
          }
  
          Events.fire(Trigger.drawOver);
@@ -35,10 +35,10 @@ index cf406487b3bf6cbf1e592a15728a8440299efec1..e5a5a3e83a71852877e31100c0eb4bf8
          Groups.draw.draw(RenderExt::onGroupDraw);
  
 diff --git a/core/src/mindustry/graphics/BlockRenderer.java b/core/src/mindustry/graphics/BlockRenderer.java
-index b88bd5bbd47e5659390c711fa86adc2ec8b9b059..50051d1ffebc609cee8be5158ccbfbbacd2d8c74 100644
+index d4c1e41dfd155d226fe3ba2a016c93edb750dcb8..95e5a05a4f9e12738791f67a7bf80639f3d276ed 100644
 --- a/core/src/mindustry/graphics/BlockRenderer.java
 +++ b/core/src/mindustry/graphics/BlockRenderer.java
-@@ -350,7 +350,7 @@ public class BlockRenderer{
+@@ -362,7 +362,7 @@ public class BlockRenderer{
          }
  
  
@@ -48,7 +48,7 @@ index b88bd5bbd47e5659390c711fa86adc2ec8b9b059..50051d1ffebc609cee8be5158ccbfbba
          }
  
 diff --git a/core/src/mindustry/world/blocks/production/Drill.java b/core/src/mindustry/world/blocks/production/Drill.java
-index 4e155b4d08cfbcc0244f103f5ce1a55b706ae3f8..f6454de7e47676d8372db35f75c5b835321ab289 100644
+index 752850896341a1feb641f909ccfdea2e905bffed..f7012546ce66d7e054a21bf10809b54974832827 100644
 --- a/core/src/mindustry/world/blocks/production/Drill.java
 +++ b/core/src/mindustry/world/blocks/production/Drill.java
 @@ -307,7 +307,7 @@ public class Drill extends Block{

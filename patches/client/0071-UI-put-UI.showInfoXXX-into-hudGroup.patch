@@ -8,7 +8,7 @@ Subject: [PATCH] UI: put UI.showInfoXXX into hudGroup
  1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/core/src/mindustry/core/UI.java b/core/src/mindustry/core/UI.java
-index b3683879a2b1ddec68ec18bfdd1b7179a7bf1b05..acfda0e35f29d783cb69a7a95db08dd3f47a31fa 100644
+index 683b40efb719d01a80eb0d5ea72c83a7e62f136e..c1b459098015985611f5d4c0068858545057af9e 100644
 --- a/core/src/mindustry/core/UI.java
 +++ b/core/src/mindustry/core/UI.java
 @@ -384,7 +384,7 @@ public class UI implements ApplicationListener, Loadable{

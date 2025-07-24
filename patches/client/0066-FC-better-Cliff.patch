@@ -8,15 +8,15 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 ---
- core/src/mindustry/content/Blocks.java        |  1 -
- .../world/blocks/environment/Cliff.java       | 19 ++++++++++++++++++-
- 2 files changed, 18 insertions(+), 2 deletions(-)
+ core/src/mindustry/content/Blocks.java         |  1 -
+ .../world/blocks/environment/Cliff.java        | 18 +++++++++++++++++-
+ 2 files changed, 17 insertions(+), 2 deletions(-)
 
 diff --git a/core/src/mindustry/content/Blocks.java b/core/src/mindustry/content/Blocks.java
-index c73fd7074c488313edf878d3cf2dbbbeae7c1e3d..ffbed6ece9fb35bb64b67afa631f53f5f1f07dd2 100644
+index e6e93e4ce16ab2e297213cfadc26fe9b3a9a492e..4ddf0faf961c39ee756fc3023937a2d59aef1edb 100644
 --- a/core/src/mindustry/content/Blocks.java
 +++ b/core/src/mindustry/content/Blocks.java
-@@ -180,7 +180,6 @@ public class Blocks{
+@@ -191,7 +191,6 @@ public class Blocks{
          removeOre = new RemoveOre("remove-ore");
  
          cliff = new Cliff("cliff"){{
@@ -25,10 +25,10 @@ index c73fd7074c488313edf878d3cf2dbbbeae7c1e3d..ffbed6ece9fb35bb64b67afa631f53f5
          }};
  
 diff --git a/core/src/mindustry/world/blocks/environment/Cliff.java b/core/src/mindustry/world/blocks/environment/Cliff.java
-index d3a0c99771bbc3c2ed3a296f23ee61c8ed4e78a6..9eea6a5b7670850eb3a7bb33997c91f8354b4106 100644
+index 49dba95d7c6bf72ef5077ee73a2d735004b382d7..fe73e5fddaf205acac6ba2a1f6227587f7a7c251 100644
 --- a/core/src/mindustry/world/blocks/environment/Cliff.java
 +++ b/core/src/mindustry/world/blocks/environment/Cliff.java
-@@ -1,10 +1,15 @@
+@@ -1,11 +1,15 @@
  package mindustry.world.blocks.environment;
  
  import arc.graphics.g2d.*;
@@ -38,13 +38,13 @@ index d3a0c99771bbc3c2ed3a296f23ee61c8ed4e78a6..9eea6a5b7670850eb3a7bb33997c91f8
 +import mindustry.gen.*;
  import mindustry.graphics.*;
  import mindustry.world.*;
-+import org.jetbrains.annotations.Nullable;
-+
-+import static mindustry.Vars.world;
  
++import static mindustry.Vars.world;
++
  public class Cliff extends Block{
      public float size = 11f;
-@@ -23,10 +28,22 @@ public class Cliff extends Block{
+     public @Load(value = "cliffmask#", length = 256) TextureRegion[] cliffs;
+@@ -22,10 +26,22 @@ public class Cliff extends Block{
      @Override
      public void drawBase(Tile tile){
          Draw.color(Tmp.c1.set(tile.floor().mapColor).mul(1.6f));
@@ -54,7 +54,7 @@ index d3a0c99771bbc3c2ed3a296f23ee61c8ed4e78a6..9eea6a5b7670850eb3a7bb33997c91f8
      }
  
 +    @Override
-+    public void placeEnded(Tile tile, @Nullable Unit builder){
++    public void placeEnded(Tile tile, @arc.util.Nullable Unit builder, int rotation, @Nullable Object config){
 +        int rotationb = 0;
 +        for(int i = 0; i < 8; i++){
 +            Tile other = world.tiles.get(tile.x + Geometry.d8[i].x, tile.y + Geometry.d8[i].y);

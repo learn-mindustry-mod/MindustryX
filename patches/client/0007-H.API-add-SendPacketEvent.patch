@@ -9,7 +9,7 @@ Subject: [PATCH] H.API: add SendPacketEvent
  2 files changed, 8 insertions(+), 1 deletion(-)
 
 diff --git a/core/src/mindustry/net/ArcNetProvider.java b/core/src/mindustry/net/ArcNetProvider.java
-index 66d2d5278ccc45716c9eb2802d64cc6f2fa22899..cf34367b9c350622a017abf32965682649be8394 100644
+index dde8aba760aab2cecf84c1ef8014faef95ccc6cc..aa4c6605de2f6ab771e4f1017dc11cfa288aa233 100644
 --- a/core/src/mindustry/net/ArcNetProvider.java
 +++ b/core/src/mindustry/net/ArcNetProvider.java
 @@ -16,6 +16,7 @@ import mindustry.game.EventType.*;
@@ -20,7 +20,7 @@ index 66d2d5278ccc45716c9eb2802d64cc6f2fa22899..cf34367b9c350622a017abf329656826
  import net.jpountz.lz4.*;
  
  import java.io.*;
-@@ -342,6 +343,7 @@ public class ArcNetProvider implements NetProvider{
+@@ -344,6 +345,7 @@ public class ArcNetProvider implements NetProvider{
  
          @Override
          public void sendStream(Streamable stream){
@@ -28,7 +28,7 @@ index 66d2d5278ccc45716c9eb2802d64cc6f2fa22899..cf34367b9c350622a017abf329656826
              connection.addListener(new InputStreamSender(stream.stream, 1024){
                  int id;
  
-@@ -367,6 +369,7 @@ public class ArcNetProvider implements NetProvider{
+@@ -369,6 +371,7 @@ public class ArcNetProvider implements NetProvider{
  
          @Override
          public void send(Object object, boolean reliable){

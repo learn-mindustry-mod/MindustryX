@@ -66,7 +66,7 @@ index c291772de8abcc7c63fb40486e65840536d0ddb1..70fff627cf7c30b109d50962bbce6f8b
              netClient.byteStream.setBytes(data);
              DataInputStream input = netClient.dataStream;
 diff --git a/core/src/mindustry/io/TypeIO.java b/core/src/mindustry/io/TypeIO.java
-index 93332c435d9383d9fb584e81f676171318f77c98..ea91419ee59ecc32cd45b75c85e3e9ec4b5626ce 100644
+index f94486244c0356b0143ef7c04f08e9ad0e9b8c6d..d6806d619bfa5a1801d1e3ed1afaf7bff0366b7d 100644
 --- a/core/src/mindustry/io/TypeIO.java
 +++ b/core/src/mindustry/io/TypeIO.java
 @@ -26,6 +26,7 @@ import mindustry.type.*;

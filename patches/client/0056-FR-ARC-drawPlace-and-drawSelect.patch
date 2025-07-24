@@ -14,7 +14,7 @@ Subject: [PATCH] FR: ARC drawPlace and drawSelect
  7 files changed, 87 insertions(+), 11 deletions(-)
 
 diff --git a/core/src/mindustry/world/blocks/ConstructBlock.java b/core/src/mindustry/world/blocks/ConstructBlock.java
-index 3e53462cf1c8f3c388141f620c2370f1467080b2..0d596c7d1bbecbacdb9273f47f0d41b573f6f250 100644
+index fab1ac11715a9a4199a88ed43cc04da9e08ce647..9c023026313f34d8b905270ebe03a22e164037ac 100644
 --- a/core/src/mindustry/world/blocks/ConstructBlock.java
 +++ b/core/src/mindustry/world/blocks/ConstructBlock.java
 @@ -3,14 +3,17 @@ package mindustry.world.blocks;
@@ -220,7 +220,7 @@ index 497fd29e612ea915d894211b1020e83346be9e23..2ace1b5e1cea191b9914428968f51147
  
          @Override
 diff --git a/core/src/mindustry/world/blocks/production/Drill.java b/core/src/mindustry/world/blocks/production/Drill.java
-index f6454de7e47676d8372db35f75c5b835321ab289..457760c517a58835814c5d42f15fbfb57a8b8001 100644
+index f7012546ce66d7e054a21bf10809b54974832827..33bcead34c228067ba30de99860f80e89483e5b6 100644
 --- a/core/src/mindustry/world/blocks/production/Drill.java
 +++ b/core/src/mindustry/world/blocks/production/Drill.java
 @@ -148,12 +148,13 @@ public class Drill extends Block{
@@ -268,10 +268,10 @@ index f6454de7e47676d8372db35f75c5b835321ab289..457760c517a58835814c5d42f15fbfb5
          returnItem = null;
          returnCount = 0;
 diff --git a/core/src/mindustry/world/blocks/storage/CoreBlock.java b/core/src/mindustry/world/blocks/storage/CoreBlock.java
-index 5bfab32686d87a3b65427594ecf326a33668da1c..e2322fa2f0bde3b8ad57f572e49e5b6518517304 100644
+index 0583fe6b52eb526f3fb3697eb19104653765a11f..07dfd6a13a5acdb4f3df0ab2c60e187ecc169bf7 100644
 --- a/core/src/mindustry/world/blocks/storage/CoreBlock.java
 +++ b/core/src/mindustry/world/blocks/storage/CoreBlock.java
-@@ -89,6 +89,7 @@ public class CoreBlock extends StorageBlock{
+@@ -92,6 +92,7 @@ public class CoreBlock extends StorageBlock{
          player.set(core);
  
          if(!net.client()){

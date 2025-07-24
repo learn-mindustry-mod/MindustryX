@@ -23,10 +23,10 @@ index 8990cb0200e7e19a0f3af54485e020cbe76cecc6..a64b7b36fdd74a29a3caae54a1f1a514
          assets.load(schematics);
  
 diff --git a/core/src/mindustry/Vars.java b/core/src/mindustry/Vars.java
-index 0c630ca7902a615c9773b3e42e0dcef05e56d9a6..560e1b69133b34bf876ddd00f365e709ab09f76a 100644
+index 3176718bda1863bcfd2660ae76190bdd84ee1fca..f214835dfbcc80be9476a4caa50f6b4467cdffd3 100644
 --- a/core/src/mindustry/Vars.java
 +++ b/core/src/mindustry/Vars.java
-@@ -280,6 +280,7 @@ public class Vars implements Loadable{
+@@ -295,6 +295,7 @@ public class Vars implements Loadable{
      }
  
      public static void init(){

@@ -9,10 +9,10 @@ Subject: [PATCH] HC(LogicExt) noUpdatePlayerMovement
  2 files changed, 4 insertions(+), 3 deletions(-)
 
 diff --git a/core/src/mindustry/input/DesktopInput.java b/core/src/mindustry/input/DesktopInput.java
-index d722a7545f327abd3fe038af4e90b0021141abb1..c4328b04ee1889c9dfb4a906f9e280fb3597c076 100644
+index cb8d0225a3abca0d2ca1fa23134b53ec4e1e31e4..de0a9942b8214c8251cf05452d471278b4d8293c 100644
 --- a/core/src/mindustry/input/DesktopInput.java
 +++ b/core/src/mindustry/input/DesktopInput.java
-@@ -429,7 +429,7 @@ public class DesktopInput extends InputHandler{
+@@ -434,7 +434,7 @@ public class DesktopInput extends InputHandler{
          }
  
          if(!player.dead() && !state.isPaused() && !scene.hasField() && !locked){
@@ -21,7 +21,7 @@ index d722a7545f327abd3fe038af4e90b0021141abb1..c4328b04ee1889c9dfb4a906f9e280fb
  
              if(Core.input.keyTap(Binding.respawn)){
                  controlledType = null;
-@@ -438,7 +438,7 @@ public class DesktopInput extends InputHandler{
+@@ -570,7 +570,7 @@ public class DesktopInput extends InputHandler{
              }
          }
  
@@ -29,7 +29,7 @@ index d722a7545f327abd3fe038af4e90b0021141abb1..c4328b04ee1889c9dfb4a906f9e280fb
 +        if(Core.input.keyRelease(Binding.select) && !LogicExt.noUpdatePlayerMovement){
              player.shooting = false;
          }
- 
+     }
 diff --git a/core/src/mindustry/input/MobileInput.java b/core/src/mindustry/input/MobileInput.java
 index 1088b8d248565a3f57bcbd401aa6f93c6bc013e0..a9be5ce9e19d11501094d3ee2188a76e581e5d14 100644
 --- a/core/src/mindustry/input/MobileInput.java

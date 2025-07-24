@@ -9,7 +9,7 @@ Inspired by FOO client.
  1 file changed, 20 insertions(+), 7 deletions(-)
 
 diff --git a/core/src/mindustry/game/Schematics.java b/core/src/mindustry/game/Schematics.java
-index 3c8b4d8571b3ab890cd20a61f9af8e54c336c1b8..32b2ddf10d8fdd80493035c7c06543782b205bf6 100644
+index 45cd1472ca5c8f5f0c0179c4cbad4d1cc7c3ba0a..8bef2b4ffd4231c7f42416ada1a87c722b5cf2d1 100644
 --- a/core/src/mindustry/game/Schematics.java
 +++ b/core/src/mindustry/game/Schematics.java
 @@ -37,6 +37,7 @@ import mindustry.world.meta.*;
@@ -20,7 +20,7 @@ index 3c8b4d8571b3ab890cd20a61f9af8e54c336c1b8..32b2ddf10d8fdd80493035c7c0654378
  import java.util.zip.*;
  
  import static mindustry.Vars.*;
-@@ -81,22 +82,36 @@ public class Schematics implements Loadable{
+@@ -80,22 +81,36 @@ public class Schematics implements Loadable{
  
          loadLoadouts();
  
@@ -61,7 +61,7 @@ index 3c8b4d8571b3ab890cd20a61f9af8e54c336c1b8..32b2ddf10d8fdd80493035c7c0654378
          all.sort();
  
          if(shadowBuffer == null && !headless){
-@@ -141,8 +156,6 @@ public class Schematics implements Loadable{
+@@ -140,8 +155,6 @@ public class Schematics implements Loadable{
  
          try{
              Schematic s = read(file);
@@ -70,7 +70,7 @@ index 3c8b4d8571b3ab890cd20a61f9af8e54c336c1b8..32b2ddf10d8fdd80493035c7c0654378
  
              //external file from workshop
              if(!s.file.parent().equals(schematicDirectory)){
-@@ -601,7 +614,7 @@ public class Schematics implements Loadable{
+@@ -600,7 +613,7 @@ public class Schematics implements Loadable{
              for(int i = 0; i < total; i++){
                  Block block = blocks.get(stream.readByte());
                  int position = stream.readInt();

@@ -32,7 +32,7 @@ index 97c69dd2cfe25d81b94b7031fbd5919672f0b8cf..c6a77a0f45c062d49994bb760785f417
  }
 \ No newline at end of file
 diff --git a/core/src/mindustry/world/blocks/distribution/MassDriver.java b/core/src/mindustry/world/blocks/distribution/MassDriver.java
-index 4aef759357661787b2b61e542671f1c6f78d5dc1..2b29f1128fb6bee59fe1d22ee81fb14618edf686 100644
+index f79d55042a03d57a0370f3c31c71c044f4e55353..9000db2408e3c6b967fec508ba5726e328eb6c63 100644
 --- a/core/src/mindustry/world/blocks/distribution/MassDriver.java
 +++ b/core/src/mindustry/world/blocks/distribution/MassDriver.java
 @@ -335,6 +335,9 @@ public class MassDriver extends Block{

@@ -61,10 +61,10 @@ index a64b7b36fdd74a29a3caae54a1f1a514039b891f..beea309f225be8de3799089a87d1fdcb
          }
  
 diff --git a/core/src/mindustry/Vars.java b/core/src/mindustry/Vars.java
-index 560e1b69133b34bf876ddd00f365e709ab09f76a..1721160e3b2d16a04594da22e3b50b44a63a87ae 100644
+index f214835dfbcc80be9476a4caa50f6b4467cdffd3..3fe4c159cd46ba64087489c7942a2cb512c3ab74 100644
 --- a/core/src/mindustry/Vars.java
 +++ b/core/src/mindustry/Vars.java
-@@ -399,6 +399,11 @@ public class Vars implements Loadable{
+@@ -415,6 +415,11 @@ public class Vars implements Loadable{
                  if(!headless && (ui == null || ui.consolefrag == null)){
                      logBuffer.add(result);
                  }else if(!headless){
@@ -77,10 +77,10 @@ index 560e1b69133b34bf876ddd00f365e709ab09f76a..1721160e3b2d16a04594da22e3b50b44
                          for(String code : ColorCodes.values){
                              result = result.replace(code, "");
 diff --git a/core/src/mindustry/ai/BlockIndexer.java b/core/src/mindustry/ai/BlockIndexer.java
-index 2026468685fcf5073820cb6187624d70d73054c7..d74408ee188bb7a3c89c70faf45242c1565c2b3a 100644
+index 11278ddac6ce2b35234acb31b43ea7e8c999592d..ed6785c5853a9a8096b2f48792c05b98292947cd 100644
 --- a/core/src/mindustry/ai/BlockIndexer.java
 +++ b/core/src/mindustry/ai/BlockIndexer.java
-@@ -37,7 +37,7 @@ public class BlockIndexer{
+@@ -38,7 +38,7 @@ public class BlockIndexer{
      /** All ores present on the map - can be wall or floor. */
      private Seq<Item> allPresentOres = new Seq<>();
      /** All ores available on this map. */
@@ -102,10 +102,10 @@ index 1ccaabc80faeabf0acaf38ae371fcc1f98bd9750..c58b4ec28d39f53104fc4555646e4284
  
          dynamic = new StatusEffect("dynamic"){{
 diff --git a/core/src/mindustry/core/Control.java b/core/src/mindustry/core/Control.java
-index eb69d4e90442611e92881ba1fe266034f641f59d..47f55d3ff7f6605bafe4ff3ab52ab21498003916 100644
+index 7a2574ccadcad4495b7c1e1c265f47630d6fc0d3..56c3a614b3888dc4896ede5523fd6173f55b9a1b 100644
 --- a/core/src/mindustry/core/Control.java
 +++ b/core/src/mindustry/core/Control.java
-@@ -574,7 +574,8 @@ public class Control implements ApplicationListener, Loadable{
+@@ -575,7 +575,8 @@ public class Control implements ApplicationListener, Loadable{
                  BaseDialog dialog = new BaseDialog("@confirm");
                  dialog.setFillParent(true);
  
@@ -131,7 +131,7 @@ index 4e9a0515a149b8b08d5c2ea83b10aa51650267a4..c291772de8abcc7c63fb40486e658405
  
              player.admin = false;
 diff --git a/core/src/mindustry/core/Renderer.java b/core/src/mindustry/core/Renderer.java
-index e5a5a3e83a71852877e31100c0eb4bf80b56128a..87b49a668cb165317c846d504577d645f9fe1e25 100644
+index c3619bccaab8ca76f327e97c1e274d07c7575ab5..6da44d18e3c38f8a3010cf7075a2932a1ef8a270 100644
 --- a/core/src/mindustry/core/Renderer.java
 +++ b/core/src/mindustry/core/Renderer.java
 @@ -161,7 +161,7 @@ public class Renderer implements ApplicationListener{
@@ -144,19 +144,19 @@ index e5a5a3e83a71852877e31100c0eb4bf80b56128a..87b49a668cb165317c846d504577d645
          if(Mathf.equal(camerascale, dest, 0.001f)) camerascale = dest;
          unitLaserOpacity = settings.getInt("unitlaseropacity") / 100f;
 diff --git a/core/src/mindustry/core/UI.java b/core/src/mindustry/core/UI.java
-index 8a3d830d8fe215154af569b863214dab26096f3a..5b0ee5946cb022e256aff23f2f1bfc71ab1d9abb 100644
+index 84eb1d70b908f0171a2201824043b088a2adb6d2..72316d3f95b80f51c11c6ad68fd87327e517824a 100644
 --- a/core/src/mindustry/core/UI.java
 +++ b/core/src/mindustry/core/UI.java
-@@ -599,7 +599,7 @@ public class UI implements ApplicationListener, Loadable{
-         t.touchable = Touchable.disabled;
-         t.margin(8f).add(text).style(Styles.outlineLabel).labelAlign(Align.center);
-         t.update(() -> t.setPosition(Core.graphics.getWidth()/2f, Core.graphics.getHeight()/2f, Align.center));
+@@ -602,7 +602,7 @@ public class UI implements ApplicationListener, Loadable{
+             t.setPosition(Core.graphics.getWidth()/2f, Core.graphics.getHeight()/2f, Align.center);
+             t.toFront();
+         });
 -        t.actions(Actions.fadeOut(duration, Interp.pow4In), Actions.remove());
 +        t.actions(Actions.fadeOut(Math.min(duration,30f), Interp.pow4In), Actions.remove());
          t.pack();
          t.act(0.1f);
          Core.scene.add(t);
-@@ -738,23 +738,7 @@ public class UI implements ApplicationListener, Loadable{
+@@ -741,23 +741,7 @@ public class UI implements ApplicationListener, Loadable{
      }
  
      public static String formatAmount(long number){
@@ -182,10 +182,10 @@ index 8a3d830d8fe215154af569b863214dab26096f3a..5b0ee5946cb022e256aff23f2f1bfc71
  
      public static int roundAmount(int number){
 diff --git a/core/src/mindustry/game/Schematics.java b/core/src/mindustry/game/Schematics.java
-index d43599fef130da4ed935b7fc819acd73517477df..0b5cb341ed1c4a6fa7d14f8c3a0ed79e656448d9 100644
+index 93b85a591a895fb117f7b4fb983f25cd90a923a0..010d77c7e0b6846d50207c0d1d6cd167817082df 100644
 --- a/core/src/mindustry/game/Schematics.java
 +++ b/core/src/mindustry/game/Schematics.java
-@@ -99,7 +99,9 @@ public class Schematics implements Loadable{
+@@ -98,7 +98,9 @@ public class Schematics implements Loadable{
          all.sort();
  
          if(shadowBuffer == null && !headless){
@@ -196,7 +196,7 @@ index d43599fef130da4ed935b7fc819acd73517477df..0b5cb341ed1c4a6fa7d14f8c3a0ed79e
          }
      }
  
-@@ -543,7 +545,7 @@ public class Schematics implements Loadable{
+@@ -542,7 +544,7 @@ public class Schematics implements Loadable{
          try(DataInputStream stream = new DataInputStream(new InflaterInputStream(input))){
              short width = stream.readShort(), height = stream.readShort();
  
@@ -205,7 +205,7 @@ index d43599fef130da4ed935b7fc819acd73517477df..0b5cb341ed1c4a6fa7d14f8c3a0ed79e
  
              StringMap map = new StringMap();
              int tags = stream.readUnsignedByte();
-@@ -569,7 +571,7 @@ public class Schematics implements Loadable{
+@@ -568,7 +570,7 @@ public class Schematics implements Loadable{
  
              int total = stream.readInt();
  
@@ -215,7 +215,7 @@ index d43599fef130da4ed935b7fc819acd73517477df..0b5cb341ed1c4a6fa7d14f8c3a0ed79e
              Seq<Stile> tiles = new Seq<>(total);
              for(int i = 0; i < total; i++){
 diff --git a/core/src/mindustry/graphics/MinimapRenderer.java b/core/src/mindustry/graphics/MinimapRenderer.java
-index de42d089571c5093a9103f787a0b6dd2accc452f..6dbe5beb6a52baa63e46df6a4bfdd406488b1124 100644
+index 1eb24a901b103493acd75da2d47c548a5255d487..e1513b06c05607e6315ad645071f72617b90e892 100644
 --- a/core/src/mindustry/graphics/MinimapRenderer.java
 +++ b/core/src/mindustry/graphics/MinimapRenderer.java
 @@ -102,7 +102,8 @@ public class MinimapRenderer{
@@ -239,10 +239,10 @@ index de42d089571c5093a9103f787a0b6dd2accc452f..6dbe5beb6a52baa63e46df6a4bfdd406
          float dy = (Core.camera.position.y / tilesize);
          dx = Mathf.clamp(dx, sz, world.width() - sz);
 diff --git a/core/src/mindustry/ui/dialogs/JoinDialog.java b/core/src/mindustry/ui/dialogs/JoinDialog.java
-index 093c36beb214adabf18f35c4bb4992e78969d1bc..087470ad988b649d17d02c6d252796d58c3db41e 100644
+index b7f2e8875fcffd66b3d3f5c833b32357dc3f42a0..fe4781873b9f29ace189947131512167e016045e 100644
 --- a/core/src/mindustry/ui/dialogs/JoinDialog.java
 +++ b/core/src/mindustry/ui/dialogs/JoinDialog.java
-@@ -60,11 +60,9 @@ public class JoinDialog extends BaseDialog{
+@@ -61,11 +61,9 @@ public class JoinDialog extends BaseDialog{
  
          loadServers();
  
@@ -257,7 +257,7 @@ index 093c36beb214adabf18f35c4bb4992e78969d1bc..087470ad988b649d17d02c6d252796d5
  
          addCloseButton(mobile ? 190f : 210f);
  
-@@ -72,9 +70,14 @@ public class JoinDialog extends BaseDialog{
+@@ -73,9 +71,14 @@ public class JoinDialog extends BaseDialog{
              renaming = null;
              add.show();
          });
@@ -276,7 +276,7 @@ index 093c36beb214adabf18f35c4bb4992e78969d1bc..087470ad988b649d17d02c6d252796d5
          add = new BaseDialog("@joingame.title");
          add.cont.add("@joingame.ip").padRight(5f).left();
 diff --git a/core/src/mindustry/ui/dialogs/KeybindDialog.java b/core/src/mindustry/ui/dialogs/KeybindDialog.java
-index 2ef05ddf87a8fd4fa51a56ab91cd157345b59bd6..2aca87c9929d7c78b1bbf9004585233acc6b407b 100644
+index e56d2f43cc0dbea91986edefd29189327d409bb6..e26fecde81717004b5561c53dc43ae28579d24f3 100644
 --- a/core/src/mindustry/ui/dialogs/KeybindDialog.java
 +++ b/core/src/mindustry/ui/dialogs/KeybindDialog.java
 @@ -79,7 +79,7 @@ public class KeybindDialog extends Dialog{
@@ -317,10 +317,10 @@ index 2ef05ddf87a8fd4fa51a56ab91cd157345b59bd6..2aca87c9929d7c78b1bbf9004585233a
  
      void rebind(KeyBind bind, KeyCode newKey){
 diff --git a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
-index 9fa6ca36f077ba1d4262863c7ff84a618667d944..1c4e5285e8cde6b14237c12c3cc2fed1ee71b5f1 100644
+index 5d143f6d785ee1730288ac7324cc90a618cc828f..a30b51f229fe50ef2fa221ca9a6ddae0e1c18f6c 100644
 --- a/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
 +++ b/core/src/mindustry/ui/dialogs/SettingsMenuDialog.java
-@@ -400,14 +400,14 @@ public class SettingsMenuDialog extends BaseDialog{
+@@ -397,14 +397,14 @@ public class SettingsMenuDialog extends BaseDialog{
          graphics.sliderPref("unitlaseropacity", 100, 0, 100, 5, s -> s + "%");
          graphics.sliderPref("bridgeopacity", 100, 0, 100, 5, s -> s + "%");
  
@@ -390,10 +390,10 @@ index add50b5864c311b66d4278e684a4e0260170139f..6202aadb499174630a04c0210e7390a0
          team("/t"),
          admin("/a", player::admin)
 diff --git a/core/src/mindustry/ui/fragments/PlacementFragment.java b/core/src/mindustry/ui/fragments/PlacementFragment.java
-index 01e984ba718425a0296ce4e80b0a16967dd0d117..5a34a71de3c2fddfbb6399c52f1851093274c008 100644
+index eb8baf410b6a31211fddd2cb50ff0c5d8c8d286e..be3d68cbc309505b39f4dbadcf62fa8cd1ab9d69 100644
 --- a/core/src/mindustry/ui/fragments/PlacementFragment.java
 +++ b/core/src/mindustry/ui/fragments/PlacementFragment.java
-@@ -753,10 +753,8 @@ public class PlacementFragment{
+@@ -756,10 +756,8 @@ public class PlacementFragment{
  
      /** @return the thing being hovered over. */
      public @Nullable Displayable hovered(){
@@ -454,7 +454,7 @@ index cbe6d64d52f66d38be69a897a9a1a2f5b928e631..c5fe7f0080fea29764ebd94f576f1f98
  
          @Override
 diff --git a/core/src/mindustry/world/blocks/production/BeamDrill.java b/core/src/mindustry/world/blocks/production/BeamDrill.java
-index 9921e4d7cf3f704a666262479af575a7dec9d668..b5d675df53bf84bc68222c8556480cd3f7a8bd3b 100644
+index 27c1aac52ccb0cbdcaa21f029054bd6270209171..a86e8509e23146c2f14e360588ad440d9d7d2417 100644
 --- a/core/src/mindustry/world/blocks/production/BeamDrill.java
 +++ b/core/src/mindustry/world/blocks/production/BeamDrill.java
 @@ -181,14 +181,10 @@ public class BeamDrill extends Block{
@@ -477,10 +477,10 @@ index 9921e4d7cf3f704a666262479af575a7dec9d668..b5d675df53bf84bc68222c8556480cd3
              drawPlaceText(Core.bundle.get("bar.drilltierreq"), x, y, false);
          }
 diff --git a/desktop/src/mindustry/desktop/DesktopLauncher.java b/desktop/src/mindustry/desktop/DesktopLauncher.java
-index bee67a07c282daadc799d3f345bee48b9223b536..868b6faa4b3deefd240e66260b7291c9380adf39 100644
+index c4dc0a63c9942f9bc0f6e4c93512544ffd016d5e..a484082d822d8cf65e514aa57161062f939405a1 100644
 --- a/desktop/src/mindustry/desktop/DesktopLauncher.java
 +++ b/desktop/src/mindustry/desktop/DesktopLauncher.java
-@@ -23,6 +23,7 @@ import mindustry.net.*;
+@@ -24,6 +24,7 @@ import mindustry.net.*;
  import mindustry.net.Net.*;
  import mindustry.service.*;
  import mindustry.type.*;
@@ -488,9 +488,9 @@ index bee67a07c282daadc799d3f345bee48b9223b536..868b6faa4b3deefd240e66260b7291c9
  
  import java.io.*;
  
-@@ -73,6 +74,20 @@ public class DesktopLauncher extends ClientLauncher{
+@@ -93,6 +94,20 @@ public class DesktopLauncher extends ClientLauncher{
+         this.args = args;
  
-     public DesktopLauncher(String[] args){
          Version.init();
 +        //MDTX, auto discover steam
 +        String steamJar = null;
@@ -509,7 +509,7 @@ index bee67a07c282daadc799d3f345bee48b9223b536..868b6faa4b3deefd240e66260b7291c9
          boolean useSteam = Version.modifier.contains("steam");
          testMobile = Seq.with(args).contains("-testMobile");
  
-@@ -101,7 +116,10 @@ public class DesktopLauncher extends ClientLauncher{
+@@ -121,7 +136,10 @@ public class DesktopLauncher extends ClientLauncher{
              });
  
              try{

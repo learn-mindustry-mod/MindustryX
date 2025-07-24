@@ -8,14 +8,14 @@ Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 
 ---
- .../mindustry/entities/comp/BuilderComp.java  |  5 +--
+ .../mindustry/entities/comp/BuilderComp.java  |  3 +-
  core/src/mindustry/game/Schematics.java       | 36 +++++++++++++++----
  core/src/mindustry/input/MobileInput.java     | 11 ++----
  .../world/blocks/environment/Floor.java       |  1 +
- 4 files changed, 36 insertions(+), 17 deletions(-)
+ 4 files changed, 35 insertions(+), 16 deletions(-)
 
 diff --git a/core/src/mindustry/entities/comp/BuilderComp.java b/core/src/mindustry/entities/comp/BuilderComp.java
-index 866717c452850ab14c94e81c4b34b540afbc9553..05b6b25f0cf612d8cf39a798e9422f769e97b667 100644
+index 3ab723995c40efde9ada16d0a6088e51ee07ca05..5e0b9854c96861eba3e02c86d484fae9456f11c9 100644
 --- a/core/src/mindustry/entities/comp/BuilderComp.java
 +++ b/core/src/mindustry/entities/comp/BuilderComp.java
 @@ -18,6 +18,7 @@ import mindustry.type.*;
@@ -26,15 +26,6 @@ index 866717c452850ab14c94e81c4b34b540afbc9553..05b6b25f0cf612d8cf39a798e9422f76
  
  import java.util.*;
  
-@@ -147,7 +148,7 @@ abstract class BuilderComp implements Posc, Statusc, Teamc, Rotc{
-                         if(hasAll){
-                             Call.beginPlace(self(), current.block, team, current.x, current.y, current.rotation);
- 
--                            if(current.block.instantBuild){
-+                            if(!net.client() && current.block.instantBuild){
-                                 if(plans.size > 0){
-                                     plans.removeFirst();
-                                 }
 @@ -276,7 +277,7 @@ abstract class BuilderComp implements Posc, Statusc, Teamc, Rotc{
                  break;
              }
@@ -45,7 +36,7 @@ index 866717c452850ab14c94e81c4b34b540afbc9553..05b6b25f0cf612d8cf39a798e9422f76
          }
          Tile tile = world.tile(place.x, place.y);
 diff --git a/core/src/mindustry/game/Schematics.java b/core/src/mindustry/game/Schematics.java
-index 0b5cb341ed1c4a6fa7d14f8c3a0ed79e656448d9..3c8b4d8571b3ab890cd20a61f9af8e54c336c1b8 100644
+index 010d77c7e0b6846d50207c0d1d6cd167817082df..45cd1472ca5c8f5f0c0179c4cbad4d1cc7c3ba0a 100644
 --- a/core/src/mindustry/game/Schematics.java
 +++ b/core/src/mindustry/game/Schematics.java
 @@ -34,6 +34,7 @@ import mindustry.world.blocks.sandbox.*;
@@ -56,16 +47,16 @@ index 0b5cb341ed1c4a6fa7d14f8c3a0ed79e656448d9..3c8b4d8571b3ab890cd20a61f9af8e54
  
  import java.io.*;
  import java.util.zip.*;
-@@ -279,7 +280,7 @@ public class Schematics implements Loadable{
+@@ -278,7 +279,7 @@ public class Schematics implements Loadable{
      /** Creates an array of build plans from a schematic's data, centered on the provided x+y coordinates. */
      public Seq<BuildPlan> toPlans(Schematic schem, int x, int y){
-         return schem.tiles.map(t -> new BuildPlan(t.x + x - schem.width/2, t.y + y - schem.height/2, t.rotation, t.block, t.config).original(t.x, t.y, schem.width, schem.height))
+         return schem.tiles.map(t -> new BuildPlan(t.x + x - schem.width/2, t.y + y - schem.height/2, t.rotation, t.block, t.config))
 -            .removeAll(s -> (!s.block.isVisible() && !(s.block instanceof CoreBlock)) || !s.block.unlockedNow()).sort(Structs.comparingInt(s -> -s.block.schematicPriority));
 +            .removeAll(s -> !LogicExt.terrainSchematic && ((!s.block.isVisible() && !(s.block instanceof CoreBlock)) || !s.block.unlockedNow())).sort(Structs.comparingInt(s -> -s.block.schematicPriority));
      }
  
      /** @return all the valid loadouts for a specific core type. */
-@@ -370,10 +371,10 @@ public class Schematics implements Loadable{
+@@ -369,10 +370,10 @@ public class Schematics implements Loadable{
      public Schematic create(int x, int y, int x2, int y2){
          Team team = headless ? null : Vars.player.team();
          NormalizeResult result = Placement.normalizeArea(x, y, x2, y2, 0, false, maxSchematicSize);
@@ -80,7 +71,7 @@ index 0b5cb341ed1c4a6fa7d14f8c3a0ed79e656448d9..3c8b4d8571b3ab890cd20a61f9af8e54
  
          int ox = x, oy = y, ox2 = x2, oy2 = y2;
  
-@@ -400,7 +401,7 @@ public class Schematics implements Loadable{
+@@ -399,7 +400,7 @@ public class Schematics implements Loadable{
              }
          }
  
@@ -89,7 +80,7 @@ index 0b5cb341ed1c4a6fa7d14f8c3a0ed79e656448d9..3c8b4d8571b3ab890cd20a61f9af8e54
              x = minx;
              y = miny;
              x2 = maxx;
-@@ -409,6 +410,20 @@ public class Schematics implements Loadable{
+@@ -408,6 +409,20 @@ public class Schematics implements Loadable{
              return new Schematic(new Seq<>(), new StringMap(), 1, 1);
          }
  
@@ -110,7 +101,7 @@ index 0b5cb341ed1c4a6fa7d14f8c3a0ed79e656448d9..3c8b4d8571b3ab890cd20a61f9af8e54
          int width = x2 - x + 1, height = y2 - y + 1;
          int offsetX = -x, offsetY = -y;
          IntSet counted = new IntSet();
-@@ -427,6 +442,15 @@ public class Schematics implements Loadable{
+@@ -426,6 +441,15 @@ public class Schematics implements Loadable{
                  }
              }
          }
@@ -149,10 +140,10 @@ index 3c291a14a3dcbaee09c33d8b0059c2b3b4b24c41..1ebb2888672ce37be40f9ffb2fc227cc
  
                              rotation = plan.rotation;
 diff --git a/core/src/mindustry/world/blocks/environment/Floor.java b/core/src/mindustry/world/blocks/environment/Floor.java
-index 79d31cd6486de86ff156d41dbfe83c1f0121306d..5d7f080d9435b7e6e03be7691c76e0f7c40040cf 100644
+index 90d253ccac50810b88fd7c95e8e807f651ee7eaa..20d55219bd96ef1c93b57bf9d1514339a076c8a5 100644
 --- a/core/src/mindustry/world/blocks/environment/Floor.java
 +++ b/core/src/mindustry/world/blocks/environment/Floor.java
-@@ -94,6 +94,7 @@ public class Floor extends Block{
+@@ -111,6 +111,7 @@ public class Floor extends Block{
          instantBuild = true;
          ignoreBuildDarkness = true;
          placeEffect = Fx.rotateBlock;

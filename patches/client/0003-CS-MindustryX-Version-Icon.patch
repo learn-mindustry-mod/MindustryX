@@ -58,7 +58,7 @@ index d42ffe6d4a318ce558f1010eae46140f88ed5c99..bf44ead5c58abfb79c500e6daae30c3e
 +    <string name="app_name">MindustryX</string>
  </resources>
 diff --git a/build.gradle b/build.gradle
-index 67184c9a4359ebf2cedccfa4098c4393013b70db..474953f0b7610058572ba9fa10de89b2db774f83 100644
+index 1fa167562b8f864a1974a5332ebfebe16a5c84b5..ba4d2ad6b96c244e8a068412fa9547c4c77af4cc 100644
 --- a/build.gradle
 +++ b/build.gradle
 @@ -22,7 +22,7 @@ allprojects{
@@ -84,10 +84,10 @@ index 0881a8a6c843fe5c6bfd78cf5a0aeee834ccb769..39332d4d175d89e93c48ebb7b9532c7d
      }
      processResources.configure {
 diff --git a/core/src/mindustry/Vars.java b/core/src/mindustry/Vars.java
-index e2394a3c0d37199f177f9d24f14a6c85e6f19548..0c630ca7902a615c9773b3e42e0dcef05e56d9a6 100644
+index 3ddbc4c7b47d5b580995e2e866512f391039c4d4..3176718bda1863bcfd2660ae76190bdd84ee1fca 100644
 --- a/core/src/mindustry/Vars.java
 +++ b/core/src/mindustry/Vars.java
-@@ -84,7 +84,7 @@ public class Vars implements Loadable{
+@@ -86,7 +86,7 @@ public class Vars implements Loadable{
      /** URLs to the JSON files containing the list of mods.  */
      public static final String[] modJsonURLs = {"https://raw.githubusercontent.com/Anuken/MindustryMods/master/mods.json", "https://cdn.jsdelivr.net/gh/anuken/mindustrymods/mods.json"};
      /** URL of the github issue report template.*/
@@ -95,7 +95,7 @@ index e2394a3c0d37199f177f9d24f14a6c85e6f19548..0c630ca7902a615c9773b3e42e0dcef0
 +    public static final String reportIssueURL = "https://github.com/TinyLake/MindustryX/issues/new?labels=bug&template=bug_report.md";
      /** list of built-in servers.*/
      public static final Seq<ServerGroup> defaultServers = Seq.with();
-     /** maximum openGL errors logged */
+     /** cached server list - only used if defaultServers have not been fetched*/
 diff --git a/core/src/mindustry/core/NetClient.java b/core/src/mindustry/core/NetClient.java
 index ac8803d3f486e4f2018dd765e1b6a9dd18fe1903..d4bf4d900113045c5f781f8a92ad3c65a9ac766d 100644
 --- a/core/src/mindustry/core/NetClient.java
@@ -117,7 +117,7 @@ index ac8803d3f486e4f2018dd765e1b6a9dd18fe1903..d4bf4d900113045c5f781f8a92ad3c65
          });
      }
 diff --git a/core/src/mindustry/core/Version.java b/core/src/mindustry/core/Version.java
-index c79594eebd049ba73c62312a246eed6947cbb837..69d93243bc079903003bcd805345b0252e0993a0 100644
+index d8981d42c957bb7b79df9ca5eafbea325dcbea49..52df23e4b3ce9719f6192d402831fdd6551d52a2 100644
 --- a/core/src/mindustry/core/Version.java
 +++ b/core/src/mindustry/core/Version.java
 @@ -6,6 +6,7 @@ import arc.files.*;
@@ -128,7 +128,7 @@ index c79594eebd049ba73c62312a246eed6947cbb837..69d93243bc079903003bcd805345b025
  
  public class Version{
      /** Build type. 'official' for official releases; 'custom' or 'bleeding edge' are also used. */
-@@ -22,6 +23,8 @@ public class Version{
+@@ -24,6 +25,8 @@ public class Version{
      public static int revision = 0;
      /** Whether version loading is enabled. */
      public static boolean enabled = true;
@@ -137,7 +137,7 @@ index c79594eebd049ba73c62312a246eed6947cbb837..69d93243bc079903003bcd805345b025
  
      public static void init(){
          if(!enabled) return;
-@@ -76,6 +79,7 @@ public class Version{
+@@ -79,6 +82,7 @@ public class Version{
          if(build == -1){
              return "custom build";
          }
@@ -160,10 +160,10 @@ index 5b49342d67c5ee443ba789417f231b75d79ee1cb..89a5e536fe62ed8d3dc04e291fb70516
          buffer.put((byte)state.rules.mode().ordinal());
          buffer.putInt(netServer.admins.getPlayerLimit());
 diff --git a/desktop/src/mindustry/desktop/DesktopLauncher.java b/desktop/src/mindustry/desktop/DesktopLauncher.java
-index 9e18ce5a54be5f6ca97395737d65de56495aeac0..bee67a07c282daadc799d3f345bee48b9223b536 100644
+index 5c8d619a5dde4f94abe0448277d25b605f321b13..c4dc0a63c9942f9bc0f6e4c93512544ffd016d5e 100644
 --- a/desktop/src/mindustry/desktop/DesktopLauncher.java
 +++ b/desktop/src/mindustry/desktop/DesktopLauncher.java
-@@ -64,7 +64,7 @@ public class DesktopLauncher extends ClientLauncher{
+@@ -82,7 +82,7 @@ public class DesktopLauncher extends ClientLauncher{
                          }
                      }
                  }
@@ -173,13 +173,13 @@ index 9e18ce5a54be5f6ca97395737d65de56495aeac0..bee67a07c282daadc799d3f345bee48b
          }catch(Throwable e){
              handleCrash(e);
 diff --git a/gradle.properties b/gradle.properties
-index 91165484dfd304f019be3295031d6dd8b584b623..d23f72a54a0f5caeef2d6f2da433b06a4e363069 100644
+index aff94b364979bd2f7bbdb4f9e02b05dc8557c337..ca00b5f3e8ec2684aff4e3536aa7792d5580f4d0 100644
 --- a/gradle.properties
 +++ b/gradle.properties
 @@ -27,3 +27,5 @@ org.gradle.internal.http.socketTimeout=100000
  org.gradle.internal.http.connectionTimeout=100000
  android.enableR8.fullMode=false
- archash=v149
+ archash=v150
 +
-+upstreamBuild=149
++upstreamBuild=150
 \ No newline at end of file
