@@ -4,11 +4,11 @@ Date: Thu, 24 Jul 2025 19:59:53 +0800
 Subject: [PATCH] PICK #anuken:11032
 
 ---
- core/assets/bundles/bundle_zh_CN.properties | 104 ++++++++++----------
- 1 file changed, 52 insertions(+), 52 deletions(-)
+ core/assets/bundles/bundle_zh_CN.properties | 100 ++++++++++----------
+ 1 file changed, 50 insertions(+), 50 deletions(-)
 
 diff --git a/core/assets/bundles/bundle_zh_CN.properties b/core/assets/bundles/bundle_zh_CN.properties
-index c9cdc41ff3257aea27c1b9039c65373eac341744..0239edb1b5582fa751161dddc262415ef8e46f8e 100644
+index c9cdc41ff3257aea27c1b9039c65373eac341744..ee8ed4a51ddafaebb345b85483e770834fc161c9 100644
 --- a/core/assets/bundles/bundle_zh_CN.properties
 +++ b/core/assets/bundles/bundle_zh_CN.properties
 @@ -121,7 +121,7 @@ continue = 继续
@@ -257,17 +257,6 @@ index c9cdc41ff3257aea27c1b9039c65373eac341744..0239edb1b5582fa751161dddc262415e
  
  #Erekir
  unit.stell.description = 向敌人发射普通子弹。
-@@ -2470,8 +2470,8 @@ unit.collaris.description = 向敌人发射远程分裂火炮。可以跨越大
- unit.elude.description = 向敌人发射螺旋状追踪子弹。可以在液体上悬浮。
- unit.avert.description = 向敌人发射螺旋状扭曲子弹。
- unit.obviate.description = 向敌人发射螺旋状闪电球。
--unit.quell.description = 向敌人发射远程追踪导弹。能够压制敌方修复建筑。
--unit.disrupt.description = 向敌人发射远程压制性追踪导弹。能够压制敌方修复建筑。
-+unit.quell.description = 向敌人发射远程追踪导弹。本体能够压制敌方修复建筑。
-+unit.disrupt.description = 向敌人发射远程压制性追踪导弹。本体能够压制敌方修复建筑。
- unit.evoke.description = 保护城堡核心，可建造建筑。使用激光束修复建筑。
- unit.incite.description = 保护堡垒核心，可建造建筑。使用激光束修复建筑。
- unit.emanate.description = 保护卫城核心，可建造建筑。使用一对激光束修复建筑。
 @@ -2509,8 +2509,8 @@ lst.spawnwave = 在任意位置生成一波敌人\n并不记录在波数计数
  lst.explosion = 在某个位置生成爆炸。
  lst.setrate = 在指令/时间刻的时间下设置处理器处理速度。
