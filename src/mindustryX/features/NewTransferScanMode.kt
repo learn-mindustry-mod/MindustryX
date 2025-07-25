@@ -308,7 +308,7 @@ object NewTransferScanMode {
             }
         }
 
-        override fun canInputItem(from: Building): Boolean = build.arcLinkValid()
+        override fun canInputItem(from: Building): Boolean = build.arcLinkValid() || (from as? MassDriver.MassDriverBuild)?.link == build.pos()
     }
 
     private class DirectionBridgeAdaptor(override val build: DirectionBridge.DirectionBridgeBuild, val type: TransportType) : BuildingAdaptor() {
