@@ -19,12 +19,11 @@ import mindustryX.features.ui.toolTable.ai.*;
 
 import static mindustry.Vars.*;
 
-public class AuxiliaryTools extends ToolTableBase{
+public class AuxiliaryTools extends Table{
     private AIController selectAI;
 
     public AuxiliaryTools(){
-        super("[acid]辅");
-        RStyles.load();
+        background(Styles.black6);
         rebuild();
         Events.run(EventType.Trigger.update, () -> {
             if(selectAI != null && !player.dead()){
@@ -47,7 +46,7 @@ public class AuxiliaryTools extends ToolTableBase{
         button(Icon.settingsSmall, Styles.clearNonei, iconMed, this::showAiSettingDialog);
 
         row();
-        button(new TextureRegionDrawable(Blocks.buildTower.uiIcon), RStyles.clearLineNonei, iconMed, () -> {
+        button(new TextureRegionDrawable(Blocks.buildTower.uiIcon), Styles.clearNonei, iconMed, () -> {
             if(!player.isBuilder()) return;
             int count = 0;
             for(Teams.BlockPlan plan : player.team().data().plans){
@@ -57,7 +56,7 @@ public class AuxiliaryTools extends ToolTableBase{
                 }
             }
         }).tooltip("在建造列表加入被摧毁建筑");
-        var t = button(new TextureRegionDrawable(Items.copper.uiIcon), RStyles.clearLineNoneTogglei, () -> AutoFill.enable ^= true).tooltip("一键装填").checked((b) -> AutoFill.enable).get();
+        var t = button(new TextureRegionDrawable(Items.copper.uiIcon), Styles.clearNoneTogglei, () -> AutoFill.enable ^= true).tooltip("一键装填").checked((b) -> AutoFill.enable).get();
         SettingsV2.bindQuickSettings(t, AutoFill.INSTANCE.getSettings());
         toggleButton(Icon.modeAttack, "autotarget", "自动攻击");
         toggleButton(new TextureRegionDrawable(UnitTypes.vela.uiIcon), "forceBoost", "强制助推");
@@ -77,12 +76,12 @@ public class AuxiliaryTools extends ToolTableBase{
     }
 
     private void aiButton(AIController ai, TextureRegion textureRegion, String describe){
-        table().get().button(new TextureRegionDrawable(textureRegion), RStyles.clearLineNoneTogglei, iconMed, () -> selectAI = selectAI == ai ? null : ai).checked(b -> selectAI == ai).tooltip(describe);
+        button(new TextureRegionDrawable(textureRegion), Styles.clearNoneTogglei, iconMed, () -> selectAI = selectAI == ai ? null : ai).checked(b -> selectAI == ai).tooltip(describe);
     }
 
 
     protected void toggleButton(Drawable icon, String settingName, String description){
-        button(icon, RStyles.clearLineNoneTogglei, iconMed, () -> {
+        button(icon, Styles.clearNoneTogglei, iconMed, () -> {
             boolean setting = Core.settings.getBool(settingName);
 
             Core.settings.put(settingName, !setting);
@@ -91,7 +90,7 @@ public class AuxiliaryTools extends ToolTableBase{
     }
 
     protected Cell<ImageButton> toggleButton(Drawable icon, String description, Runnable runnable){
-        return button(icon, RStyles.clearLineNonei, iconMed, runnable).tooltip(description, true);
+        return button(icon, Styles.clearNonei, iconMed, runnable).tooltip(description, true);
     }
 
     protected void scriptButton(Drawable icon, String description, Runnable runnable){

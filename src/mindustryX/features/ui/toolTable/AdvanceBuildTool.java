@@ -27,7 +27,7 @@ import mindustryX.features.func.*;
 import static mindustry.Vars.*;
 
 //moved from mindustry.arcModule.ui.quickTool.AdvanceBuildTool
-public class AdvanceBuildTool extends ToolTableBase{
+public class AdvanceBuildTool extends Table{
     BuildRange placement = BuildRange.player;
     Rect selection = new Rect();
     Block find = Blocks.worldProcessor;
@@ -38,7 +38,7 @@ public class AdvanceBuildTool extends ToolTableBase{
 
 
     public AdvanceBuildTool(){
-        super(Blocks.buildTower.emoji());
+        background(Styles.black6);
         Events.on(EventType.WorldLoadEvent.class, e -> rebuild());
         Events.run(Trigger.draw, () -> {
             if(placement == BuildRange.zone){
@@ -110,7 +110,7 @@ public class AdvanceBuildTool extends ToolTableBase{
             placement = BuildRange.find;
             rebuild();
         }).size(30f).tooltip("设置目标");
-        button(String.valueOf(Iconc.eye), Styles.flatTogglet, () -> {
+        button(String.valueOf(Iconc.eye), Styles.squareTogglet, () -> {
             highlight = !highlight;
             if(highlight && find == Blocks.worldProcessor) showWorldProcessorInfo();
         }).checked((b) -> highlight).size(30).tooltip("高亮目标");

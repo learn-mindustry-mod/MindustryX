@@ -2,6 +2,7 @@ package mindustryX.features.ui.toolTable
 
 import arc.graphics.Color
 import arc.math.Mathf
+import arc.scene.ui.layout.Table
 import arc.struct.Seq
 import arc.util.io.Reads
 import arc.util.io.Writes
@@ -25,12 +26,13 @@ import java.io.DataInputStream
 import java.io.DataOutputStream
 
 //move from mindustry.arcModule.ui.AdvanceToolTable
-class AdvanceToolTable : ToolTableBase(Iconc.wrench.toString()) {
+class AdvanceToolTable : Table() {
     val factoryDialog: UnitFactoryDialog = UnitFactoryDialog()
     private val rulesDialog = CustomRulesDialog()
     private val mapInfoDialog: MapInfoDialog = MapInfoDialog()
 
     init {
+        background = Styles.black6
         row().add("警告：该页功能主要供单机作图使用").color(Color.yellow).colspan(2)
 
         row().add("单位：")

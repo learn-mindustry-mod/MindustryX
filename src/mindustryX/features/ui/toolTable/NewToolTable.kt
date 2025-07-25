@@ -24,11 +24,11 @@ import mindustry.world.blocks.environment.Floor
 import mindustryX.features.*
 import mindustryX.features.ui.comp.GridTable
 
-object NewToolTable : ToolTableBase("${Iconc.settings}") {
+object NewToolTable : Table() {
     val gridTable = GridTable()
 
     init {
-        add().width(300f).row()//expand the table
+        background = Styles.black6
         add(gridTable).growX().row()
         gridTable.defaults().size(Vars.iconLarge)
 
