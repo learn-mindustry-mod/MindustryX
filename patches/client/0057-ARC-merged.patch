@@ -111,7 +111,7 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  .../ui/dialogs/CustomRulesDialog.java         | 116 ++++++++-
  .../mindustry/ui/dialogs/DatabaseDialog.java  |   3 +-
  .../mindustry/ui/dialogs/PausedDialog.java    |  12 +-
- .../mindustry/ui/dialogs/PlanetDialog.java    |  29 ++-
+ .../mindustry/ui/dialogs/PlanetDialog.java    |  31 ++-
  .../ui/dialogs/SchematicsDialog.java          | 237 +++++++++++++++++-
  .../ui/dialogs/SettingsMenuDialog.java        |  24 +-
  .../mindustry/ui/fragments/ChatFragment.java  |   9 +-
@@ -120,7 +120,7 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  .../mindustry/ui/fragments/MenuFragment.java  |  24 +-
  .../ui/fragments/PlacementFragment.java       | 164 ++++++++++--
  .../ui/fragments/PlayerListFragment.java      |  72 ++----
- 27 files changed, 1120 insertions(+), 148 deletions(-)
+ 27 files changed, 1122 insertions(+), 148 deletions(-)
 
 diff --git a/core/src/mindustry/editor/MapInfoDialog.java b/core/src/mindustry/editor/MapInfoDialog.java
 index ebc1f0b300d295e45333f1db38ea299c9658ec20..e7cba056743979206c84fc6d00472c2c44b565f6 100644
@@ -1330,7 +1330,7 @@ index 2ff15e272b39be703d3405391eff76d6ecb97ac0..08b4f1fde311f5f1a6c3f0a9cb64e3a5
      }
  
 diff --git a/core/src/mindustry/ui/dialogs/PlanetDialog.java b/core/src/mindustry/ui/dialogs/PlanetDialog.java
-index 4f623af6948aefa12ebea9d51e4897daa1431450..907d55642aea0ec3b232fd20562dc3335786da1d 100644
+index 4f623af6948aefa12ebea9d51e4897daa1431450..94dca15f3c94710747cb937e2a4a0e7414267a6f 100644
 --- a/core/src/mindustry/ui/dialogs/PlanetDialog.java
 +++ b/core/src/mindustry/ui/dialogs/PlanetDialog.java
 @@ -38,6 +38,7 @@ import mindustry.type.Planet.*;
@@ -1350,7 +1350,22 @@ index 4f623af6948aefa12ebea9d51e4897daa1431450..907d55642aea0ec3b232fd20562dc333
      public PlanetDialog(){
          super("", Styles.fullDialog);
  
-@@ -563,6 +566,11 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
+@@ -298,12 +301,14 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
+         if(Core.graphics.isPortrait()){
+             buttons.add(sectorTop).colspan(2).fillX().row();
+             addBack();
++            buttons.button("区块名称", Icon.bookOpen, () -> alwaysShowName = !alwaysShowName).size(100f, 54f).pad(2).bottom();
+             addTech();
+         }else{
+             addBack();
+             buttons.add().growX();
+             buttons.add(sectorTop).minWidth(230f);
+             buttons.add().growX();
++            buttons.button("区块名称", Icon.bookOpen, () -> alwaysShowName = !alwaysShowName).size(100f, 54f).pad(2).bottom();
+             addTech();
+         }
+     }
+@@ -563,6 +568,11 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
                          Draw.rect(icon, 0, 0, iw, iw * icon.height / icon.width);
                      });
                  }
@@ -1362,7 +1377,7 @@ index 4f623af6948aefa12ebea9d51e4897daa1431450..907d55642aea0ec3b232fd20562dc333
              }
          }
  
-@@ -763,7 +771,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
+@@ -763,7 +773,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
  
              //sector notifications & search
              c.top().right();
@@ -1371,7 +1386,7 @@ index 4f623af6948aefa12ebea9d51e4897daa1431450..907d55642aea0ec3b232fd20562dc333
  
              c.button(bundle.get("sectorlist") +
              (attacked == 0 ? "" : "\n[red]⚠[lightgray] " + bundle.format("sectorlist.attacked", "[red]" + attacked + "[]")),
-@@ -807,7 +815,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
+@@ -807,7 +817,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
  
              readd[0] = () -> {
                  con.clearChildren();
@@ -1380,7 +1395,7 @@ index 4f623af6948aefa12ebea9d51e4897daa1431450..907d55642aea0ec3b232fd20562dc333
                      if(sec.hasBase() && (searchText.isEmpty() || sec.name().toLowerCase().contains(searchText.toLowerCase()))){
                          con.button(t -> {
                              t.marginRight(10f);
-@@ -828,6 +836,19 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
+@@ -828,6 +838,19 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
                                  String ic = sec.iconChar() == null ? "" : sec.iconChar() + " ";
  
                                  head.add(ic + sec.name()).growX().wrap();
@@ -1400,7 +1415,7 @@ index 4f623af6948aefa12ebea9d51e4897daa1431450..907d55642aea0ec3b232fd20562dc333
                              }).growX().row();
  
                              if(sec.isAttacked()){
-@@ -1024,7 +1045,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
+@@ -1024,7 +1047,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
              if(total > 1){
                  t.image(item.uiIcon).padRight(3);
                  t.add(UI.formatAmount(total) + " " + Core.bundle.get("unit.perminute")).color(Color.lightGray).padRight(3);
@@ -1409,7 +1424,7 @@ index 4f623af6948aefa12ebea9d51e4897daa1431450..907d55642aea0ec3b232fd20562dc333
                      t.row();
                  }
              }
-@@ -1104,7 +1125,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
+@@ -1104,7 +1127,7 @@ public class PlanetDialog extends BaseDialog implements PlanetInterfaceRenderer{
                          for(ItemStack stack : items){
                              res.image(stack.item.uiIcon).padRight(3);
                              res.add(UI.formatAmount(Math.max(stack.amount, 0))).color(Color.lightGray);
