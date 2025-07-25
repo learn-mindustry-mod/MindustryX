@@ -5,6 +5,8 @@ import arc.Graphics.Cursor.SystemCursor
 import arc.func.Boolp
 import arc.func.Prov
 import arc.graphics.Color
+import arc.graphics.g2d.Draw
+import arc.graphics.g2d.Lines
 import arc.input.KeyCode
 import arc.math.geom.Rect
 import arc.math.geom.Vec2
@@ -86,10 +88,10 @@ object OverlayUI {
 
     class Window(name: String, val table: Table) : Table() {
         inner class DragListener : InputListener() {
-            private val last = Vec2()
+            private val offset = Vec2()
             override fun touchDown(event: InputEvent, x: Float, y: Float, pointer: Int, button: KeyCode?): Boolean {
                 if (Core.app.isMobile && pointer != 0) return false
-                last.set(event.stageX, event.stageY)
+                offset.set(event.stageX, event.stageY).sub(this@Window.x, this@Window.y)
                 dragging = true
 
                 toFront()
@@ -98,8 +100,8 @@ object OverlayUI {
 
             override fun touchDragged(event: InputEvent, x: Float, y: Float, pointer: Int) {
                 if (Core.app.isMobile && pointer != 0) return
-                moveBy(event.stageX - last.x, event.stageY - last.y)
-                last.set(event.stageX, event.stageY)
+                setPosition(event.stageX - offset.x, event.stageY - offset.y)
+                keepInStage()
             }
 
             override fun touchUp(event: InputEvent?, x: Float, y: Float, pointer: Int, button: KeyCode?) {
@@ -233,7 +235,6 @@ object OverlayUI {
                         data.enabled = false
                     }
                 }.fillX().row()
-                image().fillX().row()
 
                 val rect = data.value.rect
                 if (rect == null) {
@@ -248,6 +249,17 @@ object OverlayUI {
                     validate()
                     cell.size(Float.NEGATIVE_INFINITY)
                 }
+
+                addChild(object : Element() {
+                    override fun act(delta: Float) {
+                        setBounds(table.x, table.y, table.width, table.height)
+                    }
+
+                    override fun draw() {
+                        Draw.color()
+                        Lines.rect(x, y, width, height)
+                    }
+                })
 
                 addChild(ImageButton(Icon.resize).apply {
                     setSize(Vars.iconMed)
