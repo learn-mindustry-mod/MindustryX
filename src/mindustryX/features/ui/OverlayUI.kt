@@ -252,6 +252,7 @@ object OverlayUI {
 
                 addChild(object : Element() {
                     override fun act(delta: Float) {
+                        touchable = Touchable.disabled
                         setBounds(table.x, table.y, table.width, table.height)
                     }
 
