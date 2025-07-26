@@ -1,5 +1,5 @@
 {
-  "lastUpdated": "2025/7/4 9:20",
+  "lastUpdated": "2025/7/25 9:20",
   "modRecommend": [
     {
       "repo": "eb-wilson/toomanyitems",
@@ -24,6 +24,22 @@
     {
       "repo": "blackdeluxecat/mi2-utilities-java",
       "reason": "MI2-Utilities-Java(MI2U)，提供视觉和操作上的辅助\n懂的都懂"
+    },
+    {
+      "repo": "eb-wilson/helium",
+      "reason": "美化Mod\n提供了毛玻璃背景、更好的Mod管理界面等功能物品。其他功能按需关闭"
+    },
+    {
+      "repo": "i-hope1/mod-tools",
+      "reason": "MOD调试工具\n为开发人员提供了许多有用的工具。"
+    },
+    {
+      "repo": "Yuria-Shikibe/NewHorizonMod",
+      "reason": "新视界(简称NH)，大量新的扩展内容\n这是内容MOD，多人游戏不兼容。"
+    },
+    {
+      "repo": "xpdustry/claj",
+      "reason": "提供一个简单的方式快速创建多人联机。\n依赖的服务器在海外，可能不稳定。"
     }
   ]
 }
