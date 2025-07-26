@@ -239,7 +239,7 @@ index 1eb24a901b103493acd75da2d47c548a5255d487..e1513b06c05607e6315ad645071f7261
          float dy = (Core.camera.position.y / tilesize);
          dx = Mathf.clamp(dx, sz, world.width() - sz);
 diff --git a/core/src/mindustry/ui/dialogs/JoinDialog.java b/core/src/mindustry/ui/dialogs/JoinDialog.java
-index b7f2e8875fcffd66b3d3f5c833b32357dc3f42a0..fe4781873b9f29ace189947131512167e016045e 100644
+index 3598459b4c4c22fc23a79c44b4f47f6c305f9bbf..ffcb29c15f2e1ab996a36cda95b845d64028a9b3 100644
 --- a/core/src/mindustry/ui/dialogs/JoinDialog.java
 +++ b/core/src/mindustry/ui/dialogs/JoinDialog.java
 @@ -61,11 +61,9 @@ public class JoinDialog extends BaseDialog{

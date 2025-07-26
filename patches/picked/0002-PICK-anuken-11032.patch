@@ -8,7 +8,7 @@ Subject: [PATCH] PICK #anuken:11032
  1 file changed, 50 insertions(+), 50 deletions(-)
 
 diff --git a/core/assets/bundles/bundle_zh_CN.properties b/core/assets/bundles/bundle_zh_CN.properties
-index c9cdc41ff3257aea27c1b9039c65373eac341744..ee8ed4a51ddafaebb345b85483e770834fc161c9 100644
+index bf4505d40548523d6549f6863af37742a7637a2f..5badb0750f44179660887400b3a6a1ab1fbf85f0 100644
 --- a/core/assets/bundles/bundle_zh_CN.properties
 +++ b/core/assets/bundles/bundle_zh_CN.properties
 @@ -121,7 +121,7 @@ continue = 继续
@@ -216,7 +216,7 @@ index c9cdc41ff3257aea27c1b9039c65373eac341744..ee8ed4a51ddafaebb345b85483e77083
  block.rhyolite-crater.name = 流纹岩坑
  block.rough-rhyolite.name = 粗糙流纹岩
  block.regolith.name = 流纹岩
-@@ -2374,7 +2374,7 @@ block.shielded-wall.description = 保护己方建筑，挡下敌方炮弹。创
+@@ -2375,7 +2375,7 @@ block.shielded-wall.description = 保护己方建筑，挡下敌方炮弹。创
  block.blast-door.description = 当己方地面单位在范围内时自动打开的墙。无法手动控制。
  block.duct.description = 向前运输物品。只能存储一个物品。
  block.armored-duct.description = 向前运输物品。不接受侧面的非管道输入。
@@ -225,7 +225,7 @@ index c9cdc41ff3257aea27c1b9039c65373eac341744..ee8ed4a51ddafaebb345b85483e77083
  block.overflow-duct.description = 当前方被堵塞时才会向两侧输出，用于处理多余的物品。
  block.duct-bridge.description = 跨越任意地形或建筑物传输物品。
  block.duct-unloader.description = 从背后的建筑卸载指定物品。无法从核心卸载。
-@@ -2386,11 +2386,11 @@ block.unit-cargo-loader.description = 建造货运无人机。无人机通过需
+@@ -2387,11 +2387,11 @@ block.unit-cargo-loader.description = 建造货运无人机。无人机通过需
  block.unit-cargo-unload-point.description = 作为货运无人机的卸货点。接受需求的物品。
  block.beam-node.description = 向其他互相垂直的节点传输电力。存储少量电力。
  block.beam-tower.description = 向其他互相垂直的节点传输电力。存储大量电力。连接距离远。
@@ -239,7 +239,7 @@ index c9cdc41ff3257aea27c1b9039c65373eac341744..ee8ed4a51ddafaebb345b85483e77083
  block.neoplasia-reactor.description = 利用芳油、水和相织布产生大量电力。同时产生热量和危险的瘤液。\n如果瘤液未通过导管从反应堆中移除，则会剧烈爆炸。
  block.build-tower.description = 自动重建范围内的建筑，并在其他单位进行建造时提供协助。
  block.regen-projector.description = 在方形范围内缓慢修复己方建筑。需要氢气。
-@@ -2432,7 +2432,7 @@ unit.atrax.description = 向地面目标发射削弱性的球状矿渣液。可
+@@ -2433,7 +2433,7 @@ unit.atrax.description = 向地面目标发射削弱性的球状矿渣液。可
  unit.spiroct.description = 向敌人发射较弱的激光束，并在该过程中自我修复。可以跨越大多数地形。
  unit.arkyid.description = 向敌人发射大型激光束，并在该过程中自我修复。可以跨越大多数地形。
  unit.toxopid.description = 向敌人发射大型带电集束炮弹和穿透性激光。可以跨越大多数地形。
@@ -248,7 +248,7 @@ index c9cdc41ff3257aea27c1b9039c65373eac341744..ee8ed4a51ddafaebb345b85483e77083
  unit.horizon.description = 向正下方的地面敌人投掷炸弹。
  unit.zenith.description = 向敌人发射多枚导弹。
  unit.antumbra.description = 向敌人发射密集的子弹。
-@@ -2454,7 +2454,7 @@ unit.retusa.description = 向敌人发射追踪鱼雷，并修复己方单位。
+@@ -2455,7 +2455,7 @@ unit.retusa.description = 向敌人发射追踪鱼雷，并修复己方单位。
  unit.oxynoe.description = 向敌人发射火焰束，并修复己方建筑。搭载一台单点防御炮塔，能够防御来袭的子弹。
  unit.cyerce.description = 向敌人发射追踪集束导弹，并修复己方单位。
  unit.aegires.description = 产生能量场，使范围内的敌方建筑与单位受到电击，对己方则进行修复。
@@ -257,7 +257,7 @@ index c9cdc41ff3257aea27c1b9039c65373eac341744..ee8ed4a51ddafaebb345b85483e77083
  
  #Erekir
  unit.stell.description = 向敌人发射普通子弹。
-@@ -2509,8 +2509,8 @@ lst.spawnwave = 在任意位置生成一波敌人\n并不记录在波数计数
+@@ -2510,8 +2510,8 @@ lst.spawnwave = 在任意位置生成一波敌人\n并不记录在波数计数
  lst.explosion = 在某个位置生成爆炸。
  lst.setrate = 在指令/时间刻的时间下设置处理器处理速度。
  lst.fetch = 按索引查找单位、核心、玩家或建筑物\n索引从 0 开始，以其返回的计数结束。
@@ -268,7 +268,7 @@ index c9cdc41ff3257aea27c1b9039c65373eac341744..ee8ed4a51ddafaebb345b85483e77083
  lst.setrule = 设置地图规则。
  lst.flushmessage = 在屏幕中央投影文字缓存区的内容\n会等待上一个文字显示结束。
  lst.cutscene = 控制玩家游戏视角。
-@@ -2588,7 +2588,7 @@ laccess.id = 单位/块/物品/液体的 ID。\n这是 Lookup 的反向操作。
+@@ -2589,7 +2589,7 @@ laccess.id = 单位/块/物品/液体的 ID。\n这是 Lookup 的反向操作。
  laccess.displaywidth = 显示屏的宽度（以像素为单位）。
  laccess.displayheight = 显示屏的高度（以像素为单位）。
  laccess.buffersize = 显示器图形缓冲区中未处理的命令数。
@@ -277,12 +277,12 @@ index c9cdc41ff3257aea27c1b9039c65373eac341744..ee8ed4a51ddafaebb345b85483e77083
  
  lcategory.unknown = 未知
  lcategory.unknown.description = 未分类的指令
-@@ -2622,13 +2622,13 @@ lenum.always = 无条件跳转
+@@ -2623,13 +2623,13 @@ lenum.always = 无条件跳转
  lenum.idiv = 整数除法，返回不带小数的商
  lenum.div = 除法，除以 0 时返回 [accent]null[]
  lenum.mod = 求除法的余数
--lenum.emod = True modulo, result is always positive.
-+lenum.emod = 取模，结果总是正数
+-lenum.emod = True modulo, result sign comes from the divisor.
++lenum.emod = 取模，结果与除数符号一致
  lenum.equal = 相等。转换参数类型后进行比较\n与数字进行比较时，null 转换为 0 ，非 null 对象转换为 1
  lenum.notequal = 不相等。转换参数类型后进行比较
  lenum.strictequal = 严格相等。不转换参数类型\n可用于准确检查 [accent]null[] 对象
@@ -293,7 +293,7 @@ index c9cdc41ff3257aea27c1b9039c65373eac341744..ee8ed4a51ddafaebb345b85483e77083
  lenum.or = 按位或
  lenum.land = 逻辑与
  lenum.and = 按位与
-@@ -2748,7 +2748,7 @@ lenum.wavespacing = 波次之间的时间（以 tick 为单位）
+@@ -2749,7 +2749,7 @@ lenum.wavespacing = 波次之间的时间（以 tick 为单位）
  lenum.enemycorebuildradius = 敌人核心半径周围无建筑区
  lenum.dropzoneradius = 敌人出生点周围的半径
  lenum.unitcap = 基本单位上限。但仍然可以通过方块增加
