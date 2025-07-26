@@ -155,7 +155,7 @@ object AutoUpdate {
             buildVersionList(versions.filter { it.repo == VarsX.repo })
 
             image().fillX().height(2f).row()
-            add("测试版本(更新更快,BUG修复更及时)").row()
+            add("预览版(更新更快,新功能体验,BUG修复)").row()
             buildVersionList(versions.filter { it.repo == devRepo })
 
             image().fillX().height(2f).row()
