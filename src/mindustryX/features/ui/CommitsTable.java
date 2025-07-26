@@ -16,15 +16,15 @@ import mindustry.graphics.*;
 import mindustry.ui.*;
 import mindustryX.features.ui.CommitsTable.CommitData.*;
 
-import java.time.*;
-import java.time.format.*;
+import java.text.*;
 import java.util.*;
 
 public class CommitsTable extends Table{
     private static final ObjectMap<String, TextureRegion> AVATAR_CACHE = new ObjectMap<>();
     private static final TextureRegion NOT_FOUND = Core.atlas.find("nomap");
 
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+    private static final SimpleDateFormat ISO_DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    private static final SimpleDateFormat DATE_FORMATTER = new SimpleDateFormat("yyyy-MM-dd");
     public static final float STROKE = 1.5f;
 
     // commits sorted by date
@@ -86,8 +86,10 @@ public class CommitsTable extends Table{
                 commitsData.set(data);
                 // no author?
                 commitsData.removeAll(commitData -> commitData.commit.author == null);
-                Comparator<CommitData> comparator = Comparator.nullsFirst(Structs.comparing(c -> c.commit.author.getDate()));
-                commitsData.sort(comparator.reversed());
+                commitsData.sort(Comparator.comparing(
+                    (CommitData c) -> c.commit.author.getDate(),
+                    Comparator.nullsFirst(Comparator.naturalOrder())
+                ).reversed());
 
                 rebuildCommitsTable();
             });
@@ -100,15 +102,15 @@ public class CommitsTable extends Table{
         commitsTable.image().color(color).width(STROKE).growY();
         Table right = commitsTable.table().get();
 
-        LocalDateTime lastDate = null;
+        Date lastDate = null;
         for(CommitData data : commitsData){
-            LocalDateTime date = data.commit.author.getDate();
+            Date date = data.commit.author.getDate();
 
             // split by 1d
-            if(date != null && (lastDate == null || !lastDate.toLocalDate().isEqual(date.toLocalDate()))){
+            if(date != null && (lastDate == null || !isSameDay(lastDate, date))){
                 right.table(timeSplit -> {
                     timeSplit.image().color(color).width(8f).height(STROKE);
-                    timeSplit.add(date.format(DATE_FORMATTER)).color(color).padLeft(8f).padRight(8f);
+                    timeSplit.add(DATE_FORMATTER.format(date)).color(color).padLeft(8f).padRight(8f);
                     timeSplit.image().color(color).height(STROKE).padRight(8f).growX();
                 }).padTop(lastDate == null ? 0f : 16f).padBottom(8f).growX();
                 right.row();
@@ -182,6 +184,15 @@ public class CommitsTable extends Table{
         return region;
     }
 
+    private static boolean isSameDay(Date date1, Date date2){
+        Calendar cal1 = Calendar.getInstance();
+        Calendar cal2 = Calendar.getInstance();
+        cal1.setTime(date1);
+        cal2.setTime(date2);
+        return cal1.get(Calendar.YEAR) == cal2.get(Calendar.YEAR) &&
+        cal1.get(Calendar.DAY_OF_YEAR) == cal2.get(Calendar.DAY_OF_YEAR);
+    }
+
     public static class CommitData{
         public String html_url;
         public Commit commit;
@@ -236,7 +247,7 @@ public class CommitsTable extends Table{
             public String email;
             public String date;
 
-            private transient LocalDateTime cacheDate;
+            private transient Date cacheDate;
 
             @Override
             public String toString(){
@@ -247,10 +258,10 @@ public class CommitsTable extends Table{
                 '}';
             }
 
-            public LocalDateTime getDate(){
+            public Date getDate(){
                 if(cacheDate != null) return cacheDate;
                 try{
-                    return cacheDate = LocalDateTime.parse(date, DateTimeFormatter.ISO_ZONED_DATE_TIME);
+                    return cacheDate = ISO_DATE_FORMATTER.parse(date);
                 }catch(Exception e){
                     return null;
                 }
