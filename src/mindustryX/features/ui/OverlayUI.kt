@@ -358,6 +358,14 @@ object OverlayUI {
             t.button(Icon.exit) { toggle() }
         }
         fill { t ->
+            t.name = "overlayUI-tips"
+            t.touchable = Touchable.disabled
+            t.visibility = Boolp { open }
+            t.left().top()
+            t.add("@overlayUI.tips").pad(8f)
+        }
+
+        fill { t ->
             t.left().name = "toggle"
             t.button(Icon.settings, Vars.iconMed) { toggle() }
             t.visible { showOverlayButton.value }
