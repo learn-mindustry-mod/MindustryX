@@ -101,6 +101,7 @@ public class Main extends Mod{
                 VarsX.version = meta.version;
                 VarsX.devVersion = VarsX.version.endsWith("-dev");
             }
+            VarsX.isLoader = true;
             AutoUpdate.INSTANCE.checkUpdate();
             return false;
         }

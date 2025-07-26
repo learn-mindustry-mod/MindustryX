@@ -32,7 +32,7 @@ object VarsX {
             meta.getString("version")!!
         }.getOrElse {
             Log.err("Failed to read mod version from mod.hjson, using default value", it)
-            "custom build"
+            "custom-dev"
         }
         this.version = version
         devVersion = version.endsWith("-dev")
