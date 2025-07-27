@@ -24,7 +24,6 @@ enum class BindingExt(val default: KeybindValue = KeyCode.unset, val category: S
     focusLogicController(KeyCode.unset, onTap = { mindustryX.features.func.focusLogicController() }),
     placeRouterReplacement(KeyCode.shiftLeft),
     overlayUI(KeyCode.z, onTap = { if (!Core.input.ctrl()) OverlayUI.toggle() }),
-    commandLogicAI(KeyCode.unset, onTap = { LogicExt.commandLogicAI.toggle() }),
     ;
 
     private val bind: KeyBind = KeyBind.add(name, default, category)
