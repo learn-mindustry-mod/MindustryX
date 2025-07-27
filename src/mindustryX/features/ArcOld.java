@@ -31,6 +31,7 @@ public class ArcOld{
     public static final CheckPref colorizedContent = new CheckPref("arcExtra.colorizedContent");
     public static final TextPref backgroundPath = new TextPref("arcExtra.backgroundPath");
     public static final CheckPref showPlacementEffect = new CheckPref("block.arcPlacementEffect");
+    public static final CheckPref schematicShare = new CheckPref("arcExtra.schematicShare", true);
 
     static{
         colorizedContent.addFallbackName("colorizedContent");

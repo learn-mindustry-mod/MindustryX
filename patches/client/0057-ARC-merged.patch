@@ -1866,7 +1866,7 @@ index 6202aadb499174630a04c0210e7390a0af4f6a42..dce4a6cfa280bd84ef2aac4c4d576744
      }
  
 diff --git a/core/src/mindustry/ui/fragments/ConsoleFragment.java b/core/src/mindustry/ui/fragments/ConsoleFragment.java
-index 3542163354070ac67c49b82dff6c72b374d4ca7d..23a252543293b8b9edfdeddc87ebb9afb5937bf7 100644
+index 3542163354070ac67c49b82dff6c72b374d4ca7d..ab9ad6c393cc401d13dbad7e62a78f87ccf97a9e 100644
 --- a/core/src/mindustry/ui/fragments/ConsoleFragment.java
 +++ b/core/src/mindustry/ui/fragments/ConsoleFragment.java
 @@ -12,9 +12,11 @@ import arc.scene.ui.TextField.*;
@@ -1885,7 +1885,7 @@ index 3542163354070ac67c49b82dff6c72b374d4ca7d..23a252543293b8b9edfdeddc87ebb9af
          clearChatInput();
  
          if(message.replace(" ", "").isEmpty()) return;
-+        ArcMessageDialog.addMsg(new Msg(Type.console,message));
++        new ArcMessageDialog.Msg(Type.console,message).add();
  
          //special case for 'clear' command
          if(message.equals("clear")){

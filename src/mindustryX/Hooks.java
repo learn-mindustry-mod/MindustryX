@@ -14,6 +14,8 @@ import mindustryX.features.ui.*;
 import java.net.*;
 import java.util.*;
 
+import static mindustry.Vars.ui;
+
 public class Hooks implements ApplicationListener{
     /** invoke before `Vars.init`. Note that may be executed from `Vars.loadAsync` */
     public static void beforeInit(){
@@ -65,12 +67,20 @@ public class Hooks implements ApplicationListener{
     public static @Nullable String onHandleSendMessage(String message, @Nullable Player sender){
         if(message == null) return null;
         if(Vars.ui != null){
-            if(!MarkerType.resolveMessage(message))
+            if(MarkerType.resolveMessage(message)){
+            }else if(ArcOld.schematicShare.get() && message.contains("<ARC") && message.contains("<Schem>")){
+                String id = message.split("<Schem>")[1].split(" ")[0];
+                Http.get("https://pastebin.com/raw/" + id, r -> {
+                    String content = r.getResultAsString().replace(" ", "+");
+                    Core.app.post(() -> ui.schematics.readShare(content, sender));
+                });
+            }else{
                 try{
                     ArcMessageDialog.resolveMsg(message, sender);
                 }catch(Exception e){
                     Log.err(e);
                 }
+            }
             if(sender != null){
                 StringBuilder builder = new StringBuilder();
                 if(Vars.state.rules.pvp){
