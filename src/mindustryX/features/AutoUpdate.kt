@@ -62,7 +62,7 @@ object AutoUpdate {
     val ignoreOnce = SettingsV2.Data("AutoUpdate.ignoreOnce", "")
     val ignoreUntil = SettingsV2.Data("AutoUpdate.ignoreUntil", "")
 
-    val commitsTable by lazy { CommitsTable(VarsX.repo) }
+    private val commitsTable by lazy { CommitsTable(VarsX.repo) }
 
     init {
         Events.on(EventType.ClientLoadEvent::class.java) {

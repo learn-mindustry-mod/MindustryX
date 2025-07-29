@@ -206,10 +206,6 @@ public class MarkerType{
         localizedName = Core.bundle.get("marker." + name + ".name", "unknown");
     }
 
-    public String shortName(){
-        return "[#" + color + "]" + localizedName.charAt(0);
-    }
-
     public MarkElement at(Position pos){
         var element = new MarkElement(this, pos);
         element.show();

@@ -260,7 +260,6 @@ public class ArcMessageDialog extends BaseDialog{
         public final String message;
         public final Date time = new Date();
         public final @Nullable String sender;
-        public boolean selected;
         public final @Nullable Vec2 msgLoc;
 
         public Msg(Type msgType, String message, @Nullable String sender, @Nullable Vec2 msgLoc){
@@ -305,19 +304,15 @@ public class ArcMessageDialog extends BaseDialog{
         eventWave("事件", "波次", Color.valueOf("#ffcc99"));
 
         public final String name;
-        public final String type;
-        public final String subClass;
         public final Color color;
 
-        Type(String type, String subClass, Color color){
-            this.name = subClass.isEmpty() ? type : (type + "~" + subClass);
-            this.type = type;
-            this.subClass = subClass;
+        Type(String name, Color color){
+            this.name = name;
             this.color = color;
         }
 
-        Type(String type, Color color){
-            this(type, "", color);
+        Type(String type, String subClass, Color color){
+            this(type + "~" + subClass, color);
         }
     }
 }

@@ -3,17 +3,13 @@ package mindustryX.features;
 import arc.*;
 import arc.func.*;
 import arc.graphics.*;
-import arc.graphics.g2d.*;
-import arc.math.*;
 import arc.scene.ui.layout.*;
 import arc.struct.*;
-import arc.util.*;
 import mindustry.content.*;
 import mindustry.core.*;
 import mindustry.game.*;
 import mindustry.graphics.*;
 import mindustry.type.*;
-import mindustry.world.*;
 import mindustryX.features.ui.*;
 
 import static mindustry.Vars.*;
@@ -21,7 +17,6 @@ import static mindustry.Vars.*;
 //move from mindustry.arcModule.toolpack.arcWaveSpawner
 public class ArcWaveSpawner{
     public static boolean hasFlyer = true;
-    public static final float flyerSpawnerRadius = 5f * tilesize;
     private static final Seq<WaveInfo> arcWaveCache = new Seq<>();
     private static Seq<SpawnGroup> groups = state.rules.spawns;
 
@@ -52,25 +47,6 @@ public class ArcWaveSpawner{
 
     public static int calWinWaveClamped(){
         return Math.min(calWinWave(), 10000);
-    }
-
-    public static void arcDashCircling(float x, float y, float radius, float speed){
-        arcDashCircle(x, y, radius, Time.time * speed);
-    }
-
-    public static void arcDashCircle(float x, float y, float radius, float rotation){
-        float scaleFactor = 0.6f;
-        int sides = 10 + (int)(radius * scaleFactor);
-        if(sides % 2 == 1) sides++;
-
-        for(int i = 0; i < sides; i += 2){
-            var v = Tmp.v1;
-            v.set(radius, 0).rotate(360f / sides * i + 90 + rotation);
-            float x1 = v.x, y1 = v.y;
-            v.set(radius, 0).rotate(360f / sides * (i + 1) + 90 + rotation);
-            float x2 = v.x, y2 = v.y;
-            Lines.line(x + x1, y + y1, x + x2, y + y2);
-        }
     }
 
     public static Color unitTypeColor(UnitType type){
