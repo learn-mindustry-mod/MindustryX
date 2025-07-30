@@ -147,15 +147,6 @@ public class ArcOld{
                 c.textPref("playerEffectColor", "ffd37f", changed);
                 changed.get(settings.getString("playerEffectColor"));
             }
-            c.sliderPref("unitTargetType", 0, 0, 5, 1, s -> switch(s){
-                case 0 -> "关闭";
-                case 1 -> "虚圆";
-                case 2 -> "攻击";
-                case 3 -> "攻击去边框";
-                case 4 -> "圆十字";
-                case 5 -> "十字";
-                default -> s + "";
-            });
             c.sliderPref("superUnitEffect", 0, 0, 2, 1, s -> switch(s){
                 case 0 -> "关闭";
                 case 1 -> "独一无二";

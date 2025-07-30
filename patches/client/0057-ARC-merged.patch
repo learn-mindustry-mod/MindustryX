@@ -105,7 +105,7 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  core/src/mindustry/input/MobileInput.java     |   6 +-
  core/src/mindustry/logic/LExecutor.java       |  12 +-
  core/src/mindustry/type/UnitType.java         |  91 ++++++-
- core/src/mindustry/type/Weapon.java           |  19 ++
+ core/src/mindustry/type/Weapon.java           |  18 ++
  core/src/mindustry/ui/Fonts.java              |   2 +-
  .../ui/dialogs/ContentInfoDialog.java         |  22 +-
  .../ui/dialogs/CustomRulesDialog.java         | 116 ++++++++-
@@ -120,7 +120,7 @@ way-zer <himc.wicp@gmail.com> on 2024/9/8
  .../mindustry/ui/fragments/MenuFragment.java  |  24 +-
  .../ui/fragments/PlacementFragment.java       | 164 ++++++++++--
  .../ui/fragments/PlayerListFragment.java      |  72 ++----
- 27 files changed, 1122 insertions(+), 148 deletions(-)
+ 27 files changed, 1121 insertions(+), 148 deletions(-)
 
 diff --git a/core/src/mindustry/editor/MapInfoDialog.java b/core/src/mindustry/editor/MapInfoDialog.java
 index ebc1f0b300d295e45333f1db38ea299c9658ec20..e7cba056743979206c84fc6d00472c2c44b565f6 100644
@@ -909,7 +909,7 @@ index 7324bf31b5372f6a20f6f18317dadd97f5d7e43b..fabc92a77187a471bec1d70e464c5b71
  
              Draw.reset();
 diff --git a/core/src/mindustry/type/Weapon.java b/core/src/mindustry/type/Weapon.java
-index 5d19ab5fe98f282f1d97dcfd73190a6d433e475a..9ce9718e77c9a354736fc2fea69e8ded91dd683d 100644
+index 5d19ab5fe98f282f1d97dcfd73190a6d433e475a..f1913f406a8bf313f43a90369c9e69d9355871fe 100644
 --- a/core/src/mindustry/type/Weapon.java
 +++ b/core/src/mindustry/type/Weapon.java
 @@ -22,6 +22,8 @@ import mindustry.entities.units.*;
@@ -921,7 +921,7 @@ index 5d19ab5fe98f282f1d97dcfd73190a6d433e475a..9ce9718e77c9a354736fc2fea69e8ded
  
  import static mindustry.Vars.*;
  
-@@ -287,6 +289,23 @@ public class Weapon implements Cloneable{
+@@ -287,6 +289,22 @@ public class Weapon implements Cloneable{
  
          Draw.xscl = 1f;
  
@@ -936,8 +936,7 @@ index 5d19ab5fe98f282f1d97dcfd73190a6d433e475a..9ce9718e77c9a354736fc2fea69e8ded
 +                }
 +                Draw.alpha(0.8f);
 +                Lines.line(wx, wy, mount.aimX, mount.aimY);
-+                if(!(unit.controller() instanceof Player) || Core.settings.getInt("unitTargetType") == 0)
-+                    Lines.spikes(mount.aimX, mount.aimY, 4f, 4f, 4, (float)(Math.atan((mount.aimX - wx) / (mount.aimY - wy) * Mathf.doubleRadDeg)) + 45f);
++                Lines.spikes(mount.aimX, mount.aimY, 4f, 4f, 4, (float)(Math.atan((mount.aimX - wx) / (mount.aimY - wy) * Mathf.doubleRadDeg)) + 45f);
 +                Draw.reset();
 +            }
 +        }

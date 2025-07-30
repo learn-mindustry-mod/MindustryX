@@ -24,7 +24,7 @@ public class ArcUnits{
     public static boolean selectedUnitsFlyer, selectedUnitsLand;
 
     private static float curStroke;
-    private static int unitTargetType, superUnitEffect;
+    private static int superUnitEffect;
     private static boolean arcBuildInfo;
 
     static{
@@ -43,7 +43,6 @@ public class ArcUnits{
             selectedUnitsLand = control.input.selectedUnits.contains(unit -> !unit.isFlying());
 
             curStroke = (float)Core.settings.getInt("playerEffectCurStroke") / 10f;
-            unitTargetType = Core.settings.getInt("unitTargetType");
             superUnitEffect = Core.settings.getInt("superUnitEffect");
             arcBuildInfo = Core.settings.getBool("arcBuildInfo");
         });
@@ -52,7 +51,6 @@ public class ArcUnits{
     public static void draw(Unit unit){
         if(unit.isPlayer()){
             if(superUnitEffect > 0 && (unit.isLocal() || superUnitEffect == 2)) drawAimRange(unit);
-            if(unitTargetType > 0) drawAimTarget(unit);
             if(arcBuildInfo && unit.isLocal()) drawBuildRange(unit);
         }
         Draw.z(Draw.z() + 0.1f);
@@ -82,34 +80,6 @@ public class ArcUnits{
             Lines.arc(unit.x, unit.y, unit.type.maxRange, 0.14f, rot, (int)(50 + unit.type.maxRange / 10));
         }
         Draw.reset();
-        Draw.z(z);
-    }
-
-    private static void drawAimTarget(Unit unit){
-        Color effectColor = unit.controller() == player ? RenderExt.playerEffectColor : unit.team.color;
-        float z = Draw.z();
-        Draw.z(Layer.effect);
-
-        Draw.color(effectColor, 0.8f);
-        Lines.line(unit.x, unit.y, unit.aimX, unit.aimY);
-        switch(unitTargetType){
-            case 1:
-                Lines.dashCircle(unit.aimX, unit.aimY, 8);
-                break;
-            case 2:
-                Drawf.target(unit.aimX, unit.aimY, 6f, 0.7f, effectColor);
-                break;
-            case 3:
-            case 4:
-            case 5:
-                Draw.color(effectColor, 0.7f);
-                if(unitTargetType == 3) Lines.poly(unit.aimX, unit.aimY, 4, 6f, Time.time * 1.5f);
-                if(unitTargetType == 4) Lines.circle(unit.aimX, unit.aimY, 6f);
-                Lines.spikes(unit.aimX, unit.aimY, 3f / 7f * 6f, 6f / 7f * 6f, 4, Time.time * 1.5f);
-                break;
-        }
-
-        Draw.color();
         Draw.z(z);
     }
 
