@@ -12,6 +12,7 @@ import arc.scene.style.*;
 import arc.scene.ui.*;
 import arc.struct.*;
 import arc.util.*;
+import mindustry.*;
 import mindustry.content.*;
 import mindustry.ctype.*;
 import mindustry.entities.*;
@@ -76,8 +77,8 @@ public class ArcOld{
         });
     }
 
-    public static void init(Seq<LazySettingsCategory> categories){
-        categories.add(new LazySettingsCategory("@settings.arc", () -> Icon.star, (c) -> {
+    public static void addSettings(){
+        Vars.ui.settings.addCategory("@settings.arc", Icon.star, (c) -> {
             c.addCategory("arcCgameview");
             c.checkPref("hoveredTileInfo", false);
             c.checkPref("arcAlwaysTeamColor", false);
@@ -167,7 +168,7 @@ public class ArcOld{
             c.checkPref("save_more_map", false);
             c.checkPref("overrideSkipWave", false);
             c.checkPref("playerNeedShooting", false);
-        }));
+        });
     }
 
     public static void colorizeContent(){

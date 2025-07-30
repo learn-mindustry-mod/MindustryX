@@ -21,7 +21,6 @@ public class Hooks implements ApplicationListener{
     public static void beforeInit(){
         Log.infoTag("MindustryX", "Hooks.beforeInit");
         registerBundle();
-        Settings.addSettings();
         SettingsV2.INSTANCE.init();
         DebugUtil.init();//this is safe, and better at beforeInit,
         BindingExt.init();

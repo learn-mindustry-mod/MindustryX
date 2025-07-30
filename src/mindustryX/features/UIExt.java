@@ -36,6 +36,7 @@ public class UIExt{
         teamsStatDisplay = new TeamsStatDisplay();
 
         UIExtKt.init();
+        Settings.addSettings();
     }
 
     public static void announce(String text){
