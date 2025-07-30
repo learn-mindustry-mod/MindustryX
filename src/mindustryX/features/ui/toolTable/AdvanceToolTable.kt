@@ -73,12 +73,12 @@ class AdvanceToolTable : Table() {
         row().add("建筑：")
         with(table().growX().get()) {
             defaults().pad(4f)
-            button("创世神", Styles.flatToggleMenut) { Settings.toggle("worldCreator") }
+            button("创世神", Styles.flatToggleMenut) { LogicExt.worldCreator0.toggle() }
                 .checked { LogicExt.worldCreator }.wrapLabel(false)
             button("解禁", Styles.flatToggleMenut) {
                 VarsX.allUnlocked.toggle()
             }.checked { VarsX.allUnlocked.value }.tooltip("[acid]显示并允许建造所有物品").wrapLabel(false)
-            button("地形蓝图", Styles.flatToggleMenut) { Settings.toggle("terrainSchematic") }
+            button("地形蓝图", Styles.flatToggleMenut) { LogicExt.terrainSchematic0.toggle() }
                 .checked { LogicExt.terrainSchematic }.wrapLabel(false)
             button("瞬间完成", Styles.cleart) {
                 Vars.player.unit()?.apply {

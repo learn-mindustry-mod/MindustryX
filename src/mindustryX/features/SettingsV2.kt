@@ -90,7 +90,7 @@ object SettingsV2 {
     }
 
     open class Data<T>(name: String, def: T) : DataCore<T>(name, def) {
-        val category: String get() = name.substringBefore('.', "")
+        val category: String get() = categoryOverride[name] ?: name.substringBefore('.', "")
         val title: String get() = Core.bundle.get("settingV2.${name}.name", name)
         val description: String? get() = Core.bundle.getOrNull("settingV2.${name}.description")
 
@@ -249,6 +249,7 @@ object SettingsV2 {
     }
 
     val ALL = LinkedHashMap<String, DataCore<*>>()
+    val categoryOverride = mutableMapOf<String, String>()
     private val lateInit = mutableListOf<() -> Unit>()
 
     fun init() {
