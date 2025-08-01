@@ -4,11 +4,11 @@ Date: Sun, 20 Jul 2025 13:26:18 +0800
 Subject: [PATCH] UI: put UI.showInfoXXX into hudGroup
 
 ---
- core/src/mindustry/core/UI.java | 23 ++++++++++++-----------
- 1 file changed, 12 insertions(+), 11 deletions(-)
+ core/src/mindustry/core/UI.java | 25 ++++++++++++++-----------
+ 1 file changed, 14 insertions(+), 11 deletions(-)
 
 diff --git a/core/src/mindustry/core/UI.java b/core/src/mindustry/core/UI.java
-index 683b40efb719d01a80eb0d5ea72c83a7e62f136e..4634b6cde643e7051d9b3e89f06c6b3b8df5e428 100644
+index 683b40efb719d01a80eb0d5ea72c83a7e62f136e..3f946fa88c1be8d1ec547b69a7c19bb7dac27646 100644
 --- a/core/src/mindustry/core/UI.java
 +++ b/core/src/mindustry/core/UI.java
 @@ -48,7 +48,7 @@ public class UI implements ApplicationListener, Loadable{
@@ -28,7 +28,12 @@ index 683b40efb719d01a80eb0d5ea72c83a7e62f136e..4634b6cde643e7051d9b3e89f06c6b3b
  
          menufrag = new MenuFragment();
          hudfrag = new HudFragment();
-@@ -227,6 +228,7 @@ public class UI implements ApplicationListener, Loadable{
+@@ -224,9 +225,12 @@ public class UI implements ApplicationListener, Loadable{
+         hudGroup.setFillParent(true);
+         hudGroup.touchable = Touchable.childrenOnly;
+         hudGroup.visible(() -> state.isGame());
++        messageGroup.setFillParent(true);
++        messageGroup.touchable = Touchable.disabled;
  
          Core.scene.add(menuGroup);
          Core.scene.add(hudGroup);
@@ -36,7 +41,7 @@ index 683b40efb719d01a80eb0d5ea72c83a7e62f136e..4634b6cde643e7051d9b3e89f06c6b3b
  
          hudfrag.build(hudGroup);
          menufrag.build(menuGroup);
-@@ -236,6 +238,11 @@ public class UI implements ApplicationListener, Loadable{
+@@ -236,6 +240,11 @@ public class UI implements ApplicationListener, Loadable{
          consolefrag.build(hudGroup);
          loadfrag.build(group);
          new FadeInFragment().build(group);
@@ -48,7 +53,7 @@ index 683b40efb719d01a80eb0d5ea72c83a7e62f136e..4634b6cde643e7051d9b3e89f06c6b3b
      }
  
      @Override
-@@ -351,7 +358,7 @@ public class UI implements ApplicationListener, Loadable{
+@@ -351,7 +360,7 @@ public class UI implements ApplicationListener, Loadable{
          if(cinfo.visible && !state.isMenu()) table.marginTop(cinfo.getPrefHeight() / Scl.scl() / 2);
          table.actions(Actions.fadeOut(duration, Interp.fade), Actions.remove());
          table.top().add(info).style(Styles.outlineLabel).padTop(10);
@@ -57,7 +62,7 @@ index 683b40efb719d01a80eb0d5ea72c83a7e62f136e..4634b6cde643e7051d9b3e89f06c6b3b
      }
  
      public void addDescTooltip(Element elem, String description){
-@@ -379,12 +386,9 @@ public class UI implements ApplicationListener, Loadable{
+@@ -379,12 +388,9 @@ public class UI implements ApplicationListener, Loadable{
          table.touchable = Touchable.disabled;
          table.setFillParent(true);
          if(cinfo.visible && !state.isMenu()) table.marginTop(cinfo.getPrefHeight() / Scl.scl() / 2);
@@ -71,7 +76,7 @@ index 683b40efb719d01a80eb0d5ea72c83a7e62f136e..4634b6cde643e7051d9b3e89f06c6b3b
          lastAnnouncement = table;
      }
  
-@@ -393,12 +397,9 @@ public class UI implements ApplicationListener, Loadable{
+@@ -393,12 +399,9 @@ public class UI implements ApplicationListener, Loadable{
          Table table = new Table();
          table.setFillParent(true);
          table.touchable = Touchable.disabled;
@@ -85,7 +90,7 @@ index 683b40efb719d01a80eb0d5ea72c83a7e62f136e..4634b6cde643e7051d9b3e89f06c6b3b
      }
  
      /** Shows a label in the world. This label is behind everything. Does not fade. */
-@@ -601,7 +602,7 @@ public class UI implements ApplicationListener, Loadable{
+@@ -601,7 +604,7 @@ public class UI implements ApplicationListener, Loadable{
          t.actions(Actions.fadeOut(Math.min(duration,30f), Interp.pow4In), Actions.remove());
          t.pack();
          t.act(0.1f);
