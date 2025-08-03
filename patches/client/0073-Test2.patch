@@ -1,0 +1,22 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Woodjecket <114514@>
+Date: Sun, 3 Aug 2025 20:13:53 +0800
+Subject: [PATCH] Test2
+
+---
+ settings.gradle | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/settings.gradle b/settings.gradle
+index a6d514b14633eb15eb3e463075f737c1ea88a566..2a812e6f94ee60cfd92fc3b097a72f33b259c903 100644
+--- a/settings.gradle
++++ b/settings.gradle
+@@ -13,7 +13,7 @@ includeBuild("../buildPlugins")
+ 
+ include 'core', 'server', 'annotations', 'tools', 'tests'
+ include 'desktop'
+-//include 'ios'
++include 'ios'
+ 
+ def hasSdk = System.getenv("ANDROID_HOME") != null
+ 
