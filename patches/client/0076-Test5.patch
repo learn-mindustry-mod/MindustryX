@@ -1,0 +1,22 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Woodjecket <114514@>
+Date: Sun, 3 Aug 2025 20:37:03 +0800
+Subject: [PATCH] Test5
+
+---
+ ios/build.gradle | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/ios/build.gradle b/ios/build.gradle
+index 6d8ad8d6f853df17c13f6ea47c12cf91dd051f82..110d28054f906b67aaa1cdcd959a8ae3b322831e 100644
+--- a/ios/build.gradle
++++ b/ios/build.gradle
+@@ -72,7 +72,7 @@ task copyNatives(){
+ }
+ 
+ task deploy{
+-    if(System.getProperty("os.name").contains("Mac")) dependsOn copyAssets
++    dependsOn copyAssets
+     dependsOn createIPA
+ }
+ 
