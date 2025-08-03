@@ -24,9 +24,10 @@ jobs:
           ../scripts/applyPatches.sh
           cd ..
           git clone https://github.com/Anuken/Arc.git
-          cd work
       - name: iOS deploy
-        run: ./gradlew ios:deploy
+        run: |
+          cd work
+          ./gradlew ios:deploy
       - name: Upload file
         uses: actions/upload-artifact@v4
         with:
