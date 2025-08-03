@@ -8,7 +8,7 @@ permissions:
 jobs:
   build:
 
-    runs-on: macos-latest
+    runs-on: macos-15
 
     steps:
       - uses: actions/checkout@v4
@@ -21,7 +21,7 @@ jobs:
         run: |
           cd ..
           git clone https://github.com/Anuken/Arc.git
-          cd Mindustry
+          cd MindustryX
       - name: iOS deploy
         run: ./gradlew ios:deploy
       - name: Upload file
