@@ -19,9 +19,12 @@ jobs:
           distribution: 'temurin'
       - name: Arc Clone
         run: |
+          git submodule update --init --depth=10
+          cd work
+          ../scripts/applyPatches.sh
           cd ..
           git clone https://github.com/Anuken/Arc.git
-          cd MindustryX
+          cd work
       - name: iOS deploy
         run: ./gradlew ios:deploy
       - name: Upload file
