@@ -1,0 +1,41 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Woodjecket <114514@>
+Date: Sun, 3 Aug 2025 19:41:10 +0800
+Subject: [PATCH] test
+
+---
+ ios/build.gradle | 14 ++++----------
+ 1 file changed, 4 insertions(+), 10 deletions(-)
+
+diff --git a/ios/build.gradle b/ios/build.gradle
+index fc05725a5c30262b0061492c27b2b1deae577b55..6d8ad8d6f853df17c13f6ea47c12cf91dd051f82 100644
+--- a/ios/build.gradle
++++ b/ios/build.gradle
+@@ -18,11 +18,11 @@ task incrementConfig{
+     if(vfile.exists()){
+         props.load(new FileInputStream(vfile))
+     }else{
+-        props['app.id'] = 'io.anuke.mindustry'
+-        props['app.version'] = '7.0'
++        props['app.id'] = 'com.github.tinylake.mindustryX'
++        props['app.version'] = '8.0'
+         props['app.mainclass'] = 'mindustry.IOSLauncher'
+         props['app.executable'] = 'IOSLauncher'
+-        props['app.name'] = 'Mindustry'
++        props['app.name'] = 'MindustryX'
+     }
+ 
+     props['app.build'] = (!props.containsKey("app.build") ? 40 : props['app.build'].toInteger() + 1) + ""
+@@ -86,11 +86,5 @@ createIPA.dependsOn build
+ 
+ robovm{
+     archs = "arm64"
+-
+-    if(project.hasProperty("signIdentity")) println "iOS Sign Identity: " + project.property("signIdentity")
+-    if(project.hasProperty("provisioningProfile")) println "iOS Provisioning Profile: " + project.property("provisioningProfile")
+-
+-    iosSignIdentity = project.properties["signIdentity"]
+-    iosProvisioningProfile = project.properties["provisioningProfile"]
+-    iosSkipSigning = false
++    iosSkipSigning = true
+ }

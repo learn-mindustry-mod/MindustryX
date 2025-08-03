@@ -1,0 +1,31 @@
+name: iOS deploy
+
+on: [push]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+
+    runs-on: macos-latest
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Arc Clone
+        run: |
+          cd ..
+          git clone https://github.com/Anuken/Arc.git
+          cd Mindustry
+      - name: iOS deploy
+        run: ./gradlew ios:deploy
+      - name: Upload file
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-build
+          path: ios/build/robovm/IOSLauncher.ipa
