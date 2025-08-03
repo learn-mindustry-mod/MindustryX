@@ -1,0 +1,27 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Woodjecket <114514@>
+Date: Sun, 3 Aug 2025 20:19:33 +0800
+Subject: [PATCH] Test3
+
+---
+ build.gradle | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
+
+diff --git a/build.gradle b/build.gradle
+index a18ba221abee6090d2a7e4fdb36bf8d977092944..b80094caf9ea25a8aa697c27156f1c0a1f7f94bf 100644
+--- a/build.gradle
++++ b/build.gradle
+@@ -4,12 +4,7 @@ buildscript{
+ 
+         localArc = !project.hasProperty("release") && new File(rootDir.parent, 'Arc').exists() && !project.hasProperty("noLocalArc")
+ 
+-        arcModule = { String name ->
+-            def useLocalArc = localArc && !name.startsWith("native")
+-            //skip to last submodule
+-            name = name.substring(name.lastIndexOf(':') + 1)
+-            return "com.github.Anuken${useLocalArc ? "" : ".Arc"}:$name:$arcHash"
+-        }
++        arcModule = false
+     }
+ }
+ 
