@@ -86,10 +86,15 @@ public class CommitsTable extends Table{
                 commitsData.set(data);
                 // no author?
                 commitsData.removeAll(commitData -> commitData.commit.author == null);
-                commitsData.sort(Comparator.comparing(
-                    (CommitData c) -> c.commit.author.getDate(),
-                    Comparator.nullsFirst(Comparator.naturalOrder())
-                ).reversed());
+                commitsData.sort((c1, c2) -> {
+                    Date date1 = c1.commit.author.getDate();
+                    Date date2 = c2.commit.author.getDate();
+                    if (date1 == null && date2 == null) return 0;
+                    if (date1 == null) return -1;
+                    if (date2 == null) return 1;
+                    return date2.compareTo(date1);
+                });
+
 
                 rebuildCommitsTable();
             });

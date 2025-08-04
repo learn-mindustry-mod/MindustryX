@@ -30,7 +30,7 @@ import static arc.graphics.g2d.Lines.stroke;
 import static mindustry.Vars.*;
 
 public class MarkerType{
-    private static final Pattern posPattern = Pattern.compile("(?<type><[A-Za-z]+>)?\\((?<x>\\d+),(?<y>\\d+)\\)");
+    private static final Pattern posPattern = Pattern.compile("(<[A-Za-z]+>)?\\\\((\\\\d+),(\\\\d+)\\\\)");
     /** 冷却时间 */
     public static final float heatTime = 60f;
     /** 滞留时间 */

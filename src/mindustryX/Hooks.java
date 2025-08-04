@@ -26,7 +26,7 @@ public class Hooks implements ApplicationListener{
         BindingExt.init();
         Events.on(ClientLoadEvent.class, (e) -> MetricCollector.INSTANCE.onLaunch());
         //deprecated Java 8
-        if(!OS.isAndroid && Strings.parseInt(OS.javaVersion.split("\\.")[0]) < 17){
+        if(!(OS.isAndroid || OS.isIos)&& Strings.parseInt(OS.javaVersion.split("\\.")[0]) < 17){
             Log.warn("Java版本过低，不受支持(" + OS.javaVersion + ")。请使用Java 17或更高版本运行MindustryX。");
             Events.on(ClientLoadEvent.class, (e) -> {
                 ui.showInfo("Java版本过低，不受支持(" + OS.javaVersion + ")。请使用Java 17或更高版本运行MindustryX。\n[grey]该警告不存在设置，请更新Java版本。");
