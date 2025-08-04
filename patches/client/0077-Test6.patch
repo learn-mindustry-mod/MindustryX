@@ -1,0 +1,25 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Woodjecket <114514@>
+Date: Mon, 4 Aug 2025 13:28:18 +0800
+Subject: [PATCH] Test6
+
+---
+ ios/build.gradle | 5 +++++
+ 1 file changed, 5 insertions(+)
+
+diff --git a/ios/build.gradle b/ios/build.gradle
+index 110d28054f906b67aaa1cdcd959a8ae3b322831e..e8b039516981a2168d3c41ff2639be48c3a2379b 100644
+--- a/ios/build.gradle
++++ b/ios/build.gradle
+@@ -58,6 +58,11 @@ task copyAssets(){
+             from "../core/assets"
+             into "assets/"
+         }
++
++        copy{
++            from "../../assets"
++            into "assets/"
++        }
+     }
+ }
+ 
