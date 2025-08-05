@@ -1,0 +1,30 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Woodjecket <114514@>
+Date: Tue, 5 Aug 2025 15:15:49 +0800
+Subject: [PATCH] Mod logic
+
+---
+ core/src/mindustry/mod/Mods.java | 10 ----------
+ 1 file changed, 10 deletions(-)
+
+diff --git a/core/src/mindustry/mod/Mods.java b/core/src/mindustry/mod/Mods.java
+index 6ede53129d4ec55d2511e276ec87debafcb08f97..88baff9c46e61fc0d13996e28c7249428b5afb15 100644
+--- a/core/src/mindustry/mod/Mods.java
++++ b/core/src/mindustry/mod/Mods.java
+@@ -1182,16 +1182,6 @@ public class Mods implements Loadable{
+                 }
+                 Class<?> main = Class.forName(mainClass, true, loader);
+ 
+-                //detect mods that incorrectly package mindustry in the jar
+-                if((main.getSuperclass().getName().equals("mindustry.mod.Plugin") || main.getSuperclass().getName().equals("mindustry.mod.Mod")) &&
+-                    main.getSuperclass().getClassLoader() != Mod.class.getClassLoader()){
+-                    throw new ModLoadException(
+-                        "This mod/plugin has loaded Mindustry dependencies from its own class loader. " +
+-                        "You are incorrectly including Mindustry dependencies in the mod JAR - " +
+-                        "make sure Mindustry is declared as `compileOnly` in Gradle, and that the JAR is created with `runtimeClasspath`!"
+-                    );
+-                }
+-
+                 metas.put(main, meta);
+                 mainMod = (Mod)main.getDeclaredConstructor().newInstance();
+             }else{
