@@ -1,0 +1,26 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Woodjecket <114514@>
+Date: Tue, 5 Aug 2025 13:19:54 +0800
+Subject: [PATCH] Test9
+
+---
+ ios/build.gradle | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/ios/build.gradle b/ios/build.gradle
+index 9f024743548771fe04b27068d28cdc3b350c3396..113ceb9fc367807159a11b313699b65dee9acdcb 100644
+--- a/ios/build.gradle
++++ b/ios/build.gradle
+@@ -38,9 +38,9 @@ dependencies{
+     implementation arcModule("natives:natives-ios")
+     implementation arcModule("natives:natives-freetype-ios")
+     implementation arcModule("backends:backend-robovm")
+-    implementation file("../../libs/EU.1.2.2.2.jar")
+-    implementation file("../../libs/Helium-beta-1.1.jar")
+-    implementation file("../../libs/NewHorizonMod.2a36.jar")
++    implementation files("../../libs/EU.1.2.2.2.jar")
++    implementation files("../../libs/Helium-beta-1.1.jar")
++    implementation files("../../libs/NewHorizonMod.2a36.jar")
+ 
+     compileOnly project(":annotations")
+ }
