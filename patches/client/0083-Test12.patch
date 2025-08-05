@@ -1,0 +1,21 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Woodjecket <114514@>
+Date: Tue, 5 Aug 2025 16:31:25 +0800
+Subject: [PATCH] Test12
+
+---
+ ios/robovm.xml | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/ios/robovm.xml b/ios/robovm.xml
+index 56bcd03404f003e2831a06efe06827b28d8efca2..50f12883734220d0b4b21d3cd1ddd3680732229a 100644
+--- a/ios/robovm.xml
++++ b/ios/robovm.xml
+@@ -22,6 +22,7 @@
+         <pattern>newhorizon.**</pattern>
+         <pattern>ExtraUtilities.**</pattern>
+         <pattern>helium.**</pattern>
++        <pattern>ice.**</pattern>
+         <pattern>mindustry.**</pattern>
+         <pattern>com.android.okhttp.HttpHandler</pattern>
+         <pattern>com.android.okhttp.HttpsHandler</pattern>
