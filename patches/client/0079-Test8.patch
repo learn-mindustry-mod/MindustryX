@@ -1,0 +1,23 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Woodjecket <114514@>
+Date: Tue, 5 Aug 2025 13:17:39 +0800
+Subject: [PATCH] Test8
+
+---
+ ios/robovm.xml | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/ios/robovm.xml b/ios/robovm.xml
+index c94ef0fe26cf189156b6ff484f140a6eedcbf6a9..56bcd03404f003e2831a06efe06827b28d8efca2 100644
+--- a/ios/robovm.xml
++++ b/ios/robovm.xml
+@@ -19,6 +19,9 @@
+     <forceLinkClasses>
+         <pattern>net.jpountz.lz4.**</pattern>
+         <pattern>arc.scene.**</pattern>
++        <pattern>newhorizon.**</pattern>
++        <pattern>ExtraUtilities.**</pattern>
++        <pattern>helium.**</pattern>
+         <pattern>mindustry.**</pattern>
+         <pattern>com.android.okhttp.HttpHandler</pattern>
+         <pattern>com.android.okhttp.HttpsHandler</pattern>
