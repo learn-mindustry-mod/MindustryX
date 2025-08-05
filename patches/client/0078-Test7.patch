@@ -1,0 +1,60 @@
+From 0000000000000000000000000000000000000000 Mon Sep 17 00:00:00 2001
+From: Woodjecket <114514@>
+Date: Tue, 5 Aug 2025 13:12:18 +0800
+Subject: [PATCH] Test7
+
+---
+ .../world/blocks/distribution/Junction.java    | 18 ++++++++++++++----
+ ios/build.gradle                               |  3 +++
+ 2 files changed, 17 insertions(+), 4 deletions(-)
+
+diff --git a/core/src/mindustry/world/blocks/distribution/Junction.java b/core/src/mindustry/world/blocks/distribution/Junction.java
+index b452ce570ec65cada0eeca929d723c39ada7c506..4718e608055345d2d323f95a441b8f4230ce6a39 100644
+--- a/core/src/mindustry/world/blocks/distribution/Junction.java
++++ b/core/src/mindustry/world/blocks/distribution/Junction.java
+@@ -46,6 +46,16 @@ public class Junction extends Block{
+     }
+ 
+     public class JunctionBuild extends Building{
++
++        public static int floorMod(int x, int y) {
++            int mod = x % y;
++            // if the signs are different and modulo not zero, adjust result
++            if ((mod ^ y) < 0 && mod != 0) {
++                mod += y;
++            }
++            return mod;
++        }
++
+         public DirectionalItemBuffer buffer = new DirectionalItemBuffer(capacity);
+ 
+         @Override
+@@ -103,10 +113,10 @@ public class Junction extends Block{
+                 Draw.color(Color.white, RenderExt.hiddenItemTransparency / 100f);
+                 for(int dir = 0; dir < 4; dir++){
+                     float
+-                    endx = x + Geometry.d4(dir).x * tilesize / 2f + Geometry.d4(Math.floorMod(dir + 1, 4)).x * tilesize / 4f,
+-                    endy = y + Geometry.d4(dir).y * tilesize / 2f + Geometry.d4(Math.floorMod(dir + 1, 4)).y * tilesize / 4f,
+-                    begx = x - Geometry.d4(dir).x * tilesize / 4f + Geometry.d4(Math.floorMod(dir + 1, 4)).x * tilesize / 4f,
+-                    begy = y - Geometry.d4(dir).y * tilesize / 4f + Geometry.d4(Math.floorMod(dir + 1, 4)).y * tilesize / 4f;
++                    endx = x + Geometry.d4(dir).x * tilesize / 2f + Geometry.d4(floorMod(dir + 1, 4)).x * tilesize / 4f,
++                    endy = y + Geometry.d4(dir).y * tilesize / 2f + Geometry.d4(floorMod(dir + 1, 4)).y * tilesize / 4f,
++                    begx = x - Geometry.d4(dir).x * tilesize / 4f + Geometry.d4(floorMod(dir + 1, 4)).x * tilesize / 4f,
++                    begy = y - Geometry.d4(dir).y * tilesize / 4f + Geometry.d4(floorMod(dir + 1, 4)).y * tilesize / 4f;
+ 
+                     Item item;
+                     for(int i = 0; (item = buffer.getItem(dir, i)) != null; i++){
+diff --git a/ios/build.gradle b/ios/build.gradle
+index e8b039516981a2168d3c41ff2639be48c3a2379b..9f024743548771fe04b27068d28cdc3b350c3396 100644
+--- a/ios/build.gradle
++++ b/ios/build.gradle
+@@ -38,6 +38,9 @@ dependencies{
+     implementation arcModule("natives:natives-ios")
+     implementation arcModule("natives:natives-freetype-ios")
+     implementation arcModule("backends:backend-robovm")
++    implementation file("../../libs/EU.1.2.2.2.jar")
++    implementation file("../../libs/Helium-beta-1.1.jar")
++    implementation file("../../libs/NewHorizonMod.2a36.jar")
+ 
+     compileOnly project(":annotations")
+ }
