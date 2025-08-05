@@ -19,7 +19,7 @@ public class InternalMods{
             mods.add(internalMod(meta("MindustryX", "MindustryX", VarsX.version, "")));
         if(OS.isIos){
             try {
-            mods.add(internalMod(meta("extra-utilities", "ExtraUtilities", "1.2.2.0", "guiY"""),(Mod) Class.forName("ExtraUtilities.ExtraUtilitiesMod").newInstance()));
+            mods.add(internalMod(meta("extra-utilities", "ExtraUtilities", "1.2.2.0", "guiY",""),(Mod) Class.forName("ExtraUtilities.ExtraUtilitiesMod").newInstance()));
             mods.add(internalMod(meta("he", "Helium", "beta-1.1", "EBwilson"),(Mod) Class.forName("helium.Helium").newInstance()));
             mods.add(internalMod(meta("new-horizon", "New Horizon", "2.0-alpha-50", "Yuria"), (Mod) Class.forName("newhorizon.NewHorizon").newInstance()));
             } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
