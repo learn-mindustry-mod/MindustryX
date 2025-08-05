@@ -17,13 +17,6 @@ public class InternalMods{
         mods.add(internalMod(meta("Kotlin", "Kotlin语言标准库", "1.9.20", "Jetbrains")));
         if(!VarsX.isLoader)
             mods.add(internalMod(meta("MindustryX", "MindustryX", VarsX.version, "")));
-        if(OS.isIos){
-            try {
-            mods.add(internalMod(meta("extra-utilities", "ExtraUtilities", "1.2.2.0", "guiY"),(Mod) Class.forName("ExtraUtilities.ExtraUtilitiesMod").newInstance()));
-            } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-                throw new RuntimeException(e);
-            }
-        }
         return mods;
     }
 
